@@ -32,5 +32,6 @@ use the editor.
 ## NR Enterprise rules
 - Specs live in docs/ (PRD, API contract, spec JSON); src/data/spec.json is a copy used for mock seed data — why: one source of truth for copy and catalogue.
 - No Lovable Cloud/Supabase: the browser talks only to the owner's PHP REST API at /api/v1 through src/lib/api.ts; src/mocks/ mirrors the same shapes when VITE_USE_MOCK is not "false" — why: backend is a separate cPanel PHP+MySQL app.
+- Public data loads via src/lib/queries.ts queryOptions; loaders prefetch only when canPrefetch() and router.tsx dehydrates them with router-ssr-query — why: SSR/hydration must match and real API is unreachable from the server.
 - Money/quantities stay decimal strings; use src/lib/money.ts, never float sums — why: server owns totals.
 - Public pages sit under the pathless _site layout; admin pages under admin.tsx (guard + AdminLayout); login/reset pages use admin_ prefix to skip the guard — why: separate shells.

@@ -74,7 +74,7 @@ function Styleguide() {
         <h3 className="font-semibold">Product cards (mock GET /public/products — {products.data?.meta.total ?? "…"} products)</h3>
         {products.isLoading ? <LoadingSkeleton variant="cards" rows={3} /> : products.isError ? <EmptyState title="Couldn't load products" /> : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.data!.data.map((p) => <ProductCard key={p.id} product={p} onQuote={(x) => toast(`Quote: ${x.name}`)} />)}
+            {products.data!.data.map((p) => <ProductCard key={p.id} product={p} />)}
           </div>
         )}
       </section>

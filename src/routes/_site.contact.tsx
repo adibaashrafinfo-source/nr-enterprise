@@ -1,7 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { StubPage } from "@/components/nre/StubPage";
 
+interface ContactSearch { product?: string; sample?: number }
+
 export const Route = createFileRoute("/_site/contact")({
+  validateSearch: (s: Record<string, unknown>): ContactSearch => {
+    const out: ContactSearch = {};
+    if (typeof s["product"] === "string" && s["product"]) out.product = s["product"];
+    if (Number(s["sample"]) === 1) out.sample = 1;
+    return out;
+  },
   head: () => ({
     meta: [
       { title: "Contact & Request a Quote — NR Enterprise" },
