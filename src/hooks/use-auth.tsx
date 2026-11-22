@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { ApiError, authApi, setCsrfToken } from "@/lib/api";
 import type { Role, User } from "@/lib/types";
 
@@ -12,7 +12,9 @@ interface AuthState {
   refresh: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthState | null>(null);
+// Kept on globalThis so a hot reload of this file reuses the same context and the provider still matches.
+const g = globalThis as { __nreAuthCtx?: React.Context<AuthState | null> };
+const AuthContext = (g.__nreAuthCtx ??= createContext<AuthState | null>(null));
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
