@@ -1,0 +1,2926 @@
+{
+  "meta": {
+    "project": "NR Enterprise website + admin inventory system",
+    "version": "2.0 (cPanel + PHP + MySQL)",
+    "date": "2026-11-22",
+    "prepared_by": "Abrar IT",
+    "stack": {
+      "frontend": "React + TypeScript + Vite + Tailwind + shadcn/ui, built in Lovable, static build uploaded to cPanel public_html",
+      "backend": "PHP 8.1+ REST API (PDO) built with Claude Code, under public_html/api + nre_backend/ outside web root",
+      "database": "MySQL/MariaDB on the same cPanel hosting (no Supabase, no third-party database)",
+      "auth": "PHP session cookie + CSRF token",
+      "files": "public_html/uploads (images), private storage/enquiries (attachments)",
+      "pdf": "Browser print CSS (A4) with embedded Bangla-capable font",
+      "hosting": "Single cPanel account with AutoSSL"
+    },
+    "companion_files": [
+      "NRE_PRD.md",
+      "NRE_mysql_schema.sql",
+      "NRE_mysql_seed.sql",
+      "NRE_BACKEND_API.md",
+      "NRE_CLAUDE_CODE_PROMPTS.md",
+      "NRE_LOVABLE_PROMPTS.md",
+      "NRE_Updated_Business_Profile.md",
+      "assets/"
+    ]
+  },
+  "brand": {
+    "name": "NR Enterprise",
+    "tagline": "All Kinds of Garments Accessories",
+    "logo": {
+      "full_on_light": "/assets/brand/nr-logo-full.png",
+      "mark_circle": "/assets/brand/nr-logo-mark.png",
+      "notes": "Logo = green NR monogram inside a yellow circle, wordmark 'NR ENTERPRISE' in black with italic serif tagline. Use nr-logo-full.png on light backgrounds; use nr-logo-mark.png (transparent circle) on dark/coloured backgrounds, favicon and admin sidebar."
+    },
+    "colors": {
+      "yellow": {
+        "hex": "#F8C840",
+        "use": "Logo circle yellow. Primary CTA background, highlights, active states, section accents."
+      },
+      "yellow_deep": {
+        "hex": "#E5AE1B",
+        "use": "Hover for yellow buttons, small icons on white."
+      },
+      "yellow_soft": {
+        "hex": "#FFF4CC",
+        "use": "Light yellow tint for badges, callouts, row highlight."
+      },
+      "green": {
+        "hex": "#6FA33F",
+        "use": "Logo NR green. Decorative, icons, charts, success accents. Not for small white-on-green text."
+      },
+      "green_deep": {
+        "hex": "#2F5D1A",
+        "use": "Headings accent, links, text on light bg, secondary button, admin primary."
+      },
+      "ink": {
+        "hex": "#201818",
+        "use": "Logo black. Body text, headings, text on yellow."
+      },
+      "ink_green": {
+        "hex": "#14210F",
+        "use": "Dark sections, footer, admin sidebar."
+      },
+      "cream": {
+        "hex": "#FBF8EE",
+        "use": "Page background alternate sections."
+      },
+      "surface": {
+        "hex": "#FFFFFF",
+        "use": "Cards, tables."
+      },
+      "line": {
+        "hex": "#E8E2CF",
+        "use": "Borders and dividers."
+      },
+      "muted": {
+        "hex": "#6B655A",
+        "use": "Secondary text."
+      },
+      "danger": {
+        "hex": "#C0392B",
+        "use": "Errors, out of stock."
+      },
+      "warning": {
+        "hex": "#B7791F",
+        "use": "Low stock."
+      }
+    },
+    "contrast_rules": [
+      "Text on yellow (#F8C840) is always ink (#201818). Never white on yellow.",
+      "White text only on ink_green, green_deep or ink backgrounds.",
+      "Never place small body text in #6FA33F on white (low contrast). Use green_deep."
+    ],
+    "typography": {
+      "heading": "Poppins 700 (same family as the business profile)",
+      "body": "Poppins 400/500; fallback Inter, system-ui",
+      "bangla_fallback": "Hind Siliguri, Noto Sans Bengali",
+      "scale": {
+        "h1": "clamp(2.2rem,5vw,3.75rem)",
+        "h2": "clamp(1.6rem,3vw,2.4rem)",
+        "h3": "1.25rem",
+        "body": "1rem",
+        "small": "0.875rem"
+      }
+    },
+    "shape_and_motion": {
+      "radius": "16px cards, 999px pills and buttons, 12px inputs",
+      "shadow": "0 8px 30px rgba(20,33,15,0.08)",
+      "motion": "subtle fade-up on scroll (200-350ms), image hover zoom 1.04, no autoplay carousels except client logo marquee",
+      "signature_elements": [
+        "Dotted 'NR' watermark pattern (from the profile) as a faint background on hero and footer",
+        "Yellow bar + dark text label blocks as used in the profile (heading with yellow underline bar)",
+        "Rounded product cards with a yellow caption strip at the bottom of the image, like the profile's product grid"
+      ]
+    },
+    "admin_theme": {
+      "sidebar": "ink_green background, nr-logo-mark at top, active item yellow background with ink text",
+      "topbar": "white with line border, global search, user menu",
+      "tables": "white cards, sticky header, zebra rows #FBF8EE, status pills",
+      "status_pills": {
+        "ok": "green_deep on #E4F3DA",
+        "low": "warning on yellow_soft",
+        "out": "danger on #FBE0DC",
+        "partial": "#1F4E8C on #E0ECFB",
+        "paid": "green_deep on #E4F3DA",
+        "due": "warning on yellow_soft"
+      }
+    }
+  },
+  "company": {
+    "legal_display_name": "NR Enterprise",
+    "positioning": "An ultimate garments trims & accessories manufacturer & exporter",
+    "positioning_note": "Updated profile cover says 'manufacturer & exporter' (the earlier profile said 'supplier'). Use 'Garments Trims & Accessories' on the site until NR confirms whether it manufactures in-house.",
+    "promise": "We synchronize supply with demand",
+    "motto": "We blend People, Process & Technology to meet customer demand",
+    "closing_line": "Make your brand's product stand out with our high-quality production line.",
+    "vision": "To be the global Trims & Accessories company that respected brands, retailers and manufacturers choose to partner with.",
+    "mission": "To create innovative, intelligent and sustainable ways to connect brands with consumers.",
+    "contact": {
+      "address": "House # 375/C, Chanpara, Uttarkhan, Dhaka-1230, Bangladesh",
+      "phones": [
+        "+880 1876584213",
+        "+88 01648886936"
+      ],
+      "whatsapp": "+8801876584213",
+      "email": "nrenterprisebd2@gmail.com",
+      "social": {
+        "facebook": null,
+        "youtube": null
+      },
+      "website": null,
+      "notes": "Profile shows Facebook and YouTube icons and a QR code with no links, and prints the email as a 'website'. Leave social/website as null; hide the icons until NR supplies links."
+    },
+    "verified_use_on_site": [
+      "Company name, tagline, logo, address, phones, email",
+      "Vision, mission, 'We synchronize supply with demand', People-Process-Technology message",
+      "Product list and product descriptions (19 lines)",
+      "Client brand logos (20) once NR confirms permission",
+      "Sustainability message (4R icons from earlier profile; environmental policy wording)"
+    ],
+    "hide_until_confirmed": [
+      {
+        "item": "Founded in 2015",
+        "reason": "Identical to the United Nine Bangladesh (UNB) profile text"
+      },
+      {
+        "item": "85 million capacity per month; 20/25/30/40/5/6/2 million per-process capacities",
+        "reason": "UNB figures"
+      },
+      {
+        "item": "150+ employees",
+        "reason": "UNB figure"
+      },
+      {
+        "item": "'More than 10 years of manufacturing expertise'",
+        "reason": "UNB wording"
+      },
+      {
+        "item": "Machinery & capacity tables (pages 16-17)",
+        "reason": "UNB machinery list"
+      },
+      {
+        "item": "Certificates with numbers (FSC C147844, GRS GSCI-1074, amfori ID, ISO 9001:2015, OEKO-TEX, SEDEX)",
+        "reason": "Certificates and IDs belong to UNB; publishing them for NR could be a false claim"
+      },
+      {
+        "item": "Management Overview signed 'Md. Arif, Managing Director, United Nine Bangladesh OPC' and Sun Tin Lun group paragraph",
+        "reason": "Refers to UNB"
+      },
+      {
+        "item": "Text still saying 'United Nine Bangladesh' (overview, sustainability) and 'Welcome to United Nine Bangladesh' photo",
+        "reason": "Replace with NR Enterprise wording / NR's own photo"
+      },
+      {
+        "item": "Factory/machine photos that appear to show UNB branding",
+        "reason": "Use only NR's own premises photos"
+      }
+    ]
+  },
+  "categories": [
+    {
+      "slug": "labels",
+      "name": "Labels",
+      "description": "Fabric identification sewn into garments: woven, printed care and screen printed labels.",
+      "image_url": "/assets/products/woven-labels/woven-labels-1.jpg",
+      "sort_order": 1
+    },
+    {
+      "slug": "tags-stickers-tracking",
+      "name": "Tags, Stickers & Tracking",
+      "description": "Paper and adhesive identification: hangtags, thermal and barcode stickers, RFID and variable-data labels.",
+      "image_url": "/assets/products/offset-printed-tags/offset-printed-tags-1.jpg",
+      "sort_order": 2
+    },
+    {
+      "slug": "trims",
+      "name": "Trims & Accessories",
+      "description": "Physical garment components: sewing thread, elastic, twill tape, drawcords, cord stoppers and buttons.",
+      "image_url": "/assets/products/sewing-thread/sewing-thread-1.jpg",
+      "sort_order": 3
+    }
+  ],
+  "products": [
+    {
+      "category_slug": "labels",
+      "slug": "woven-labels",
+      "name": "Woven Labels",
+      "code": "WL",
+      "short_description": "Sewn-in brand label with a permanent, durable finish.",
+      "description": "Woven labels are the original label. Sewn into your garment, they are your brand's permanent signature and offer high quality and durability. Specialised in woven-edge technology, produced on modern machines with recycled-quality raw material.",
+      "features": [
+        "Permanent brand identity",
+        "High durability",
+        "Recycled-quality raw material",
+        "Taffeta, satin and damask weaves"
+      ],
+      "specs": {
+        "weave": [
+          "Taffeta",
+          "Satin",
+          "Damask"
+        ],
+        "fields": [
+          "width_mm",
+          "length_mm",
+          "colours",
+          "edge",
+          "buyer_brand"
+        ],
+        "fold_types": [
+          "End fold",
+          "Centre fold",
+          "Mitre fold"
+        ]
+      },
+      "unit_code": "pcs",
+      "moq": 1000.0,
+      "is_featured": true,
+      "sort_order": 1,
+      "images": [
+        "/assets/products/woven-labels/woven-labels-1.jpg",
+        "/assets/products/woven-labels/woven-labels-2.jpg",
+        "/assets/products/woven-labels/woven-labels-3.jpg",
+        "/assets/products/woven-labels/woven-labels-4.jpg"
+      ]
+    },
+    {
+      "category_slug": "labels",
+      "slug": "printed-care-labels",
+      "name": "Printed Care Labels (PFL)",
+      "code": "PCL",
+      "short_description": "Care and content labels printed on a wide range of fibres.",
+      "description": "Care and content labels are small yet crucial to ensuring your product reaches the shop floor and the end user enjoys it as long as possible. Printed on polyester satin, taffeta, acetate, tear-away, nylon, poly-cotton blends, cotton, organic cotton and twill tape.",
+      "features": [
+        "Composition and care instructions",
+        "Wide range of base fibres",
+        "Recycled-quality raw material"
+      ],
+      "specs": {
+        "fields": [
+          "size",
+          "print_colours",
+          "language",
+          "buyer_brand"
+        ],
+        "base_fabrics": [
+          "Polyester satin",
+          "Taffeta",
+          "Acetate",
+          "Tear away",
+          "Nylon",
+          "Poly cotton",
+          "Cotton",
+          "Organic cotton",
+          "Twill tape"
+        ]
+      },
+      "unit_code": "pcs",
+      "moq": 1000.0,
+      "is_featured": true,
+      "sort_order": 2,
+      "images": [
+        "/assets/products/printed-care-labels/printed-care-labels-1.jpg",
+        "/assets/products/printed-care-labels/printed-care-labels-2.jpg",
+        "/assets/products/printed-care-labels/printed-care-labels-3.jpg",
+        "/assets/products/printed-care-labels/printed-care-labels-4.jpg",
+        "/assets/products/printed-care-labels/printed-care-labels-5.jpg"
+      ]
+    },
+    {
+      "category_slug": "labels",
+      "slug": "screen-printed-labels",
+      "name": "Screen Printed Labels",
+      "code": "SPL",
+      "short_description": "Vibrant colour at a relatively lower cost.",
+      "description": "A popular alternative to woven labels thanks to colour vibrancy. Produced on in-house substrates, including cotton substitutes that are durable and do not fray.",
+      "features": [
+        "Colour vibrancy",
+        "Lower cost than woven",
+        "Does not fray",
+        "In-house substrates"
+      ],
+      "specs": {
+        "fields": [
+          "substrate",
+          "size",
+          "print_colours",
+          "finish"
+        ]
+      },
+      "unit_code": "pcs",
+      "moq": 1000.0,
+      "is_featured": false,
+      "sort_order": 3,
+      "images": [
+        "/assets/products/screen-printed-labels/screen-printed-labels-1.jpg",
+        "/assets/products/screen-printed-labels/screen-printed-labels-2.jpg",
+        "/assets/products/screen-printed-labels/screen-printed-labels-3.jpg",
+        "/assets/products/screen-printed-labels/screen-printed-labels-4.jpg",
+        "/assets/products/screen-printed-labels/screen-printed-labels-5.jpg",
+        "/assets/products/screen-printed-labels/screen-printed-labels-6.jpg"
+      ]
+    },
+    {
+      "category_slug": "tags-stickers-tracking",
+      "slug": "offset-printed-tags",
+      "name": "Offset Printed Tags",
+      "code": "OPT",
+      "short_description": "Price tickets, hangtags, waist tags and secondary tags.",
+      "description": "A swing ticket is the book cover to your brand. Wide range of price tickets, hangtags, waist tags and secondary tags with finishing such as die cutting, embossing, foil stamping, varnishing, stringing, eyelet and folding. Printed on eco-friendly recycled paper with soy-based ink.",
+      "features": [
+        "Die cutting",
+        "Embossing",
+        "Foil stamping",
+        "Varnishing",
+        "Stringing and eyelet",
+        "Recycled paper, soy-based ink"
+      ],
+      "specs": {
+        "fields": [
+          "paper_type",
+          "gsm",
+          "size",
+          "recycled_paper"
+        ],
+        "finishing": [
+          "Die cut",
+          "Emboss",
+          "Foil",
+          "Varnish",
+          "String",
+          "Eyelet",
+          "Fold"
+        ]
+      },
+      "unit_code": "pcs",
+      "moq": 1000.0,
+      "is_featured": true,
+      "sort_order": 4,
+      "images": [
+        "/assets/products/offset-printed-tags/offset-printed-tags-1.jpg",
+        "/assets/products/offset-printed-tags/offset-printed-tags-2.jpg",
+        "/assets/products/offset-printed-tags/offset-printed-tags-3.jpg",
+        "/assets/products/offset-printed-tags/offset-printed-tags-4.jpg"
+      ]
+    },
+    {
+      "category_slug": "tags-stickers-tracking",
+      "slug": "digital-printed-tags",
+      "name": "Digital Printed Tags",
+      "code": "DPT",
+      "short_description": "Photo-quality tags with many designs in one run.",
+      "description": "A cost-effective method for custom tags and labels with photographic-quality graphics, crisp text and vibrant colours. Multiple designs can be produced in the same run without delay, from startups to large-scale enterprises.",
+      "features": [
+        "Photographic quality",
+        "Short runs",
+        "Multiple designs per run"
+      ],
+      "specs": {
+        "fields": [
+          "paper_type",
+          "gsm",
+          "size",
+          "finishing"
+        ]
+      },
+      "unit_code": "pcs",
+      "moq": 500.0,
+      "is_featured": false,
+      "sort_order": 5,
+      "images": [
+        "/assets/products/digital-printed-tags/digital-printed-tags-1.jpg",
+        "/assets/products/digital-printed-tags/digital-printed-tags-2.jpg"
+      ]
+    },
+    {
+      "category_slug": "tags-stickers-tracking",
+      "slug": "thermal-stickers",
+      "name": "Thermal Stickers",
+      "code": "TST",
+      "short_description": "Thermal printed price, carton, poly and box stickers.",
+      "description": "Thermal printed labels and tags for barcode-oriented products: price stickers, price tickets, carton stickers, poly stickers, box stickers and more.",
+      "features": [
+        "Barcode-ready",
+        "Price, carton, poly and box stickers"
+      ],
+      "specs": {
+        "fields": [
+          "roll_width_mm",
+          "roll_length_m",
+          "core_size",
+          "material",
+          "labels_per_roll"
+        ]
+      },
+      "unit_code": "roll",
+      "moq": 10.0,
+      "is_featured": true,
+      "sort_order": 6,
+      "images": [
+        "/assets/products/thermal-stickers/thermal-stickers-1.jpg",
+        "/assets/products/thermal-stickers/thermal-stickers-2.jpg",
+        "/assets/products/thermal-stickers/thermal-stickers-3.jpg"
+      ]
+    },
+    {
+      "category_slug": "tags-stickers-tracking",
+      "slug": "barcode-labels",
+      "name": "Barcode Labels & Stickers",
+      "code": "BCL",
+      "short_description": "Barcode and QR identification labels.",
+      "description": "Barcode and QR code labels and stickers for identification, tracking and retail scanning.",
+      "features": [
+        "Barcode and QR",
+        "Roll or sheet"
+      ],
+      "specs": {
+        "fields": [
+          "code_type",
+          "size",
+          "material",
+          "labels_per_roll"
+        ]
+      },
+      "unit_code": "roll",
+      "moq": 10.0,
+      "is_featured": false,
+      "sort_order": 7,
+      "images": [
+        "/assets/products/barcode-labels/barcode-labels-1.jpg",
+        "/assets/products/barcode-labels/barcode-labels-2.jpg",
+        "/assets/products/barcode-labels/barcode-labels-3.jpg"
+      ]
+    },
+    {
+      "category_slug": "tags-stickers-tracking",
+      "slug": "rfid-labels-tags",
+      "name": "RFID Labels & Tags",
+      "code": "RFD",
+      "short_description": "RFID labels and tags for inventory and supply-chain tracking.",
+      "description": "Radio frequency identification used in manufacturing, inventory control, warehousing, distribution, logistics, automatic object tracking and supply-chain management. Labels and tags produced in-house.",
+      "features": [
+        "Inventory control",
+        "Warehousing and logistics",
+        "Automatic tracking"
+      ],
+      "specs": {
+        "fields": [
+          "chip_type",
+          "frequency",
+          "size",
+          "printed_data"
+        ]
+      },
+      "unit_code": "pcs",
+      "moq": 1000.0,
+      "is_featured": false,
+      "sort_order": 8,
+      "images": [
+        "/assets/products/rfid-labels-tags/rfid-labels-tags-1.jpg",
+        "/assets/products/rfid-labels-tags/rfid-labels-tags-2.jpg",
+        "/assets/products/rfid-labels-tags/rfid-labels-tags-3.jpg",
+        "/assets/products/rfid-labels-tags/rfid-labels-tags-4.jpg"
+      ]
+    },
+    {
+      "category_slug": "tags-stickers-tracking",
+      "slug": "variable-data-labels",
+      "name": "Variable Data Labels",
+      "code": "VDL",
+      "short_description": "Tickets and labels carrying changing data through the supply chain.",
+      "description": "Variable data tickets and labels communicate critical information throughout the supply chain as a product makes its way from production through to store.",
+      "features": [
+        "Unique data per label",
+        "Production to store tracking"
+      ],
+      "specs": {
+        "fields": [
+          "data_fields",
+          "size",
+          "material",
+          "code_type"
+        ]
+      },
+      "unit_code": "pcs",
+      "moq": 1000.0,
+      "is_featured": false,
+      "sort_order": 9,
+      "images": [
+        "/assets/products/variable-data-labels/variable-data-labels-1.jpg",
+        "/assets/products/variable-data-labels/variable-data-labels-2.jpg",
+        "/assets/products/variable-data-labels/variable-data-labels-3.jpg",
+        "/assets/products/variable-data-labels/variable-data-labels-4.jpg"
+      ]
+    },
+    {
+      "category_slug": "tags-stickers-tracking",
+      "slug": "flexo-adhesive-labels",
+      "name": "Flexo Printed Adhesive Labels",
+      "code": "FAL",
+      "short_description": "Roll adhesive labels printed by flexo.",
+      "description": "Flexo printed adhesive labels and stickers on rolls for packaging and product identification.",
+      "features": [
+        "Roll form",
+        "Adhesive backing"
+      ],
+      "specs": {
+        "fields": [
+          "roll_width_mm",
+          "material",
+          "print_colours"
+        ]
+      },
+      "unit_code": "roll",
+      "moq": 10.0,
+      "is_featured": false,
+      "sort_order": 10,
+      "images": [
+        "/assets/products/flexo-adhesive-labels/flexo-adhesive-labels-1.jpg"
+      ]
+    },
+    {
+      "category_slug": "tags-stickers-tracking",
+      "slug": "adhesive-labels-tags",
+      "name": "Adhesive Labels & Tags",
+      "code": "ALT",
+      "short_description": "Adhesive labels and tags in rolls and sheets.",
+      "description": "A range of adhesive labels and tags for packaging, cartons and product identification.",
+      "features": [
+        "Rolls and sheets",
+        "Custom shapes"
+      ],
+      "specs": {
+        "fields": [
+          "size",
+          "material",
+          "shape"
+        ]
+      },
+      "unit_code": "roll",
+      "moq": 10.0,
+      "is_featured": false,
+      "sort_order": 11,
+      "images": [
+        "/assets/products/adhesive-labels-tags/adhesive-labels-tags-1.jpg"
+      ]
+    },
+    {
+      "category_slug": "trims",
+      "slug": "sewing-thread",
+      "name": "Sewing Thread",
+      "code": "THR",
+      "short_description": "Cotton, polyester and silk thread for strong, smooth seams.",
+      "description": "A vital component in garment production, designed to hold fabrics together with strength and flexibility. Available in cotton, polyester and silk for durability, smooth seams and a refined finish.",
+      "features": [
+        "Cotton, polyester, silk",
+        "Durable smooth seams",
+        "Wide colour range"
+      ],
+      "specs": {
+        "fields": [
+          "fibre",
+          "count_ticket",
+          "colour_code",
+          "cone_weight"
+        ]
+      },
+      "unit_code": "cone",
+      "moq": 12.0,
+      "is_featured": true,
+      "sort_order": 12,
+      "images": [
+        "/assets/products/sewing-thread/sewing-thread-1.jpg"
+      ]
+    },
+    {
+      "category_slug": "trims",
+      "slug": "elastic",
+      "name": "Elastic",
+      "code": "ELA",
+      "short_description": "Stretchable elastic for waistbands, cuffs and more.",
+      "description": "A stretchable material for flexibility, comfort and a secure fit. Commonly made from rubber or spandex blended with fabric fibres. Available in various widths and strengths for waistbands, cuffs and other areas needing stretch and recovery.",
+      "features": [
+        "Various widths and strengths",
+        "Rubber or spandex blends",
+        "Comfort and secure fit"
+      ],
+      "specs": {
+        "fields": [
+          "material",
+          "width_mm",
+          "colour",
+          "stretch_type",
+          "roll_length"
+        ]
+      },
+      "unit_code": "roll",
+      "moq": 10.0,
+      "is_featured": true,
+      "sort_order": 13,
+      "images": [
+        "/assets/products/elastic/elastic-1.jpg"
+      ]
+    },
+    {
+      "category_slug": "trims",
+      "slug": "twill-tape",
+      "name": "Twill Tape",
+      "code": "TWT",
+      "short_description": "Strong flat woven tape with a diagonal pattern.",
+      "description": "A flat woven tape with a distinctive diagonal pattern, known for strength and durability. Made from cotton, polyester or a blend, widely used for binding edges, reinforcing seams and creating ties in garments and home textiles.",
+      "features": [
+        "Binding and reinforcing",
+        "Cotton or polyester",
+        "Soft texture, sturdy weave"
+      ],
+      "specs": {
+        "fields": [
+          "material",
+          "width_mm",
+          "colour",
+          "roll_length"
+        ]
+      },
+      "unit_code": "roll",
+      "moq": 10.0,
+      "is_featured": false,
+      "sort_order": 14,
+      "images": [
+        "/assets/products/twill-tape/twill-tape-1.jpg"
+      ]
+    },
+    {
+      "category_slug": "trims",
+      "slug": "drawstring-cord",
+      "name": "Drawstring / Drawcord",
+      "code": "DRC",
+      "short_description": "Coloured cords with tipped ends for hoods and waists.",
+      "description": "Coloured drawstrings and drawcords with tipped ends for hoodies, joggers, shorts and bags.",
+      "features": [
+        "Many colours",
+        "Tipped ends",
+        "Custom lengths"
+      ],
+      "specs": {
+        "fields": [
+          "diameter_mm",
+          "length_cm",
+          "tip_type",
+          "colour"
+        ]
+      },
+      "unit_code": "dozen",
+      "moq": 12.0,
+      "is_featured": false,
+      "sort_order": 15,
+      "images": [
+        "/assets/products/drawstring-cord/drawstring-cord-1.jpg"
+      ]
+    },
+    {
+      "category_slug": "trims",
+      "slug": "cord-stoppers",
+      "name": "Cord Stoppers",
+      "code": "CST",
+      "short_description": "Plastic and metal toggle stoppers for drawcords.",
+      "description": "Plastic and metal cord stoppers (toggles) for drawcords, hoods, waists and bags.",
+      "features": [
+        "Plastic and metal",
+        "Single and double hole"
+      ],
+      "specs": {
+        "fields": [
+          "size",
+          "hole_count",
+          "material",
+          "colour"
+        ]
+      },
+      "unit_code": "gross",
+      "moq": 1.0,
+      "is_featured": false,
+      "sort_order": 16,
+      "images": [
+        "/assets/products/cord-stoppers/cord-stoppers-1.jpg",
+        "/assets/products/cord-stoppers/cord-stoppers-2.jpg"
+      ]
+    },
+    {
+      "category_slug": "trims",
+      "slug": "metal-snap-buttons",
+      "name": "Metal Snap Buttons",
+      "code": "MSB",
+      "short_description": "Brass-finish snap buttons with custom logo.",
+      "description": "Metal snap buttons in antique and other finishes, with custom embossed logos. Four-part sets: cap, socket, stud and post.",
+      "features": [
+        "Custom logo",
+        "Antique and other finishes",
+        "Four-part snap sets"
+      ],
+      "specs": {
+        "fields": [
+          "size_ligne",
+          "finish",
+          "snap_parts",
+          "logo"
+        ]
+      },
+      "unit_code": "gross",
+      "moq": 1.0,
+      "is_featured": true,
+      "sort_order": 17,
+      "images": [
+        "/assets/products/metal-snap-buttons/metal-snap-buttons-1.jpg"
+      ]
+    },
+    {
+      "category_slug": "trims",
+      "slug": "plastic-buttons",
+      "name": "Plastic Buttons",
+      "code": "PLB",
+      "short_description": "2-hole and 4-hole plastic buttons in many colours.",
+      "description": "Durable plastic buttons in two-hole and four-hole styles across a wide colour range.",
+      "features": [
+        "2-hole and 4-hole",
+        "Many colours and sizes"
+      ],
+      "specs": {
+        "fields": [
+          "size_ligne",
+          "holes",
+          "colour",
+          "finish"
+        ]
+      },
+      "unit_code": "gross",
+      "moq": 1.0,
+      "is_featured": false,
+      "sort_order": 18,
+      "images": [
+        "/assets/products/plastic-buttons/plastic-buttons-1.jpg"
+      ]
+    },
+    {
+      "category_slug": "trims",
+      "slug": "shell-buttons",
+      "name": "Shell / Pearl Buttons",
+      "code": "SHB",
+      "short_description": "Pearl and shell buttons for shirts and premium wear.",
+      "description": "Pearl and shell-finish buttons for shirts and premium garments.",
+      "features": [
+        "Pearl and shell finish",
+        "Shirt and premium wear"
+      ],
+      "specs": {
+        "fields": [
+          "size_ligne",
+          "holes",
+          "finish"
+        ]
+      },
+      "unit_code": "gross",
+      "moq": 1.0,
+      "is_featured": false,
+      "sort_order": 19,
+      "images": [
+        "/assets/products/shell-buttons/shell-buttons-1.jpg"
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "name": "ONLY",
+      "logo": "/assets/clients/only.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "name it",
+      "logo": "/assets/clients/nameit.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "JDY",
+      "logo": "/assets/clients/jdy.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "VERO MODA",
+      "logo": "/assets/clients/veromoda.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "NOISY MAY",
+      "logo": "/assets/clients/noisymay.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "ONLY & SONS",
+      "logo": "/assets/clients/onlyandsons.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "Obaïbi",
+      "logo": "/assets/clients/obaibi.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "Okaïdi",
+      "logo": "/assets/clients/okaidi.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "Pepe Jeans London",
+      "logo": "/assets/clients/pepejeans.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "Lois",
+      "logo": "/assets/clients/lois.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "157",
+      "logo": "/assets/clients/157.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "ONLY Carmakoma",
+      "logo": "/assets/clients/onlycarmakoma.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "JULES",
+      "logo": "/assets/clients/jules.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "PIECES",
+      "logo": "/assets/clients/pieces.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "Y.A.S",
+      "logo": "/assets/clients/yas.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "ONLY PLAY",
+      "logo": "/assets/clients/onlyplay.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "JACK & JONES",
+      "logo": "/assets/clients/jackandjones.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "SELECTED / FEMME",
+      "logo": "/assets/clients/selectedfemme.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "mama licious",
+      "logo": "/assets/clients/mamalicious.png",
+      "permission_confirmed": false
+    },
+    {
+      "name": "VILA Clothes",
+      "logo": "/assets/clients/vilaclothes.png",
+      "permission_confirmed": false
+    }
+  ],
+  "certifications": [
+    {
+      "name": "OEKO-TEX Standard 100",
+      "published": false
+    },
+    {
+      "name": "Forest Stewardship Council (FSC)",
+      "published": false
+    },
+    {
+      "name": "Global Recycled Standard (GRS)",
+      "published": false
+    },
+    {
+      "name": "amfori BSCI",
+      "published": false
+    },
+    {
+      "name": "ISO 9001:2015 (QMS)",
+      "published": false
+    },
+    {
+      "name": "SEDEX / SMETA",
+      "published": false
+    }
+  ],
+  "assets": {
+    "root": "assets/ -> copy into the Lovable project at public/assets/",
+    "brand": "/assets/brand/nr-logo-full.png, /assets/brand/nr-logo-mark.png",
+    "products": "/assets/products/<product-slug>/<product-slug>-N.jpg (74 files overall)",
+    "clients": "/assets/clients/<name>.png (20 logos)",
+    "site": [
+      "/assets/site/factory-exterior.jpg",
+      "/assets/site/people-process-technology.jpg",
+      "/assets/site/supply-demand-banner.jpg",
+      "/assets/site/sustainability-bottle.jpg",
+      "/assets/site/sustainable-products.jpg",
+      "/assets/site/governance-policy.jpg"
+    ],
+    "note": "Embedded photos are low resolution (about 290 px). Admin lets NR replace them via upload."
+  },
+  "website": {
+    "routes_note": "React + TypeScript + React Router. Public routes below; admin lives under /admin. All public content is read from the PHP API (GET /api/v1/public/*: products, categories, clients, certifications, settings). Static copy lives in code.",
+    "global": {
+      "header": "Sticky. Logo (full on light), nav, phone, yellow 'Request a Quote' pill. Mobile: hamburger drawer + sticky bottom bar with Call, WhatsApp, Quote.",
+      "nav": [
+        "Home",
+        "About",
+        "Products (mega menu: Labels / Tags, Stickers & Tracking / Trims)",
+        "Capabilities",
+        "Sustainability",
+        "Clients",
+        "Contact"
+      ],
+      "footer": "ink_green with faint dotted NR watermark. Logo mark, tagline, 3 category link columns, quick links, address, phones, email, (social icons only if links exist), copyright, 'Admin login' small link.",
+      "floating": "WhatsApp floating button (bottom-right, uses company_settings.whatsapp).",
+      "seo": "Per-page title/description/OG image; JSON-LD Organization + Product; sitemap.xml; robots.txt; clean slugs."
+    },
+    "pages": [
+      {
+        "route": "/",
+        "name": "Home",
+        "goal": "In ten seconds show what NR supplies, prove credibility, push Request a Quote.",
+        "sections": [
+          {
+            "order": 1,
+            "name": "Hero",
+            "content": "Headline: 'All kinds of garments accessories, under one roof.' Sub: 'Labels, tags, stickers and trims for garment factories, buying houses and brands.' Buttons: [Explore Products] (yellow) and [Request a Quote] (outline). Right side: collage of 4 product photos (woven, hangtags, thread, buttons) in rounded cards over the dotted NR watermark.",
+            "images": [
+              "/assets/products/woven-labels/woven-labels-1.jpg",
+              "/assets/products/offset-printed-tags/offset-printed-tags-1.jpg",
+              "/assets/products/sewing-thread/sewing-thread-1.jpg",
+              "/assets/products/metal-snap-buttons/metal-snap-buttons-1.jpg"
+            ]
+          },
+          {
+            "order": 2,
+            "name": "Trust strip",
+            "content": "Four items, no numbers: 'Labels · Tags · Trims', 'Custom finishing', 'Recycled-quality materials', 'Supplying global brands'."
+          },
+          {
+            "order": 3,
+            "name": "Category cards",
+            "content": "Three large cards (Labels, Tags Stickers & Tracking, Trims & Accessories) from the categories table: image, name, one-line description, product count, 'Explore' arrow."
+          },
+          {
+            "order": 4,
+            "name": "Featured products",
+            "content": "8 products where is_featured = true. Product card: image, category chip, name, short description, 'Get quote' button."
+          },
+          {
+            "order": 5,
+            "name": "Why choose NR",
+            "content": "Left: 'We blend People, Process & Technology to meet customer demand' with the three-circle graphic (/assets/site/people-process-technology.jpg). Right: 4 benefit cards - Wide range under one roof; Custom finishing on labels and tags; Sustainable materials focus; Sample and artwork support."
+          },
+          {
+            "order": 6,
+            "name": "Process strip",
+            "content": "Brief -> Artwork & approval -> Production -> Quality check -> Delivery, five icon steps."
+          },
+          {
+            "order": 7,
+            "name": "Sustainability band",
+            "content": "Yellow band, ink text: 'Reduce - Reuse - Recycle - Recover' with four icons, one sentence, link to /sustainability."
+          },
+          {
+            "order": 8,
+            "name": "Clients marquee",
+            "content": "Auto-scrolling grayscale logo row from clients (is_active). Hover = colour. Title: 'Trusted by leading brands'. Hidden if no active clients."
+          },
+          {
+            "order": 9,
+            "name": "Quote CTA",
+            "content": "ink_green section: 'Make your brand's product stand out.' Mini form (name, phone, product dropdown, quantity) posting to enquiries; link to full form."
+          }
+        ]
+      },
+      {
+        "route": "/about",
+        "name": "About",
+        "goal": "Story and credibility.",
+        "sections": [
+          {
+            "order": 1,
+            "name": "Banner",
+            "content": "Title 'About NR Enterprise', breadcrumb, cream background with NR watermark."
+          },
+          {
+            "order": 2,
+            "name": "Overview",
+            "content": "Two columns: text + photo (/assets/site/factory-exterior.jpg, flagged to be replaced by NR photo if needed). Copy: NR Enterprise supplies garment labels, tags, stickers and trims, from promotional labels to product identification, helping brands share essential product information. Serves retailers, brand owners and garment manufacturers across the supply chain. No founding year or numbers until verified."
+          },
+          {
+            "order": 3,
+            "name": "Vision and mission",
+            "content": "Two yellow cards with the vision and mission text."
+          },
+          {
+            "order": 4,
+            "name": "People - Process - Technology",
+            "content": "Three-circle graphic and three short paragraphs."
+          },
+          {
+            "order": 5,
+            "name": "Values",
+            "content": "Ethical, responsible business practices; positive impact on community and environment (from profile). Three icon cards."
+          },
+          {
+            "order": 6,
+            "name": "CTA",
+            "content": "'Talk to our team' -> /contact."
+          }
+        ]
+      },
+      {
+        "route": "/products",
+        "name": "Products",
+        "goal": "Browse and search the full catalogue.",
+        "sections": [
+          {
+            "order": 1,
+            "name": "Banner + search",
+            "content": "Search by name or code (debounced ilike on products)."
+          },
+          {
+            "order": 2,
+            "name": "Category tabs",
+            "content": "All, Labels, Tags Stickers & Tracking, Trims & Accessories. Active tab yellow."
+          },
+          {
+            "order": 3,
+            "name": "Product grid",
+            "content": "3 columns desktop, 2 tablet, 1 mobile. Card as in Home. 12 per page with pagination."
+          },
+          {
+            "order": 4,
+            "name": "Help block",
+            "content": "'Not sure what you need? Send us a sample or your artwork' -> /contact?sample=1"
+          }
+        ]
+      },
+      {
+        "route": "/products/:categorySlug",
+        "name": "Category page",
+        "goal": "One page per category.",
+        "sections": [
+          {
+            "order": 1,
+            "name": "Category hero",
+            "content": "Name, description, hero image."
+          },
+          {
+            "order": 2,
+            "name": "Filter bar",
+            "content": "Filter by product type within category; sort by featured/name."
+          },
+          {
+            "order": 3,
+            "name": "Product grid",
+            "content": "Products of the category."
+          },
+          {
+            "order": 4,
+            "name": "Related categories",
+            "content": "The other two categories."
+          }
+        ]
+      },
+      {
+        "route": "/products/:categorySlug/:productSlug",
+        "name": "Product detail",
+        "goal": "Everything needed to request a quote.",
+        "sections": [
+          {
+            "order": 1,
+            "name": "Breadcrumb",
+            "content": "Home / Products / Category / Product."
+          },
+          {
+            "order": 2,
+            "name": "Gallery",
+            "content": "Main image + thumbnails from product_images (zoom on click)."
+          },
+          {
+            "order": 3,
+            "name": "Summary panel",
+            "content": "Name, code, short description, features list, available variants (colour, size) as chips from active variants, MOQ with unit, [Request a Quote] (opens drawer pre-filled with product) and [WhatsApp this product] link. No prices shown."
+          },
+          {
+            "order": 4,
+            "name": "Details tabs",
+            "content": "Description | Specifications (table from specs JSON fields) | Finishing options (only offset tags) | Sustainability note."
+          },
+          {
+            "order": 5,
+            "name": "Related products",
+            "content": "4 products from the same category."
+          }
+        ]
+      },
+      {
+        "route": "/capabilities",
+        "name": "Capabilities",
+        "goal": "Show how NR produces and supplies, without UNB machine data.",
+        "sections": [
+          {
+            "order": 1,
+            "name": "Banner",
+            "content": "'Capabilities'."
+          },
+          {
+            "order": 2,
+            "name": "Process overview",
+            "content": "Five steps as on Home with one paragraph each."
+          },
+          {
+            "order": 3,
+            "name": "Printing and finishing methods",
+            "content": "Cards with photo: Woven, Printed care labels, Screen printing, Offset tags, Digital printing, Thermal, RFID and variable data. Finishing chips: die cutting, embossing, foil stamping, varnishing, stringing, eyelet, folding."
+          },
+          {
+            "order": 4,
+            "name": "Quality and compliance",
+            "content": "Generic quality statement. Certificates grid appears only for certifications where is_published = true (currently none)."
+          },
+          {
+            "order": 5,
+            "name": "Capacity (hidden)",
+            "content": "Block coded but hidden by feature flag SHOW_CAPACITY = false until NR provides its own numbers."
+          }
+        ]
+      },
+      {
+        "route": "/sustainability",
+        "name": "Sustainability",
+        "goal": "Responsible supply message.",
+        "sections": [
+          {
+            "order": 1,
+            "name": "Overview",
+            "content": "Why sustainability matters to brands and retailers; NR's approach (profile text with NR name)."
+          },
+          {
+            "order": 2,
+            "name": "4R",
+            "content": "Reduce, Reuse, Recycle, Recover icon cards."
+          },
+          {
+            "order": 3,
+            "name": "Materials",
+            "content": "Recycled-quality raw material; eco-friendly recycled paper and soy-based ink on tags; cotton substitute substrates that do not fray."
+          },
+          {
+            "order": 4,
+            "name": "Environmental policy",
+            "content": "Policy statement (materials, water, greenhouse gas and energy, waste, air pollution) with /assets/site/governance-policy.jpg."
+          },
+          {
+            "order": 5,
+            "name": "Certificates",
+            "content": "Rendered from certifications where is_published = true; otherwise section hidden."
+          }
+        ]
+      },
+      {
+        "route": "/clients",
+        "name": "Clients",
+        "goal": "Proof of supply.",
+        "sections": [
+          {
+            "order": 1,
+            "name": "Brand logo wall",
+            "content": "Grid 4x5 desktop, 2 columns mobile. Logos from clients where is_active = true, sorted."
+          },
+          {
+            "order": 2,
+            "name": "Testimonials",
+            "content": "Optional block, hidden when empty."
+          },
+          {
+            "order": 3,
+            "name": "CTA",
+            "content": "Become our next client -> /contact."
+          }
+        ]
+      },
+      {
+        "route": "/contact",
+        "name": "Contact & Request a Quote",
+        "goal": "Convert visitors.",
+        "sections": [
+          {
+            "order": 1,
+            "name": "Quote form",
+            "content": "Fields: name*, company, phone*, email, product category, product, quantity (text), required date, message, optional file upload (jpg/png/webp/pdf up to 5 MB, sent as multipart to POST /api/v1/public/enquiries), checkbox 'I need a sample first'. Hidden honeypot field. Zod validation. Posts to /api/v1/public/enquiries (stored in the enquiries table); success state with thank-you message and WhatsApp link. Query params ?product=slug&sample=1 prefill."
+          },
+          {
+            "order": 2,
+            "name": "Contact details",
+            "content": "Address, two phones (tap to call), email, WhatsApp button; social icons only when links exist."
+          },
+          {
+            "order": 3,
+            "name": "Map",
+            "content": "Google Maps embed from company_settings.map_embed_url (placeholder card if empty)."
+          }
+        ]
+      },
+      {
+        "route": "*",
+        "name": "404",
+        "goal": "Friendly not-found page with links to Home and Products.",
+        "sections": []
+      }
+    ]
+  },
+  "admin": {
+    "base_route": "/admin",
+    "auth": "Own PHP session auth (email + password) via /api/v1/auth/*; HttpOnly session cookie + X-CSRF-Token header. /admin/login. Route guard calls /auth/me and checks the role; users without a role see 'Waiting for approval'. The first registered user becomes admin (done in AuthController, not a DB trigger).",
+    "roles": {
+      "admin": "Everything: users and roles, settings, activity log.",
+      "manager": "Catalogue, stock adjust/opening, purchases, suppliers, sales, invoices, customers, reports incl. cost and profit.",
+      "staff": "Sales orders, invoices, payments, customers (add/edit), view stock, receive goods against purchase orders. Cannot see purchase prices, suppliers, profit or settings."
+    },
+    "layout": "Left sidebar (collapsible, icons + labels), top bar with global search (product code, customer, invoice no.) and user menu, content area max-width 1400, breadcrumbs. Mobile: bottom sheet navigation. Toasts for every write. Confirm dialogs for cancel/delete.",
+    "modules": [
+      {
+        "key": "dashboard",
+        "route": "/admin",
+        "name": "Dashboard",
+        "roles": [
+          "admin",
+          "manager",
+          "staff"
+        ],
+        "screens": [
+          "Dashboard"
+        ],
+        "features": [
+          "KPI cards: sales today (vs yesterday), stock value (manager+), customer dues + unpaid invoice count, low-stock count",
+          "Sales chart last 7/30 days (GET /dashboard/sales-by-day)",
+          "Low-stock list with 'Create purchase' shortcut",
+          "Recent invoices with status pills",
+          "New enquiries card -> inbox",
+          "Quick actions: New invoice, Receive goods, Add product, Add customer, Receive payment",
+          "Global search"
+        ],
+        "data": [
+          "GET /dashboard/summary",
+          "GET /dashboard/sales-by-day",
+          "GET /stock?status=low",
+          "GET /invoices?limit=5",
+          "GET /enquiries?status=new"
+        ]
+      },
+      {
+        "key": "products",
+        "route": "/admin/products",
+        "name": "Products",
+        "roles": [
+          "admin",
+          "manager"
+        ],
+        "screens": [
+          "Product list",
+          "Product form (tabs: Basic, Images, Specs, Variants, Website/SEO)",
+          "Categories",
+          "Units"
+        ],
+        "features": [
+          "Add/edit/archive products",
+          "Category and sub-category management",
+          "Image upload (POST /products/{id}/images, stored in /uploads/products) with drag-to-reorder and primary image",
+          "Spec fields editor (key/value from category field list)",
+          "Variants table: colour, size/width, material, pack size, SKU auto = product code + suffix, selling price, reorder level, active",
+          "Purchase price per variant (variant_costs, manager+ only)",
+          "Unit and pack conversion table (dozen=12, gross=144, thousand=1000)",
+          "Show on website and Featured toggles",
+          "Search and filter by category/status",
+          "Import products and variants from Excel/CSV with preview",
+          "Print SKU/rack barcode labels (simple)"
+        ],
+        "data": [
+          "/products",
+          "/products/{id}/images",
+          "/products/{id}/variants",
+          "/variants/{id}",
+          "/categories",
+          "/units",
+          "/products/import"
+        ]
+      },
+      {
+        "key": "stock",
+        "route": "/admin/stock",
+        "name": "Stock",
+        "roles": [
+          "admin",
+          "manager",
+          "staff(view only)"
+        ],
+        "screens": [
+          "Stock overview",
+          "Variant stock card (movement history)",
+          "Stock In/Adjust dialog",
+          "Opening stock wizard"
+        ],
+        "features": [
+          "Live balance per variant (GET /stock); filters: category, status (ok/low/out), search",
+          "Stock In via Receive goods (purchases) or opening stock",
+          "Stock Out is automatic on confirmed invoice",
+          "Adjustment with required reason (manager+): damage, loss, count correction (POST /stock/adjust)",
+          "Movement history per variant: date, type, qty, document link, buyer, style no, batch, user",
+          "Low-stock and out-of-stock badges using reorder_level",
+          "Optional buyer/brand, style no and batch/lot on movements",
+          "Stock value report (manager+)",
+          "Export to Excel"
+        ],
+        "data": [
+          "GET /stock",
+          "GET /stock/{variantId}/movements",
+          "POST /stock/opening",
+          "POST /stock/adjust",
+          "GET /stock/value"
+        ]
+      },
+      {
+        "key": "sales_orders",
+        "route": "/admin/orders",
+        "name": "Sales Orders",
+        "roles": [
+          "admin",
+          "manager",
+          "staff"
+        ],
+        "screens": [
+          "Order list",
+          "Order form",
+          "Order detail"
+        ],
+        "features": [
+          "Create quotation/order for a customer: pick product variants, quantity, rate, discount per line",
+          "Live stock check while adding (warn if short)",
+          "Status flow: quotation -> confirmed -> delivered -> invoiced -> cancelled",
+          "Buyer PO no., style no., buyer/brand, delivery date",
+          "Create order from a website enquiry (link enquiry_id)",
+          "Print quotation PDF",
+          "Convert to invoice (POST /orders/{id}/convert)"
+        ],
+        "data": [
+          "/orders",
+          "/orders/{id}",
+          "/orders/{id}/status",
+          "/orders/{id}/convert"
+        ]
+      },
+      {
+        "key": "invoices",
+        "route": "/admin/invoices",
+        "name": "Invoices",
+        "roles": [
+          "admin",
+          "manager",
+          "staff"
+        ],
+        "screens": [
+          "Invoice list",
+          "Invoice form",
+          "Invoice detail/print",
+          "Delivery challan print",
+          "Payments list",
+          "Receive payment dialog"
+        ],
+        "features": [
+          "Create invoice from order or from scratch; auto number INV-0001",
+          "Draft -> Confirm (POST /invoices/{id}/confirm posts stock OUT and checks stock) -> Due/Partial/Paid",
+          "Line discount % and invoice discount; optional VAT using company tax_rate",
+          "PO no., style no., buyer/brand references",
+          "Credit days from customer -> due date",
+          "Receive payment: cash, bKash, Nagad, bank, cheque; partial allowed; reference no.; money receipt print",
+          "Delivery challan (vehicle, driver, received by) printable and linked to invoice",
+          "Cancel invoice (manager+) reverses stock; blocked if payments exist",
+          "Sales return (manager+) puts stock back and applies credit_note payment",
+          "Print / Save as PDF with logo, BIN, bank details, footer; share link via WhatsApp (wa.me text) or email",
+          "Filters: status, customer, date range"
+        ],
+        "data": [
+          "/invoices",
+          "/invoices/{id}",
+          "/invoices/{id}/confirm",
+          "/invoices/{id}/cancel",
+          "/invoice-items/{id}/return",
+          "/invoices/{id}/payments",
+          "/invoices/{id}/challans",
+          "/payments",
+          "/challans/{id}"
+        ]
+      },
+      {
+        "key": "customers",
+        "route": "/admin/customers",
+        "name": "Customers",
+        "roles": [
+          "admin",
+          "manager",
+          "staff"
+        ],
+        "screens": [
+          "Customer list",
+          "Customer form",
+          "Customer profile (tabs: Orders, Invoices, Payments, Ledger, Notes)"
+        ],
+        "features": [
+          "Fields: name, contact person, phone, WhatsApp, email, billing and delivery address, area, type (factory/buying house/brand/retail), credit days, credit limit, opening balance, buyers served, BIN, notes, active",
+          "Due balance from v_customer_balance; due follow-up list with days overdue (v_invoice_aging)",
+          "Ledger statement printable (GET /customers/{id}/ledger)",
+          "Receive payment from profile; New order / New invoice buttons",
+          "Credit limit warning when creating invoice",
+          "Search by name/phone/area; filter by type and 'has due'",
+          "Import/export Excel"
+        ],
+        "data": [
+          "/customers",
+          "/customers/{id}",
+          "/customers/{id}/ledger",
+          "/customers/dues"
+        ]
+      },
+      {
+        "key": "suppliers",
+        "route": "/admin/suppliers",
+        "name": "Suppliers",
+        "roles": [
+          "admin",
+          "manager"
+        ],
+        "screens": [
+          "Supplier list",
+          "Supplier form",
+          "Supplier profile (tabs: Purchases, Payments, Ledger, Products)"
+        ],
+        "features": [
+          "Fields: name, contact person, phone, email, address, payment terms, opening balance, notes, active",
+          "Products/categories supplied (supplier_products)",
+          "Payable balance from GET /suppliers",
+          "Make supplier payment: cash, bank, bKash, cheque; voucher print",
+          "Last purchase rate shown when buying again (v_last_purchase_rate)",
+          "Search and filter; import/export"
+        ],
+        "data": [
+          "/suppliers",
+          "/suppliers/{id}",
+          "/suppliers/{id}/ledger",
+          "/suppliers/{id}/payments"
+        ]
+      },
+      {
+        "key": "purchases",
+        "route": "/admin/purchases",
+        "name": "Purchases",
+        "roles": [
+          "admin",
+          "manager",
+          "staff(receive only)"
+        ],
+        "screens": [
+          "Purchase order list",
+          "PO form",
+          "Receive goods",
+          "Pending receipts (staff)"
+        ],
+        "features": [
+          "Create PO: supplier, variants, qty, rate, expected date; status draft -> ordered -> partial -> received",
+          "Receive goods per line with batch/lot; partial receiving; stock goes IN automatically (POST /purchase-items/{id}/receive)",
+          "Supplier bill number; paid/unpaid via supplier payments",
+          "Purchase return reduces stock and payable (POST /purchase-items/{id}/return)",
+          "Reorder suggestion from low-stock list",
+          "Print PO PDF",
+          "Staff use GET /receiving/pending (no prices)"
+        ],
+        "data": [
+          "/purchases",
+          "/purchases/{id}",
+          "/purchases/{id}/status",
+          "/receiving/pending",
+          "/purchase-items/{id}/receive",
+          "/purchase-items/{id}/return",
+          "/purchases/reorder-suggestions"
+        ]
+      },
+      {
+        "key": "enquiries",
+        "route": "/admin/enquiries",
+        "name": "Enquiries",
+        "roles": [
+          "admin",
+          "manager",
+          "staff"
+        ],
+        "screens": [
+          "Enquiry inbox",
+          "Enquiry detail"
+        ],
+        "features": [
+          "List from website quote form with status: new, contacted, quoted, won, lost",
+          "View attachment (streamed by GET /enquiries/{id}/attachment from a private folder)",
+          "Internal note",
+          "Convert to quotation (opens order form prefilled and links enquiry_id)",
+          "Call and WhatsApp buttons",
+          "New-enquiry count badge in sidebar"
+        ],
+        "data": [
+          "/enquiries",
+          "/enquiries/{id}",
+          "/enquiries/{id}/attachment",
+          "/enquiries/{id}/convert"
+        ]
+      },
+      {
+        "key": "reports",
+        "route": "/admin/reports",
+        "name": "Reports",
+        "roles": [
+          "admin",
+          "manager"
+        ],
+        "screens": [
+          "Reports hub and one page per report"
+        ],
+        "features": [
+          "Stock report (qty and value) by product/category",
+          "Low stock",
+          "Stock movement by date range",
+          "Sales by date, customer, product",
+          "Purchase by date, supplier, product",
+          "Customer dues and aging",
+          "Supplier payable",
+          "Profit summary (GET /reports/profit)",
+          "Each: date filter, print, export Excel/PDF"
+        ],
+        "data": [
+          "/reports/stock",
+          "/reports/low-stock",
+          "/reports/movements",
+          "/reports/sales",
+          "/reports/purchases",
+          "/reports/dues",
+          "/reports/payables",
+          "/reports/profit"
+        ]
+      },
+      {
+        "key": "content",
+        "route": "/admin/content",
+        "name": "Website content",
+        "roles": [
+          "admin",
+          "manager"
+        ],
+        "screens": [
+          "Clients",
+          "Certifications",
+          "Categories (shared)"
+        ],
+        "features": [
+          "Manage client logos (upload, order, show/hide, permission_confirmed)",
+          "Manage certifications (publish only when confirmed)",
+          "Edit featured products from the Products screen"
+        ],
+        "data": [
+          "/clients",
+          "/certifications"
+        ]
+      },
+      {
+        "key": "settings",
+        "route": "/admin/settings",
+        "name": "Settings & Users",
+        "roles": [
+          "admin"
+        ],
+        "screens": [
+          "Company settings",
+          "Numbering",
+          "Users & roles",
+          "Activity log"
+        ],
+        "features": [
+          "Company name, logo, address, phones, email, WhatsApp, social links, map embed, BIN/TIN/trade licence, bank details, invoice footer",
+          "Tax/VAT on/off and rate; currency BDT",
+          "Document numbering prefixes (doc_counters)",
+          "Users: list, assign/remove roles, deactivate",
+          "Activity log (admin only): who changed what",
+          "Backup note (nightly mysqldump cron on cPanel)"
+        ],
+        "data": [
+          "/settings",
+          "/settings/numbering",
+          "/users",
+          "/activity-log"
+        ]
+      }
+    ],
+    "garments_trade_rules": [
+      "Stock is tracked per VARIANT (colour/width/size/pack), never per product.",
+      "Units: pcs, dozen, gross, thousand, roll, cone, kg, yard, metre, with pack conversion.",
+      "Orders and invoices carry optional Buyer/Brand, Buyer PO no. and Style no.; stock movements copy them.",
+      "Delivery challan is printed with each delivery.",
+      "Customers buy on credit: credit days, credit limit, due balance, ledger.",
+      "Payments in BDT via cash, bKash, Nagad, bank, cheque. Amounts shown with the BDT symbol and Indian-style grouping (1,84,500).",
+      "Names accept Bangla text; PDF prints must embed a Bangla-capable font (Hind Siliguri / Noto Sans Bengali).",
+      "Not included: online cart/payment, full accounting, payroll, production planning, multi-branch, barcode scanner hardware, customer portal, mobile app."
+    ]
+  },
+  "database": {
+    "engine": "MySQL 5.7+ / MariaDB 10.3+ on the same cPanel hosting (InnoDB, utf8mb4). No third-party database.",
+    "files": [
+      "NRE_mysql_schema.sql",
+      "NRE_mysql_seed.sql"
+    ],
+    "import_order": "phpMyAdmin > Import NRE_mysql_schema.sql, then NRE_mysql_seed.sql, into an empty database created in cPanel.",
+    "tables": [
+      "users",
+      "password_resets",
+      "login_attempts",
+      "company_settings",
+      "doc_counters",
+      "units",
+      "categories",
+      "products",
+      "product_images",
+      "product_variants",
+      "variant_costs",
+      "customers",
+      "suppliers",
+      "supplier_products",
+      "stock_movements",
+      "sales_orders",
+      "sales_order_items",
+      "invoices",
+      "invoice_items",
+      "delivery_challans",
+      "payments",
+      "purchase_orders",
+      "purchase_order_items",
+      "supplier_payments",
+      "enquiries",
+      "clients",
+      "certifications",
+      "activity_log"
+    ],
+    "views": [
+      "v_stock_balance",
+      "v_customer_balance",
+      "v_invoice_aging",
+      "v_supplier_balance",
+      "v_last_purchase_rate",
+      "v_pending_receipts"
+    ],
+    "no_triggers_or_procedures": "All logic (numbering, totals, stock posting, permissions, audit) is in PHP services inside DB transactions. See NRE_BACKEND_API.md section 4 for exact SQL recipes.",
+    "generated_columns": [
+      "sales_order_items.amount",
+      "invoice_items.amount",
+      "invoices.balance",
+      "purchase_order_items.line_total",
+      "purchase_order_items.received_value"
+    ],
+    "rules_for_backend": [
+      "Only StockService inserts into stock_movements; the table is append-only (never UPDATE/DELETE).",
+      "Every multi-table change runs in one transaction; lock rows in ascending id order.",
+      "Document numbers come from doc_counters with UPDATE ... LAST_INSERT_ID(last_number+1) inside the same transaction.",
+      "Invoice subtotal, tax_amount, total, paid_amount and status are written only by InvoiceService/PaymentService.",
+      "variant_costs, purchase order rates and profit are never returned to staff.",
+      "Invoices and invoice_items are editable only while status = 'draft'.",
+      "Public endpoints return only is_active/show_on_website/published rows and never any price or cost.",
+      "Use prepared statements only; money and quantities are returned as decimal strings."
+    ],
+    "rules_for_frontend": [
+      "The browser never talks to MySQL. It calls /api/v1 only, through one typed API client (src/lib/api.ts).",
+      "Do not compute or send invoice totals, balances, statuses or document numbers; display what the API returns.",
+      "Hide cost columns and manager-only menu items by role from /auth/me, but never rely on hiding for security.",
+      "Format money as BDT with en-IN grouping using a decimal-safe helper; do not sum floating point numbers for final totals.",
+      "VITE_USE_MOCK=true switches the API client to an in-memory mock built from nre-project-spec.json so Lovable can preview without the PHP backend."
+    ],
+    "seed": "3 categories, 19 products with one default variant each (SKU = product code + -STD), 46 product image rows, 20 clients (permission_confirmed=0), 6 UNPUBLISHED certifications, company settings, units, document counters. No users are seeded: the first registered user becomes admin."
+  },
+  "api": {
+    "base": "/api/v1",
+    "doc": "NRE_BACKEND_API.md",
+    "auth": "session cookie + X-CSRF-Token",
+    "roles": {
+      "P": "public",
+      "S*": "any logged-in user (role may be empty)",
+      "S": "staff, manager, admin",
+      "M": "manager, admin",
+      "A": "admin only"
+    },
+    "endpoints": [
+      {
+        "group": "Auth",
+        "method": "POST",
+        "path": "/auth/register",
+        "role": "P",
+        "summary": "Create account (email, password, full_name). First ever user becomes admin; later users get role NULL and see 'Waiting for approval'. Rate limited."
+      },
+      {
+        "group": "Auth",
+        "method": "POST",
+        "path": "/auth/login",
+        "role": "P",
+        "summary": "Email + password. Starts PHP session (HttpOnly, Secure, SameSite=Lax). Returns user and csrf_token. Throttled by login_attempts."
+      },
+      {
+        "group": "Auth",
+        "method": "POST",
+        "path": "/auth/logout",
+        "role": "S*",
+        "summary": "Destroy session. (* any logged-in user, even without role)"
+      },
+      {
+        "group": "Auth",
+        "method": "GET",
+        "path": "/auth/me",
+        "role": "S*",
+        "summary": "Current user {id,email,full_name,role,is_active} + csrf_token. role may be null."
+      },
+      {
+        "group": "Auth",
+        "method": "POST",
+        "path": "/auth/forgot-password",
+        "role": "P",
+        "summary": "Email a reset link (token stored hashed in password_resets, 1 hour). Always answers 200."
+      },
+      {
+        "group": "Auth",
+        "method": "POST",
+        "path": "/auth/reset-password",
+        "role": "P",
+        "summary": "Token + new password. Bumps users.token_version."
+      },
+      {
+        "group": "Auth",
+        "method": "POST",
+        "path": "/auth/change-password",
+        "role": "S*",
+        "summary": "Current + new password."
+      },
+      {
+        "group": "Public",
+        "method": "GET",
+        "path": "/public/settings",
+        "role": "P",
+        "summary": "Company name, tagline, address, phones, emails, whatsapp, social urls, map_embed_url, logo_url. Never bank/BIN/TIN."
+      },
+      {
+        "group": "Public",
+        "method": "GET",
+        "path": "/public/categories",
+        "role": "P",
+        "summary": "Active categories with product_count."
+      },
+      {
+        "group": "Public",
+        "method": "GET",
+        "path": "/public/products",
+        "role": "P",
+        "summary": "Active + show_on_website products. Query: category, q (name/code), featured=1, page, per_page(<=48). Includes primary image and category. No prices."
+      },
+      {
+        "group": "Public",
+        "method": "GET",
+        "path": "/public/products/{slug}",
+        "role": "P",
+        "summary": "Product + images + active variants (name,color,size,material,pack_size) + related. No prices, no costs."
+      },
+      {
+        "group": "Public",
+        "method": "GET",
+        "path": "/public/clients",
+        "role": "P",
+        "summary": "Clients where is_active=1."
+      },
+      {
+        "group": "Public",
+        "method": "GET",
+        "path": "/public/certifications",
+        "role": "P",
+        "summary": "Certifications where is_published=1 (empty by default)."
+      },
+      {
+        "group": "Public",
+        "method": "POST",
+        "path": "/public/enquiries",
+        "role": "P",
+        "summary": "multipart/form-data. Fields: name, company, phone, email, category_id, product_id, quantity, required_date, message, wants_sample, file (jpg/png/webp/pdf <=5MB), website (honeypot, must be empty). Rate limit 5/hour/IP. Stores file outside web root."
+      },
+      {
+        "group": "Dashboard",
+        "method": "GET",
+        "path": "/dashboard/summary",
+        "role": "S",
+        "summary": "sales_today, sales_yesterday, customer_dues, unpaid_invoices, low_stock_count, new_enquiries, variant_count, stock_value (manager+ only, else null)."
+      },
+      {
+        "group": "Dashboard",
+        "method": "GET",
+        "path": "/dashboard/sales-by-day?days=7|30",
+        "role": "S",
+        "summary": "[{day,total}] with zero-filled days."
+      },
+      {
+        "group": "Dashboard",
+        "method": "GET",
+        "path": "/search?q=",
+        "role": "S",
+        "summary": "Global search: products/variants (code/name), customers (name/phone), invoices (number). Max 5 each."
+      },
+      {
+        "group": "Catalogue",
+        "method": "GET",
+        "path": "/categories",
+        "role": "S",
+        "summary": "All categories (incl. inactive)."
+      },
+      {
+        "group": "Catalogue",
+        "method": "POST",
+        "path": "/categories",
+        "role": "M",
+        "summary": "Create."
+      },
+      {
+        "group": "Catalogue",
+        "method": "PUT",
+        "path": "/categories/{id}",
+        "role": "M",
+        "summary": "Update."
+      },
+      {
+        "group": "Catalogue",
+        "method": "DELETE",
+        "path": "/categories/{id}",
+        "role": "M",
+        "summary": "Delete only if it has no products, else 409."
+      },
+      {
+        "group": "Catalogue",
+        "method": "GET",
+        "path": "/units",
+        "role": "S",
+        "summary": "List units."
+      },
+      {
+        "group": "Catalogue",
+        "method": "POST",
+        "path": "/units",
+        "role": "M",
+        "summary": "Create/update unit (code unique)."
+      },
+      {
+        "group": "Catalogue",
+        "method": "GET",
+        "path": "/products",
+        "role": "S",
+        "summary": "Admin list. Query: q, category_id, status(active|archived), page, per_page. Includes variant_count and total stock."
+      },
+      {
+        "group": "Catalogue",
+        "method": "POST",
+        "path": "/products",
+        "role": "M",
+        "summary": "Create product (slug auto from name if empty)."
+      },
+      {
+        "group": "Catalogue",
+        "method": "GET",
+        "path": "/products/{id}",
+        "role": "S",
+        "summary": "Product + images + variants. purchase_price included only for manager+."
+      },
+      {
+        "group": "Catalogue",
+        "method": "PUT",
+        "path": "/products/{id}",
+        "role": "M",
+        "summary": "Update product fields (name, slug, code, category_id, unit_code, moq, descriptions, features[], specs{}, flags, seo)."
+      },
+      {
+        "group": "Catalogue",
+        "method": "DELETE",
+        "path": "/products/{id}",
+        "role": "M",
+        "summary": "Archive (is_active=0). Hard delete only if the product has no stock movements and no document lines."
+      },
+      {
+        "group": "Catalogue",
+        "method": "POST",
+        "path": "/products/{id}/images",
+        "role": "M",
+        "summary": "multipart upload (jpg/png/webp <=5MB, re-encoded, max 1600px). Saved in /uploads/products/."
+      },
+      {
+        "group": "Catalogue",
+        "method": "PUT",
+        "path": "/products/{id}/images/order",
+        "role": "M",
+        "summary": "Body {ids:[...], primary_id}."
+      },
+      {
+        "group": "Catalogue",
+        "method": "DELETE",
+        "path": "/product-images/{id}",
+        "role": "M",
+        "summary": "Delete image row (and file if under /uploads)."
+      },
+      {
+        "group": "Catalogue",
+        "method": "POST",
+        "path": "/products/{id}/variants",
+        "role": "M",
+        "summary": "Create variant. SKU auto = product code + suffix if empty. Optional purchase_price (writes variant_costs)."
+      },
+      {
+        "group": "Catalogue",
+        "method": "PUT",
+        "path": "/variants/{id}",
+        "role": "M",
+        "summary": "Update variant (+ purchase_price)."
+      },
+      {
+        "group": "Catalogue",
+        "method": "DELETE",
+        "path": "/variants/{id}",
+        "role": "M",
+        "summary": "Archive; hard delete only if no movements/lines."
+      },
+      {
+        "group": "Catalogue",
+        "method": "GET",
+        "path": "/variants/search?q=&in_stock=",
+        "role": "S",
+        "summary": "Line-item picker: id, sku, display name, unit, selling_price, qty_on_hand. NEVER cost."
+      },
+      {
+        "group": "Catalogue",
+        "method": "POST",
+        "path": "/products/import",
+        "role": "M",
+        "summary": "JSON rows [{product..., variants:[...]}] after client-side CSV/Excel parsing; validates all rows then inserts in one transaction; returns per-row errors."
+      },
+      {
+        "group": "Stock",
+        "method": "GET",
+        "path": "/stock",
+        "role": "S",
+        "summary": "v_stock_balance. Query: q, category_id, status(ok|low|out), page. Cost never included."
+      },
+      {
+        "group": "Stock",
+        "method": "GET",
+        "path": "/stock/{variantId}/movements",
+        "role": "S",
+        "summary": "Ledger rows with user name and document link (reference_type/id). Query: type, from, to, page."
+      },
+      {
+        "group": "Stock",
+        "method": "GET",
+        "path": "/stock/value",
+        "role": "M",
+        "summary": "Total and per-category stock value = SUM(qty * purchase_price)."
+      },
+      {
+        "group": "Stock",
+        "method": "POST",
+        "path": "/stock/opening",
+        "role": "M",
+        "summary": "{variant_id, quantity>0, cost?, note?}. Inserts 'opening' movement, upserts variant_costs."
+      },
+      {
+        "group": "Stock",
+        "method": "POST",
+        "path": "/stock/adjust",
+        "role": "M",
+        "summary": "{variant_id, quantity (+/-, !=0), reason required}. Locks the variant's stock, rejects if result < 0."
+      },
+      {
+        "group": "Customers",
+        "method": "GET",
+        "path": "/customers",
+        "role": "S",
+        "summary": "Joins v_customer_balance. Query: q, type, has_due=1, page."
+      },
+      {
+        "group": "Customers",
+        "method": "POST",
+        "path": "/customers",
+        "role": "S",
+        "summary": "Create; code CUS-0001 from doc_counters."
+      },
+      {
+        "group": "Customers",
+        "method": "GET",
+        "path": "/customers/{id}",
+        "role": "S",
+        "summary": "Customer + balance + counts."
+      },
+      {
+        "group": "Customers",
+        "method": "PUT",
+        "path": "/customers/{id}",
+        "role": "S",
+        "summary": "Update."
+      },
+      {
+        "group": "Customers",
+        "method": "DELETE",
+        "path": "/customers/{id}",
+        "role": "M",
+        "summary": "Only if no documents, else archive (is_active=0)."
+      },
+      {
+        "group": "Customers",
+        "method": "GET",
+        "path": "/customers/{id}/ledger?from=&to=",
+        "role": "S",
+        "summary": "Rows {date,type,doc_no,debit,credit,running_balance}; starts from opening_balance."
+      },
+      {
+        "group": "Customers",
+        "method": "GET",
+        "path": "/customers/dues",
+        "role": "S",
+        "summary": "v_invoice_aging (days_overdue), sorted by oldest."
+      },
+      {
+        "group": "Suppliers",
+        "method": "GET",
+        "path": "/suppliers",
+        "role": "M",
+        "summary": "Joins v_supplier_balance."
+      },
+      {
+        "group": "Suppliers",
+        "method": "POST",
+        "path": "/suppliers",
+        "role": "M",
+        "summary": "Create; code SUP-0001."
+      },
+      {
+        "group": "Suppliers",
+        "method": "GET",
+        "path": "/suppliers/{id}",
+        "role": "M",
+        "summary": "Supplier + balance + product ids."
+      },
+      {
+        "group": "Suppliers",
+        "method": "PUT",
+        "path": "/suppliers/{id}",
+        "role": "M",
+        "summary": "Update (+ product_ids[] sync into supplier_products)."
+      },
+      {
+        "group": "Suppliers",
+        "method": "DELETE",
+        "path": "/suppliers/{id}",
+        "role": "M",
+        "summary": "Only if no documents, else archive."
+      },
+      {
+        "group": "Suppliers",
+        "method": "GET",
+        "path": "/suppliers/{id}/ledger?from=&to=",
+        "role": "M",
+        "summary": "Purchases received (credit) and payments (debit) with running payable."
+      },
+      {
+        "group": "Suppliers",
+        "method": "POST",
+        "path": "/suppliers/{id}/payments",
+        "role": "M",
+        "summary": "{payment_date, method, reference_no, amount>0, po_id?, note}. Voucher SV-0001."
+      },
+      {
+        "group": "Suppliers",
+        "method": "GET",
+        "path": "/supplier-payments/{id}",
+        "role": "M",
+        "summary": "Voucher for print."
+      },
+      {
+        "group": "Sales",
+        "method": "GET",
+        "path": "/orders",
+        "role": "S",
+        "summary": "Query: status, customer_id, from, to, q, page."
+      },
+      {
+        "group": "Sales",
+        "method": "POST",
+        "path": "/orders",
+        "role": "S",
+        "summary": "Header + items[]; totals computed by API."
+      },
+      {
+        "group": "Sales",
+        "method": "GET",
+        "path": "/orders/{id}",
+        "role": "S",
+        "summary": "Order + items + customer."
+      },
+      {
+        "group": "Sales",
+        "method": "PUT",
+        "path": "/orders/{id}",
+        "role": "S",
+        "summary": "Replace header+items while status is quotation/confirmed."
+      },
+      {
+        "group": "Sales",
+        "method": "POST",
+        "path": "/orders/{id}/status",
+        "role": "S",
+        "summary": "{status}. Allowed: quotation>confirmed>delivered, any>cancelled (manager+)."
+      },
+      {
+        "group": "Sales",
+        "method": "POST",
+        "path": "/orders/{id}/convert",
+        "role": "S",
+        "summary": "Creates a draft invoice with copied items and references. Returns invoice id."
+      },
+      {
+        "group": "Sales",
+        "method": "GET",
+        "path": "/invoices",
+        "role": "S",
+        "summary": "Query: status, customer_id, from, to, q, page."
+      },
+      {
+        "group": "Sales",
+        "method": "POST",
+        "path": "/invoices",
+        "role": "S",
+        "summary": "Draft invoice header + items[]. API computes subtotal/tax/total."
+      },
+      {
+        "group": "Sales",
+        "method": "GET",
+        "path": "/invoices/{id}",
+        "role": "S",
+        "summary": "Invoice + items + payments + challans + customer + company print block (bank, BIN, footer)."
+      },
+      {
+        "group": "Sales",
+        "method": "PUT",
+        "path": "/invoices/{id}",
+        "role": "S",
+        "summary": "Only while draft (409 otherwise). Replaces header and items."
+      },
+      {
+        "group": "Sales",
+        "method": "DELETE",
+        "path": "/invoices/{id}",
+        "role": "M",
+        "summary": "Delete a DRAFT invoice only."
+      },
+      {
+        "group": "Sales",
+        "method": "POST",
+        "path": "/invoices/{id}/confirm",
+        "role": "S",
+        "summary": "Transaction: lock invoice, check stock per line (message names the item), insert sale_out movements, set status due/partial/paid, due_date = date + credit_days, mark linked order invoiced."
+      },
+      {
+        "group": "Sales",
+        "method": "POST",
+        "path": "/invoices/{id}/cancel",
+        "role": "M",
+        "summary": "{reason}. Blocked if payments exist. Inserts cancel_reverse movements for confirmed invoices."
+      },
+      {
+        "group": "Sales",
+        "method": "POST",
+        "path": "/invoice-items/{id}/return",
+        "role": "M",
+        "summary": "{quantity, note}. Stock back in + credit_note payment for the line value."
+      },
+      {
+        "group": "Sales",
+        "method": "POST",
+        "path": "/invoices/{id}/payments",
+        "role": "S",
+        "summary": "{payment_date, method, reference_no, amount (<= balance), note}. Receipt RC-0001; resyncs invoice paid/status."
+      },
+      {
+        "group": "Sales",
+        "method": "GET",
+        "path": "/payments",
+        "role": "S",
+        "summary": "Query: customer_id, from, to, method, page."
+      },
+      {
+        "group": "Sales",
+        "method": "GET",
+        "path": "/payments/{id}",
+        "role": "S",
+        "summary": "Receipt for print."
+      },
+      {
+        "group": "Sales",
+        "method": "PUT",
+        "path": "/payments/{id}",
+        "role": "M",
+        "summary": "Edit (resync invoice)."
+      },
+      {
+        "group": "Sales",
+        "method": "DELETE",
+        "path": "/payments/{id}",
+        "role": "M",
+        "summary": "Delete (resync invoice)."
+      },
+      {
+        "group": "Sales",
+        "method": "POST",
+        "path": "/invoices/{id}/challans",
+        "role": "S",
+        "summary": "{challan_date, vehicle_no, driver_name, received_by, note}. CH-0001."
+      },
+      {
+        "group": "Sales",
+        "method": "GET",
+        "path": "/challans/{id}",
+        "role": "S",
+        "summary": "Challan + invoice lines WITHOUT prices."
+      },
+      {
+        "group": "Purchases",
+        "method": "GET",
+        "path": "/purchases",
+        "role": "M",
+        "summary": "Query: status, supplier_id, from, to, page."
+      },
+      {
+        "group": "Purchases",
+        "method": "POST",
+        "path": "/purchases",
+        "role": "M",
+        "summary": "Header + items[{variant_id,qty_ordered,rate}]. PO-0001."
+      },
+      {
+        "group": "Purchases",
+        "method": "GET",
+        "path": "/purchases/{id}",
+        "role": "M",
+        "summary": "PO + items + supplier + payments."
+      },
+      {
+        "group": "Purchases",
+        "method": "PUT",
+        "path": "/purchases/{id}",
+        "role": "M",
+        "summary": "Only draft/ordered with nothing received."
+      },
+      {
+        "group": "Purchases",
+        "method": "POST",
+        "path": "/purchases/{id}/status",
+        "role": "M",
+        "summary": "{status}: draft>ordered, any>cancelled (if nothing received)."
+      },
+      {
+        "group": "Purchases",
+        "method": "GET",
+        "path": "/receiving/pending",
+        "role": "S",
+        "summary": "v_pending_receipts (NO prices). Visible to all roles."
+      },
+      {
+        "group": "Purchases",
+        "method": "POST",
+        "path": "/purchase-items/{id}/receive",
+        "role": "S",
+        "summary": "{quantity <= pending, batch_no?, note?}. Updates qty_received, inserts purchase_in movement, sets PO partial/received."
+      },
+      {
+        "group": "Purchases",
+        "method": "POST",
+        "path": "/purchase-items/{id}/return",
+        "role": "M",
+        "summary": "{quantity <= received, note}. purchase_return_out movement; reduces qty_received."
+      },
+      {
+        "group": "Purchases",
+        "method": "GET",
+        "path": "/purchases/reorder-suggestions",
+        "role": "M",
+        "summary": "Low/out variants with last purchase rate (v_last_purchase_rate)."
+      },
+      {
+        "group": "Reports",
+        "method": "GET",
+        "path": "/reports/stock",
+        "role": "M",
+        "summary": "Qty and value by product/category."
+      },
+      {
+        "group": "Reports",
+        "method": "GET",
+        "path": "/reports/low-stock",
+        "role": "S",
+        "summary": "Low and out of stock."
+      },
+      {
+        "group": "Reports",
+        "method": "GET",
+        "path": "/reports/movements?from=&to=&variant_id=&type=",
+        "role": "S",
+        "summary": "Stock movement report."
+      },
+      {
+        "group": "Reports",
+        "method": "GET",
+        "path": "/reports/sales?from=&to=&group=day|customer|product",
+        "role": "M",
+        "summary": "Confirmed invoices only."
+      },
+      {
+        "group": "Reports",
+        "method": "GET",
+        "path": "/reports/purchases?from=&to=&group=day|supplier|product",
+        "role": "M",
+        "summary": "Received value."
+      },
+      {
+        "group": "Reports",
+        "method": "GET",
+        "path": "/reports/dues",
+        "role": "S",
+        "summary": "Customer dues + aging buckets (0-30, 31-60, 61-90, 90+)."
+      },
+      {
+        "group": "Reports",
+        "method": "GET",
+        "path": "/reports/payables",
+        "role": "M",
+        "summary": "Supplier payable."
+      },
+      {
+        "group": "Reports",
+        "method": "GET",
+        "path": "/reports/profit?from=&to=",
+        "role": "M",
+        "summary": "{sales, cost, profit}; sales = SUM(subtotal - discount) of confirmed invoices; cost = SUM(qty * current purchase_price)."
+      },
+      {
+        "group": "Enquiries",
+        "method": "GET",
+        "path": "/enquiries",
+        "role": "S",
+        "summary": "Query: status, q, page."
+      },
+      {
+        "group": "Enquiries",
+        "method": "GET",
+        "path": "/enquiries/{id}",
+        "role": "S",
+        "summary": "Detail."
+      },
+      {
+        "group": "Enquiries",
+        "method": "PUT",
+        "path": "/enquiries/{id}",
+        "role": "S",
+        "summary": "Update status and internal_note."
+      },
+      {
+        "group": "Enquiries",
+        "method": "GET",
+        "path": "/enquiries/{id}/attachment",
+        "role": "S",
+        "summary": "Streams the private file after auth check."
+      },
+      {
+        "group": "Enquiries",
+        "method": "POST",
+        "path": "/enquiries/{id}/convert",
+        "role": "S",
+        "summary": "Creates a quotation (customer_id or new customer payload), sets enquiry converted_order_id and status quoted."
+      },
+      {
+        "group": "Content",
+        "method": "GET",
+        "path": "/clients",
+        "role": "M",
+        "summary": "All clients."
+      },
+      {
+        "group": "Content",
+        "method": "POST",
+        "path": "/clients",
+        "role": "M",
+        "summary": "Create (logo upload multipart or url)."
+      },
+      {
+        "group": "Content",
+        "method": "PUT",
+        "path": "/clients/{id}",
+        "role": "M",
+        "summary": "Update incl. is_active, permission_confirmed, sort_order."
+      },
+      {
+        "group": "Content",
+        "method": "DELETE",
+        "path": "/clients/{id}",
+        "role": "M",
+        "summary": "Delete."
+      },
+      {
+        "group": "Content",
+        "method": "GET",
+        "path": "/certifications",
+        "role": "M",
+        "summary": "All certifications."
+      },
+      {
+        "group": "Content",
+        "method": "POST",
+        "path": "/certifications",
+        "role": "M",
+        "summary": "Create."
+      },
+      {
+        "group": "Content",
+        "method": "PUT",
+        "path": "/certifications/{id}",
+        "role": "M",
+        "summary": "Update incl. is_published."
+      },
+      {
+        "group": "Content",
+        "method": "DELETE",
+        "path": "/certifications/{id}",
+        "role": "M",
+        "summary": "Delete."
+      },
+      {
+        "group": "Settings",
+        "method": "GET",
+        "path": "/settings",
+        "role": "M",
+        "summary": "Full company_settings (incl. bank, BIN, TIN)."
+      },
+      {
+        "group": "Settings",
+        "method": "PUT",
+        "path": "/settings",
+        "role": "A",
+        "summary": "Update company_settings."
+      },
+      {
+        "group": "Settings",
+        "method": "GET",
+        "path": "/settings/numbering",
+        "role": "A",
+        "summary": "doc_counters."
+      },
+      {
+        "group": "Settings",
+        "method": "PUT",
+        "path": "/settings/numbering",
+        "role": "A",
+        "summary": "Update prefix/padding (never lower last_number)."
+      },
+      {
+        "group": "Settings",
+        "method": "POST",
+        "path": "/settings/logo",
+        "role": "A",
+        "summary": "Upload company logo."
+      },
+      {
+        "group": "Settings",
+        "method": "GET",
+        "path": "/users",
+        "role": "A",
+        "summary": "List users with roles."
+      },
+      {
+        "group": "Settings",
+        "method": "POST",
+        "path": "/users",
+        "role": "A",
+        "summary": "Create user with role (invite-only mode)."
+      },
+      {
+        "group": "Settings",
+        "method": "PUT",
+        "path": "/users/{id}",
+        "role": "A",
+        "summary": "Set role (admin|manager|staff|null), is_active, full_name; bumps token_version when deactivated. Cannot remove the last admin."
+      },
+      {
+        "group": "Settings",
+        "method": "POST",
+        "path": "/users/{id}/reset-password",
+        "role": "A",
+        "summary": "Set a temporary password."
+      },
+      {
+        "group": "Settings",
+        "method": "GET",
+        "path": "/activity-log",
+        "role": "A",
+        "summary": "Query: table, user_id, action, from, to, page."
+      }
+    ]
+  },
+  "phases": [
+    {
+      "phase": 0,
+      "name": "Foundation (backend skeleton + frontend design system)",
+      "goal": "Server skeleton connected to MySQL, frontend shell with brand tokens and a typed API client with mock mode.",
+      "backend_tasks": [
+        "Create nre_backend/ and public_html/api/ with front controller, router, Db (PDO), Request/Response, error handler, config.sample.php",
+        "Import NRE_mysql_schema.sql + NRE_mysql_seed.sql into a local DB",
+        "Auth endpoints: register (first user = admin), login, logout, me, CSRF, throttling",
+        "GET /api/v1/public/settings as the first working endpoint",
+        "Local dev router + README with setup steps"
+      ],
+      "frontend_tasks": [
+        "Create React + TS + Vite + Tailwind + shadcn/ui project; copy assets/ to public/assets/",
+        "Design tokens from brand.colors, Poppins, button/card/pill/status components, /styleguide",
+        "PublicLayout and AdminLayout, router with all routes stubbed",
+        "src/lib/api.ts typed client (fetch, credentials same-origin, CSRF header, error mapping) with VITE_USE_MOCK in-memory adapter seeded from the spec JSON",
+        "TanStack Query provider and AuthContext (calls /auth/me)"
+      ],
+      "done_when": [
+        "php -S serves /api/v1/public/settings with seed data",
+        "Register/login/me work and first user is admin",
+        "/styleguide shows tokens; app runs in mock mode",
+        "NR mark is the favicon"
+      ]
+    },
+    {
+      "phase": 1,
+      "name": "Public site: core catalogue",
+      "goal": "Home, Products, Category, Product detail live with real data.",
+      "backend_tasks": [
+        "GET /public/categories, /public/products (filters, pagination, primary image), /public/products/{slug} (images, variants, related)",
+        "Cache headers on public GETs",
+        "Tests: only active + show_on_website rows; no price fields"
+      ],
+      "frontend_tasks": [
+        "Header with mega menu, footer, floating WhatsApp, mobile bottom bar",
+        "Home sections 1-5 and 9",
+        "Products listing (search, tabs, pagination), Category page",
+        "Product detail: gallery, variant chips, specs table, related, quote drawer prefilled",
+        "SEO tags and JSON-LD"
+      ],
+      "done_when": [
+        "All 19 products and 3 categories render with images",
+        "Search and filters work",
+        "Responsive at 375, 768, 1280 px"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Public site: trust pages and enquiries",
+      "goal": "Remaining pages, quote form saving to the server, SEO.",
+      "backend_tasks": [
+        "GET /public/clients, /public/certifications",
+        "POST /public/enquiries: validation, honeypot, rate limit, safe file upload to private storage, optional email notification",
+        "Tests: oversized/fake files rejected, honeypot stores nothing"
+      ],
+      "frontend_tasks": [
+        "About, Capabilities, Sustainability, Clients, Contact, 404",
+        "Home sections 6-8",
+        "Quote form (zod, upload, success state, prefill) wired to the API; also mini form and drawer",
+        "sitemap.xml, robots.txt, per-page meta",
+        "Flags hide capacity, certificates, stats"
+      ],
+      "done_when": [
+        "Quote form creates an enquiry and stores the file privately",
+        "No UNB name, numbers or certificate IDs appear anywhere",
+        "Lighthouse mobile performance 85+"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Admin shell, auth and dashboard",
+      "goal": "Secure admin with roles and dashboard.",
+      "backend_tasks": [
+        "Auth::require(role) helper and role matrix tests",
+        "GET /dashboard/summary, /dashboard/sales-by-day, /search",
+        "Forgot/reset/change password with emailed token",
+        "Audit helper writing activity_log"
+      ],
+      "frontend_tasks": [
+        "Login, logout, forgot/reset, role guard, Waiting-for-approval screen",
+        "Sidebar by role, top bar, global search, breadcrumbs",
+        "Dashboard KPIs, chart, low-stock list, recent invoices, enquiries card",
+        "DataTable (server paging/sort/filter/export), FormDialog, ConfirmDialog, StatusPill"
+      ],
+      "done_when": [
+        "Unauthenticated users cannot open /admin",
+        "No-role user sees only the waiting screen",
+        "Staff does not see manager-only items or stock value",
+        "Dashboard figures match SQL"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Catalogue management",
+      "goal": "Admin can fully manage products, variants, images, categories, units.",
+      "backend_tasks": [
+        "CRUD for categories, units, products, variants (+ variant_costs for manager+)",
+        "Image upload/reorder/delete with GD re-encode",
+        "POST /products/import with per-row validation in one transaction",
+        "GET /variants/search (no cost)"
+      ],
+      "frontend_tasks": [
+        "Product list and tabbed form (Basic, Images, Specs, Variants, Website/SEO)",
+        "Variants table with SKU auto and cost column for manager+",
+        "Categories and Units screens",
+        "CSV/Excel import wizard with preview"
+      ],
+      "done_when": [
+        "A new product with 3 variants and 2 images appears publicly when Show on website is on",
+        "Staff cannot see cost fields in UI or API responses"
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Stock",
+      "goal": "Reliable stock ledger and alerts.",
+      "backend_tasks": [
+        "StockService with locking; GET /stock, /stock/{variantId}/movements, /stock/value",
+        "POST /stock/opening and /stock/adjust with validation",
+        "Tests for negative adjustment and concurrency"
+      ],
+      "frontend_tasks": [
+        "Stock overview with filters and status pills",
+        "Variant stock card with movement history",
+        "Opening stock wizard grid",
+        "Adjustment dialog with required reason",
+        "Low/out badges, Excel export"
+      ],
+      "done_when": [
+        "Opening stock then adjustment updates balance and history",
+        "Client cannot write stock directly (no such endpoint)"
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "Customers and suppliers",
+      "goal": "People records with balances and ledgers.",
+      "backend_tasks": [
+        "Customers CRUD with CUS- numbering, balances, dues, ledger",
+        "Suppliers CRUD with SUP- numbering, balances, ledger, product links",
+        "Archive-instead-of-delete rules"
+      ],
+      "frontend_tasks": [
+        "Customer list, form, profile tabs, printable ledger, due follow-up tab",
+        "Supplier list, form, profile tabs",
+        "Excel import/export"
+      ],
+      "done_when": [
+        "Customer due = opening + invoices - payments",
+        "Supplier payable = opening + received value - payments",
+        "Staff cannot open Suppliers"
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "Sales, invoices and payments",
+      "goal": "Quotation to paid invoice, with challan.",
+      "backend_tasks": [
+        "OrderService, InvoiceService (4.3 totals, 4.5 confirm, 4.6 cancel, 4.7 return, 4.8 convert)",
+        "PaymentService with sync (4.4) and receipt numbers",
+        "Delivery challans without prices",
+        "Tests A8-A13"
+      ],
+      "frontend_tasks": [
+        "Order list/form/detail with live stock warning",
+        "Invoice list/form/detail; Confirm, Cancel, Return, Receive payment dialogs",
+        "Print views: invoice, challan, receipt, quotation (A4, logo, Bangla font)",
+        "WhatsApp/email share links"
+      ],
+      "done_when": [
+        "Confirm reduces stock; over-selling is refused with the item named",
+        "Cancel restores stock; blocked with payments",
+        "Partial then full payment sets Partial then Paid",
+        "Print matches the sample invoice layout"
+      ]
+    },
+    {
+      "phase": 8,
+      "name": "Purchases and receiving",
+      "goal": "Buy from suppliers and receive into stock.",
+      "backend_tasks": [
+        "PurchaseService (4.10 receive, 4.11 return), PO numbering and status flow",
+        "Supplier payments with SV- vouchers",
+        "GET /receiving/pending without prices; reorder suggestions",
+        "Tests A14-A15"
+      ],
+      "frontend_tasks": [
+        "PO list/form/print",
+        "Receive-goods screen and staff Pending receipts screen",
+        "Supplier payment dialog and voucher print",
+        "Purchase return, reorder suggestions"
+      ],
+      "done_when": [
+        "Receiving 8 then 12 of 20 moves PO Partial then Received",
+        "Over-receiving rejected",
+        "Supplier payable updates",
+        "Staff never see rates"
+      ]
+    },
+    {
+      "phase": 9,
+      "name": "Reports, enquiries, content and settings",
+      "goal": "Management visibility and admin controls.",
+      "backend_tasks": [
+        "All /reports/* endpoints",
+        "Enquiry list/detail/attachment/convert",
+        "Clients and certifications CRUD + logo upload",
+        "Settings, numbering, users/roles, activity-log endpoints"
+      ],
+      "frontend_tasks": [
+        "Reports hub with filters, print, Excel export",
+        "Enquiry inbox with convert to quotation",
+        "Content screens for clients and certifications with confirmation prompts",
+        "Settings, numbering, Users & Roles, Activity log"
+      ],
+      "done_when": [
+        "Every report matches underlying data",
+        "Admin can assign roles and the user gains access on next load",
+        "Activity log lists changes"
+      ]
+    },
+    {
+      "phase": 10,
+      "name": "QA, security hardening and cPanel launch",
+      "goal": "Production-ready on cPanel.",
+      "backend_tasks": [
+        "Run the full test list (NRE_BACKEND_API.md section 9) and fix failures",
+        "Security checklist (section 3): headers, uploads, throttling, errors, config permissions",
+        "Nightly mysqldump cron, ALLOW_REGISTRATION=false after first admin",
+        "Package nre_backend.zip and write deployment notes"
+      ],
+      "frontend_tasks": [
+        "Role-based test pass, mobile pass, empty/loading/error states",
+        "Accessibility and Lighthouse",
+        "Production build with VITE_USE_MOCK=false; sitemap, canonical, robots",
+        "Staff hand-over guide"
+      ],
+      "done_when": [
+        "All acceptance criteria in PRD section 12 pass on the live cPanel site",
+        "HTTPS enforced, backup file appears next day"
+      ]
+    }
+  ],
+  "content_gaps": [
+    {
+      "id": "G1",
+      "gap": "NR's own founding year, capacity, staff count",
+      "why": "Profile numbers are copied from UNB",
+      "default_on_site": "Not shown",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G2",
+      "gap": "Whether NR manufactures in-house or sources trims (cover says manufacturer & exporter)",
+      "why": "Changes wording across the site",
+      "default_on_site": "Neutral: 'supplier of garments trims & accessories'",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G3",
+      "gap": "NR's own certificates (OEKO-TEX, GRS, FSC, ISO, BSCI, SEDEX) and numbers",
+      "why": "Shown certificates belong to UNB",
+      "default_on_site": "Certifications hidden",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G4",
+      "gap": "NR's own factory/office/team photos (some existing ones appear to show UNB branding)",
+      "why": "Authenticity and legal",
+      "default_on_site": "Cover building photo used in About and flagged; capabilities uses product photos",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G5",
+      "gap": "Facebook page, YouTube channel, website domain, QR destination",
+      "why": "Profile shows icons/QR without links; 'website' printed is an email",
+      "default_on_site": "Social icons hidden",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G6",
+      "gap": "Permission to show the 20 client brand logos",
+      "why": "Third-party trademarks",
+      "default_on_site": "Shown (is_active) but permission_confirmed = false; admin toggles",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G7",
+      "gap": "Higher-resolution product photos (embedded images are about 290 px wide)",
+      "why": "Large hero/gallery will look soft",
+      "default_on_site": "Use small sizes, avoid full-bleed; replace via admin upload",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G8",
+      "gap": "Per-product specs, colours, sizes/widths, MOQ, units",
+      "why": "Profile has descriptions only",
+      "default_on_site": "Default variant per product, MOQ and unit from seed",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G9",
+      "gap": "Trims (thread, elastic, twill tape, drawcord, stoppers, buttons) were dropped from the updated profile",
+      "why": "They appeared in the earlier NR profile and match 'All kinds of garments accessories'",
+      "default_on_site": "Kept in catalogue (8 products); confirm NR still supplies them",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G10",
+      "gap": "BIN/TIN/trade licence, bank details, invoice footer terms",
+      "why": "Needed on printed invoices",
+      "default_on_site": "Left blank in settings; fields exist",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G11",
+      "gap": "Map location (Google Maps embed URL)",
+      "why": "Contact page",
+      "default_on_site": "Placeholder card",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G12",
+      "gap": "Bangla website copy (if a Bangla toggle is wanted)",
+      "why": "Profile is English only",
+      "default_on_site": "English only",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G13",
+      "gap": "Existing stock list, customers, suppliers, opening dues",
+      "why": "Admin go-live data",
+      "default_on_site": "Empty tables; import tools in admin",
+      "needed_from": "Owner"
+    },
+    {
+      "id": "G14",
+      "gap": "Management message/about text written for NR (current one is UNB's)",
+      "why": "Refers to United Nine Bangladesh OPC and Sun Tin Lun group",
+      "default_on_site": "Omitted",
+      "needed_from": "Owner"
+    }
+  ],
+  "acceptance_summary": [
+    "Public site shows 3 categories and 19 products with correct images, no unverified claims",
+    "Quote form stores an enquiry (and file) visible in admin",
+    "Role matrix enforced: admin, manager, staff, no-role, anonymous",
+    "Invoice confirm reduces stock, cancel restores it, payments drive Paid/Partial/Due",
+    "Customer due and supplier payable match ledgers",
+    "Staff cannot see purchase prices or profit",
+    "All pages responsive; invoice prints on A4 with logo"
+  ]
+}

@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## NR Enterprise rules
+- Specs live in docs/ (PRD, API contract, spec JSON); src/data/spec.json is a copy used for mock seed data — why: one source of truth for copy and catalogue.
+- No Lovable Cloud/Supabase: the browser talks only to the owner's PHP REST API at /api/v1 through src/lib/api.ts; src/mocks/ mirrors the same shapes when VITE_USE_MOCK is not "false" — why: backend is a separate cPanel PHP+MySQL app.
+- Money/quantities stay decimal strings; use src/lib/money.ts, never float sums — why: server owns totals.
+- Public pages sit under the pathless _site layout; admin pages under admin.tsx (guard + AdminLayout); login/reset pages use admin_ prefix to skip the guard — why: separate shells.
