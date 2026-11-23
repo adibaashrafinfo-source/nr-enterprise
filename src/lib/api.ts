@@ -83,7 +83,7 @@ export const adminApi = {
   recentInvoices: () => request<Paged<Invoice>>("GET", "/invoices", { query: { page: 1, per_page: 5 } }),
   newEnquiries: () => request<Paged<Enquiry>>("GET", "/enquiries", { query: { status: "new", page: 1, per_page: 5 } }),
   search: (q: string) => request<One<AdminSearchResults>>("GET", "/search", { query: { q } }).then((r) => r.data),
-  products: (query: AdminProductListQuery = {}) => request<Paged<AdminProductSummary>>("GET", "/products", { query }),
+  products: (query: AdminProductListQuery = {}) => request<Paged<AdminProductSummary>>("GET", "/products", { query: { ...query } }),
   product: (id: number) => request<One<AdminProduct>>("GET", `/products/${id}`).then((r) => r.data),
   createProduct: (input: ProductInput) => request<One<AdminProduct>>("POST", "/products", { body: input }).then((r) => r.data),
   updateProduct: (id: number, input: ProductInput) => request<One<AdminProduct>>("PUT", `/products/${id}`, { body: input }).then((r) => r.data),
