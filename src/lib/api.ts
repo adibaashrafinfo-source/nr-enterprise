@@ -7,6 +7,7 @@ import type {
   AdminCategory, AdminProduct, AdminProductSummary, AdminSearchResults, Category, CategoryInput, Certification, Client,
   DashboardSummary, Enquiry, Invoice, LowStockItem, MeResponse, Paged, ProductImage, ProductImportResult, ProductImportRow,
   ProductInput, PublicProduct, PublicProductSummary, PublicSettings, SalesDay, Challan, ChallanInput, CompanyBlock, InvoiceDetail, InvoiceInput, OrderStatus, PaymentInput, SalesLine, SalesOrder, SalesOrderInput, VariantPick, Customer, CustomerDue, CustomerInput, LedgerRow, PartyImportResult, Payment, Supplier, SupplierInput, StockAdjustInput, StockLedgerRow, StockRow, StockValue, OpeningStockInput, Unit, UnitInput, Variant, VariantInput,
+  ActivityRow, AdminCertification, AdminClient, AdminUser, CertificationInput, ClientInput, CompanySettings, DocCounter, EnquiryStatus, Role,
   PendingReceipt, PurchaseDetail, PurchaseInput, PurchaseOrder, PurchaseStatus, ReceiveResult, ReorderSuggestion, SupplierPayment, SupplierPaymentInput,
 } from "./types";
 
@@ -75,6 +76,14 @@ export interface LedgerRange { from?: string; to?: string }
 export type CustomerProfile = Customer & { invoices: Invoice[]; payments: Pick<Payment, "id" | "receipt_no" | "payment_date" | "amount">[] };
 export type SupplierProfile = Supplier & { purchases: { id: number; po_no: string; date: string; received_value: string }[]; payments: SupplierPayment[] };
 export interface PurchaseListQuery { q?: string; status?: PurchaseStatus; supplier_id?: number; from?: string; to?: string; page?: number; per_page?: number }
+export interface ReportRange { from?: string; to?: string }
+export interface GroupRow { key: string; label: string; count: number; total: string }
+export interface StockReportRow { variant_id: number; sku: string; display_name: string; category_name: string; unit_code: string; qty_on_hand: string; purchase_price: string; value: string }
+export interface MovementReportRow extends StockLedgerRow { date: string; display_name: string; sku: string }
+export interface DuesAgingRow { customer_id: number; customer_name: string; total: string; "0-30": string; "31-60": string; "61-90": string; "90+": string }
+export interface PayableRow { supplier_id: number; code: string; name: string; total_purchased: string; paid: string; payable_balance: string }
+export interface EnquiryListQuery { status?: EnquiryStatus; q?: string; page?: number; per_page?: number }
+export interface ActivityQuery { table?: string; action?: string; user_id?: number; from?: string; to?: string; page?: number }
 export type VoucherPrint = SupplierPayment & { supplier: Supplier; company: CompanyBlock };
 
 export interface SalesListQuery { q?: string; status?: string; customer_id?: number; from?: string; to?: string; page?: number; per_page?: number }
@@ -148,6 +157,34 @@ export const adminApi = {
   reorderSuggestions: () => request<One<ReorderSuggestion[]>>("GET", "/purchases/reorder-suggestions").then((r) => r.data),
   paySupplier: (supplierId: number, input: SupplierPaymentInput) => request<One<SupplierPayment>>("POST", `/suppliers/${supplierId}/payments`, { body: input }).then((r) => r.data),
   supplierPayment: (id: number) => request<One<VoucherPrint>>("GET", `/supplier-payments/${id}`).then((r) => r.data),
+  reportStock: () => request<One<StockReportRow[]>>("GET", "/reports/stock").then((r) => r.data),
+  reportLowStock: () => request<One<StockRow[]>>("GET", "/reports/low-stock").then((r) => r.data),
+  reportMovements: (q: ReportRange & { type?: string }) => request<One<MovementReportRow[]>>("GET", "/reports/movements", { query: { ...q } }).then((r) => r.data),
+  reportSales: (q: ReportRange & { group: "day" | "customer" | "product" }) => request<One<GroupRow[]>>("GET", "/reports/sales", { query: { ...q } }).then((r) => r.data),
+  reportPurchases: (q: ReportRange & { group: "day" | "supplier" | "product" }) => request<One<GroupRow[]>>("GET", "/reports/purchases", { query: { ...q } }).then((r) => r.data),
+  reportDues: () => request<One<DuesAgingRow[]>>("GET", "/reports/dues").then((r) => r.data),
+  reportPayables: () => request<One<PayableRow[]>>("GET", "/reports/payables").then((r) => r.data),
+  reportProfit: (q: ReportRange) => request<One<{ sales: string; cost: string; profit: string }>>("GET", "/reports/profit", { query: { ...q } }).then((r) => r.data),
+  enquiries: (q: EnquiryListQuery = {}) => request<Paged<Enquiry>>("GET", "/enquiries", { query: { ...q } }),
+  enquiry: (id: number) => request<One<Enquiry>>("GET", `/enquiries/${id}`).then((r) => r.data),
+  updateEnquiry: (id: number, input: { status?: EnquiryStatus; internal_note?: string | null }) => request<One<Enquiry>>("PUT", `/enquiries/${id}`, { body: input }).then((r) => r.data),
+  enquiryAttachment: (id: number) => request<One<{ name: string; url: string | null; note?: string }>>("GET", `/enquiries/${id}/attachment`).then((r) => r.data),
+  convertEnquiry: (id: number, customerId?: number) => request<One<{ order_id: number }>>("POST", `/enquiries/${id}/convert`, { body: customerId ? { customer_id: customerId } : {} }).then((r) => r.data),
+  adminClients: () => request<One<AdminClient[]>>("GET", "/clients").then((r) => r.data),
+  saveClient: (input: ClientInput, id?: number) => request<One<AdminClient>>(id ? "PUT" : "POST", id ? `/clients/${id}` : "/clients", { body: input }).then((r) => r.data),
+  deleteClient: (id: number) => request<One<{ ok: boolean }>>("DELETE", `/clients/${id}`).then((r) => r.data),
+  adminCertifications: () => request<One<AdminCertification[]>>("GET", "/certifications").then((r) => r.data),
+  saveCertification: (input: CertificationInput, id?: number) => request<One<AdminCertification>>(id ? "PUT" : "POST", id ? `/certifications/${id}` : "/certifications", { body: input }).then((r) => r.data),
+  deleteCertification: (id: number) => request<One<{ ok: boolean }>>("DELETE", `/certifications/${id}`).then((r) => r.data),
+  companySettings: () => request<One<CompanySettings>>("GET", "/settings").then((r) => r.data),
+  saveCompanySettings: (input: CompanySettings) => request<One<CompanySettings>>("PUT", "/settings", { body: input }).then((r) => r.data),
+  numbering: () => request<One<DocCounter[]>>("GET", "/settings/numbering").then((r) => r.data),
+  saveNumbering: (counters: DocCounter[]) => request<One<DocCounter[]>>("PUT", "/settings/numbering", { body: { counters } }).then((r) => r.data),
+  users: () => request<One<AdminUser[]>>("GET", "/users").then((r) => r.data),
+  createUser: (input: { email: string; full_name: string; role: Role | null; password: string }) => request<One<AdminUser>>("POST", "/users", { body: input }).then((r) => r.data),
+  updateUser: (id: number, input: { role?: Role | null; is_active?: boolean; full_name?: string }) => request<One<AdminUser>>("PUT", `/users/${id}`, { body: input }).then((r) => r.data),
+  resetUserPassword: (id: number) => request<One<{ temporary_password: string }>>("POST", `/users/${id}/reset-password`).then((r) => r.data),
+  activityLog: (q: ActivityQuery = {}) => request<Paged<ActivityRow>>("GET", "/activity-log", { query: { ...q } }),
   deleteSupplier: (id: number) => request<One<{ ok: boolean; archived: boolean }>>("DELETE", `/suppliers/${id}`).then((r) => r.data),
   variantSearch: (q: string) => request<One<VariantPick[]>>("GET", "/variants/search", { query: { q } }).then((r) => r.data),
   orders: (query: SalesListQuery = {}) => request<Paged<SalesOrder>>("GET", "/orders", { query: { ...query } }),

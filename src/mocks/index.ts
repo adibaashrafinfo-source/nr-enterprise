@@ -6,6 +6,7 @@ import * as db from "./seed";
 import { isSalesPath, salesRequest } from "./sales";
 import { isPartyPath, partyRequest } from "./parties";
 import { isPurchasePath, purchaseRequest } from "./purchases";
+import { addPublicEnquiry, backofficeRequest, isBackofficePath, logActivity, publicCertifications, publicClients } from "./backoffice";
 import { isStockPath, lowStockCount, stockRequest, stockValueTotal } from "./stock";
 import { variantEntries, catalogueRequest, isCatalogueAdminPath, isPublic, publicVariants } from "./catalogue";
 
@@ -72,12 +73,18 @@ function salesByDay(days: number): SalesDay[] {
 
 export async function mockRequest(method: string, path: string, query: Query = {}, body?: unknown): Promise<unknown> {
   await delay();
+  const result = route_(method, path, query, body);
+  logActivity(session, method, path, result);
+  return result;
+}
+
+function route_(method: string, path: string, query: Query, body: unknown): unknown {
   const route = `${method} ${path}`;
 
   if (route === "GET /public/settings") return { data: db.settings };
   if (route === "GET /public/categories") return { data: db.categories.map((c) => ({ ...c, product_count: db.products.filter((p) => p.category.id === c.id && isPublic(p)).length })) };
-  if (route === "GET /public/clients") return { data: db.clients };
-  if (route === "GET /public/certifications") return { data: [] };
+  if (route === "GET /public/clients") return { data: publicClients() };
+  if (route === "GET /public/certifications") return { data: publicCertifications() };
   if (route === "GET /public/products") {
     let rows = db.products.filter(isPublic).sort((a, b) => a.category.id - b.category.id || a.sort_order - b.sort_order);
     if (query["category"]) rows = rows.filter((p) => p.category.slug === query["category"]);
@@ -95,7 +102,7 @@ export async function mockRequest(method: string, path: string, query: Query = {
     const related = db.products.filter(isPublic).filter((x) => x.category.id === p.category.id && x.id !== p.id).slice(0, 4).map(summary);
     return { data: { ...p, variants: publicVariants(p), related } };
   }
-  if (route === "POST /public/enquiries") return { data: { id: Date.now(), ok: true } };
+  if (route === "POST /public/enquiries") return { data: { id: addPublicEnquiry(body).id, ok: true } };
 
   if (route === "GET /auth/me") return { data: { user: requireSession(), csrf_token: CSRF } };
   if (route === "POST /auth/login") {
@@ -144,13 +151,7 @@ export async function mockRequest(method: string, path: string, query: Query = {
   if (isPurchasePath(path)) return purchaseRequest(method, path, query, body, requireDashboardRole());
   if (isPartyPath(path)) return partyRequest(method, path, query, body, requireDashboardRole());
   if (isStockPath(path)) return stockRequest(method, path, query, body, requireDashboardRole());
-  if (route === "GET /enquiries") {
-    requireDashboardRole();
-    const term = String(query["q"] ?? "").toLowerCase();
-    const status = String(query["status"] ?? "");
-    const rows = db.enquiries.filter((enquiry) => (!status || enquiry.status === status) && (!term || `${enquiry.name} ${enquiry.company ?? ""} ${enquiry.phone}`.toLowerCase().includes(term)));
-    return paginate(rows, query);
-  }
+  if (isBackofficePath(path)) return backofficeRequest(method, path, query, body, requireDashboardRole());
   if (route === "GET /search") {
     requireDashboardRole();
     const term = String(query["q"] ?? "").trim().toLowerCase();

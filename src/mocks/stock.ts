@@ -106,3 +106,7 @@ export function stockRequest(method: string, path: string, query: Query, body: u
 
 /** On-hand quantity for one variant (sum of its movements). */
 export const onHand = (variantId: number) => addQty(findEntry(variantId).variant.stock_qty);
+
+/** Read-only views for reports. */
+export const stockRows = () => rows();
+export const movementRows = () => ledger.slice();

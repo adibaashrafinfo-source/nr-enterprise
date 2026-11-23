@@ -54,6 +54,14 @@ export interface ProductImportRow { product: ProductInput; variants: VariantInpu
 export interface ProductImportResult { created: number; errors: { row: number; message: string; fields?: Record<string, string> }[] }
 export interface Client { id: number; name: string; logo_url: string }
 export interface Certification { id: number; name: string; image_url: string | null }
+export interface AdminClient extends Client { sort_order: number; is_active: boolean; permission_confirmed: boolean }
+export type ClientInput = Omit<AdminClient, "id">;
+export interface AdminCertification extends Certification { description: string | null; certificate_number: string | null; is_published: boolean; holder_confirmed: boolean }
+export type CertificationInput = Omit<AdminCertification, "id">;
+export interface CompanySettings extends PublicSettings { bin: string | null; tin: string | null; trade_licence: string | null; bank_details: string | null; invoice_footer: string | null; tax_enabled: boolean; tax_rate: Decimal }
+export interface DocCounter { type: string; prefix: string; padding: number; last_number: number }
+export interface AdminUser extends User { created_at: string }
+export interface ActivityRow { id: number; created_at: string; user_id: number | null; user_name: string; action: "create" | "update" | "delete"; table_name: string; record: string; summary: string }
 
 export type StockStatus = "ok" | "low" | "out";
 export type InvoiceStatus = "draft" | "due" | "partial" | "paid" | "cancelled";
@@ -107,7 +115,8 @@ export interface PurchaseDetail extends PurchaseOrder { items: PurchaseItem[]; p
 export interface PendingReceipt { item_id: number; purchase_id: number; po_no: string; supplier_name: string; expected_date: string | null; variant_id: number; display_name: string; sku: string; unit_code: string; qty_ordered: Decimal; qty_received: Decimal; qty_pending: Decimal }
 export interface ReceiveResult { item_id: number; qty_received: Decimal; qty_pending: Decimal; status: PurchaseStatus }
 export interface ReorderSuggestion { variant_id: number; display_name: string; sku: string; unit_code: string; qty_on_hand: Decimal; reorder_level: Decimal; suggested_qty: Decimal; last_rate: Decimal | null; supplier_id: number | null }
-export interface Enquiry { id: number; name: string; company: string | null; phone: string; email: string | null; product_name: string | null; quantity: string | null; message: string | null; wants_sample: boolean; status: "new" | "contacted" | "quoted" | "closed"; created_at: string }
+export interface Enquiry { id: number; name: string; company: string | null; phone: string; email: string | null; product_name: string | null; quantity: string | null; message: string | null; wants_sample: boolean; status: EnquiryStatus; created_at: string; required_date?: string | null; internal_note?: string | null; attachment_name?: string | null; converted_order_id?: number | null }
+export type EnquiryStatus = "new" | "contacted" | "quoted" | "won" | "lost";
 
 export interface DashboardSummary {
   sales_today: Decimal;
