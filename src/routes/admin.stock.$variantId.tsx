@@ -38,7 +38,7 @@ function StockCard() {
 
   const signed = (q: string) => (q.startsWith("-") ? `−${formatQty(q.slice(1))}` : `+${formatQty(q)}`);
   const columns: Column<StockLedgerRow>[] = [
-    { key: "date", header: "Date", exportValue: (r) => r.created_at, cell: (r) => new Date(r.created_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) },
+    { key: "date", header: "Date", exportValue: (r) => r.created_at, cell: (r) => new Date(r.created_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Dhaka" }) },
     { key: "type", header: "Type", exportValue: (r) => TYPES[r.type], cell: (r) => TYPES[r.type] },
     { key: "qty", header: "Quantity", align: "right", exportValue: (r) => r.quantity, cell: (r) => <span className={`font-semibold tabular-nums ${r.quantity.startsWith("-") ? "text-destructive" : "text-secondary"}`}>{signed(r.quantity)}</span> },
     { key: "doc", header: "Document", exportValue: (r) => (r.reference_type ? `${r.reference_type} #${r.reference_id}` : ""), cell: (r) => r.reference_type && r.reference_id
