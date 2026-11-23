@@ -3,6 +3,7 @@ import { ApiError } from "@/lib/api-error";
 import { addMoney } from "@/lib/money";
 import type { DashboardSummary, LowStockItem, PublicProductSummary, Role, SalesDay, User } from "@/lib/types";
 import * as db from "./seed";
+import { catalogueRequest, isCatalogueAdminPath, isPublic, publicVariants } from "./catalogue";
 
 type Query = Record<string, string | number | undefined>;
 let session: User | null = null;
@@ -71,11 +72,11 @@ export async function mockRequest(method: string, path: string, query: Query = {
   const route = `${method} ${path}`;
 
   if (route === "GET /public/settings") return { data: db.settings };
-  if (route === "GET /public/categories") return { data: db.categories };
+  if (route === "GET /public/categories") return { data: db.categories.map((c) => ({ ...c, product_count: db.products.filter((p) => p.category.id === c.id && isPublic(p)).length })) };
   if (route === "GET /public/clients") return { data: db.clients };
   if (route === "GET /public/certifications") return { data: [] };
   if (route === "GET /public/products") {
-    let rows = [...db.products].sort((a, b) => a.category.id - b.category.id || a.sort_order - b.sort_order);
+    let rows = db.products.filter(isPublic).sort((a, b) => a.category.id - b.category.id || a.sort_order - b.sort_order);
     if (query["category"]) rows = rows.filter((p) => p.category.slug === query["category"]);
     if (query["featured"]) rows = rows.filter((p) => p.is_featured);
     if (query["q"]) {
@@ -86,10 +87,10 @@ export async function mockRequest(method: string, path: string, query: Query = {
   }
   const slug = path.match(/^\/public\/products\/([^/]+)$/)?.[1];
   if (method === "GET" && slug) {
-    const p = db.products.find((x) => x.slug === slug);
+    const p = db.products.find((x) => x.slug === slug && isPublic(x));
     if (!p) throw new ApiError(404, "not_found", "Product not found.");
-    const related = db.products.filter((x) => x.category.id === p.category.id && x.id !== p.id).slice(0, 4).map(summary);
-    return { data: { ...p, related } };
+    const related = db.products.filter(isPublic).filter((x) => x.category.id === p.category.id && x.id !== p.id).slice(0, 4).map(summary);
+    return { data: { ...p, variants: publicVariants(p), related } };
   }
   if (route === "POST /public/enquiries") return { data: { id: Date.now(), ok: true } };
 
@@ -166,6 +167,11 @@ export async function mockRequest(method: string, path: string, query: Query = {
       customers: matches(db.customers, (c) => `${c.name} ${c.phone ?? ""}`).map((c) => ({ id: c.id, name: c.name, phone: c.phone })),
       invoices: matches(db.invoices, (i) => `${i.invoice_no} ${i.customer_name}`).map((i) => ({ id: i.id, invoice_no: i.invoice_no, customer_name: i.customer_name, total: i.total, status: i.status })),
     } };
+  }
+
+  if (isCatalogueAdminPath(path)) {
+    const result = catalogueRequest(method, path, query, body, requireDashboardRole());
+    if (result !== undefined) return result;
   }
 
   throw new ApiError(404, "not_implemented", `Mock endpoint not built yet: ${route}`);

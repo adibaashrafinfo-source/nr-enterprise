@@ -1,14 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PageHeader } from "@/components/nre/PageHeader";
-import { EmptyState } from "@/components/nre/EmptyState";
-import { noIndexPageHead } from "@/lib/seo";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { CatalogueNav, useCatalogueAccess } from "@/components/catalogue/shared";
 
-export const Route = createFileRoute("/admin/products")({
-  head: () => noIndexPageHead("Products — NR Enterprise Admin", "Manage the NR Enterprise product catalogue, variants and website visibility."),
-  component: () => (
-    <>
-      <PageHeader title="Products" />
-      <EmptyState title="Coming soon" description="This screen is built in a later phase." />
-    </>
-  ),
-});
+export const Route = createFileRoute("/admin/products")({ component: CatalogueLayout });
+
+function CatalogueLayout() {
+  const { canEdit } = useCatalogueAccess();
+  return (<><CatalogueNav canEdit={canEdit} /><Outlet /></>);
+}
