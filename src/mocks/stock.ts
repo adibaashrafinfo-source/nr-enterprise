@@ -21,16 +21,16 @@ function rows(): StockRow[] {
     status: status(variant.stock_qty, variant.reorder_level),
   }));
 }
-const findEntry = (id: number) => {
+export const findEntry = (id: number) => {
   const e = variantEntries().find((x) => x.variant.id === id);
   if (!e) throw new ApiError(404, "not_found", "Variant not found.", { variant_id: "Choose a variant." });
   return e;
 };
 
-function post(user: User, variantId: number, type: StockMovementType, quantity: string, note: string | null): StockLedgerRow {
+export function post(user: User, variantId: number, type: StockMovementType, quantity: string, note: string | null, ref: Partial<Pick<StockLedgerRow, "reference_type" | "reference_id" | "buyer" | "style_no" | "batch">> = {}): StockLedgerRow {
   const { variant } = findEntry(variantId);
   variant.stock_qty = addQty(variant.stock_qty, quantity);
-  const row: StockLedgerRow = { id: ++nextId, variant_id: variantId, type, quantity: addQty(quantity), reference_type: null, reference_id: null, buyer: null, style_no: null, batch: null, user_name: user.full_name, note, created_at: new Date().toISOString() };
+  const row: StockLedgerRow = { id: ++nextId, variant_id: variantId, type, quantity: addQty(quantity), reference_type: null, reference_id: null, buyer: null, style_no: null, batch: null, ...ref, user_name: user.full_name, note, created_at: new Date().toISOString() };
   ledger.push(row);
   return row;
 }
@@ -103,3 +103,6 @@ export function stockRequest(method: string, path: string, query: Query, body: u
   }
   throw new ApiError(404, "not_found", `No mock for ${route}`);
 }
+
+/** On-hand quantity for one variant (sum of its movements). */
+export const onHand = (variantId: number) => addQty(findEntry(variantId).variant.stock_qty);

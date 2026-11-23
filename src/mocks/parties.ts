@@ -1,16 +1,18 @@
 // Mock Customers and Suppliers groups (docs/NRE_BACKEND_API.md). Balances follow 4.12: opening + confirmed invoices − payments.
 import { ApiError } from "@/lib/api-error";
 import { addMoney, subMoney, toScaled } from "@/lib/money";
-import type { Customer, CustomerDue, CustomerInput, CustomerType, LedgerRow, Supplier, SupplierInput, User } from "@/lib/types";
+import type { Payment, Customer, CustomerDue, CustomerInput, CustomerType, LedgerRow, Supplier, SupplierInput, User } from "@/lib/types";
 import * as db from "./seed";
 
 type Query = Record<string, string | number | undefined>;
 const TYPES: CustomerType[] = ["factory", "buying_house", "brand", "retail", "other"];
 // Payments, purchases and supplier payments arrive in Phases 7-8; the ledger already reads them.
-export const customerPayments: { id: number; receipt_no: string; payment_date: string; customer_id: number; amount: string }[] = [];
+export const customerPayments: Payment[] = [];
 export const supplierPurchases: { id: number; po_no: string; date: string; supplier_id: number; received_value: string }[] = [];
 export const supplierPayments: { id: number; voucher_no: string; payment_date: string; supplier_id: number; amount: string }[] = [];
 
+let orderCount: (customerId: number) => number = () => 0;
+export const setOrderCounter = (fn: (customerId: number) => number) => { orderCount = fn; };
 const confirmed = (customerId: number) => db.invoices.filter((i) => i.customer_id === customerId && ["due", "partial", "paid"].includes(i.status));
 const today = () => new Date().toISOString().slice(0, 10);
 const addDays = (d: string, n: number) => { const x = new Date(`${d}T12:00:00Z`); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
@@ -20,7 +22,7 @@ function customerView(c: (typeof db.customers)[number]): Customer {
   const inv = confirmed(c.id);
   const total_sales = addMoney(...inv.map((i) => i.total));
   const paid = addMoney(...customerPayments.filter((p) => p.customer_id === c.id).map((p) => p.amount));
-  return { ...c, total_sales, due_balance: subMoney(addMoney(c.opening_balance, total_sales), paid), invoice_count: db.invoices.filter((i) => i.customer_id === c.id).length, order_count: 0 };
+  return { ...c, total_sales, due_balance: subMoney(addMoney(c.opening_balance, total_sales), paid), invoice_count: db.invoices.filter((i) => i.customer_id === c.id).length, order_count: orderCount(c.id) };
 }
 function supplierView(s: (typeof db.suppliers)[number]): Supplier {
   const total_purchased = addMoney(...supplierPurchases.filter((p) => p.supplier_id === s.id).map((p) => p.received_value));

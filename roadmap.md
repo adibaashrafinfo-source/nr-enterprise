@@ -17,4 +17,11 @@
 # Phase 6 — Customers and suppliers
 - [x] Customer list, due follow-up, form, profile tabs, ledger with print, Excel import/export.
 - [x] Supplier list, form with products supplied, profile tabs and ledger (manager/admin only).
-- [ ] New order / invoice / payment / purchase buttons — wired in Phases 7–8.
+- [x] New order / invoice / payment buttons wired (Phase 7).
+- [ ] New purchase / make payment buttons on suppliers — Phase 8.
+
+# Phase 7 — Sales orders, invoices and payments
+- [x] Orders: list, form with item search and stock warning, statuses, printable quotation, convert to invoice.
+- [x] Invoices: list with filters, draft edit, confirm (stock check), cancel, sales return, payments with receipt, delivery challan.
+- [x] A4 print views for invoice, challan, receipt and quotation with amount in words; WhatsApp and email share.
+- [x] Demo rules and tests.

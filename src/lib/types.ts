@@ -74,9 +74,25 @@ export interface LedgerRow { date: string; type: "opening" | "invoice" | "paymen
 export interface CustomerDue { invoice_id: number; invoice_no: string; customer_id: number; customer_name: string; invoice_date: string; due_date: string; balance: Decimal; days_overdue: number }
 export interface PartyImportResult { created: number; errors: { row: number; message: string }[] }
 export interface Variant { id: number; product_id: number; sku: string; name: string; color: string | null; size: string | null; material: string | null; pack_size: Decimal | null; selling_price: Decimal; reorder_level: Decimal; stock_qty: Decimal; is_active: boolean; purchase_price?: Decimal }
-export interface InvoiceItem { id: number; variant_id: number; description: string; qty: Decimal; rate: Decimal; discount_pct: Decimal; amount: Decimal }
-export interface Invoice { id: number; invoice_no: string; invoice_date: string; customer_id: number; customer_name: string; status: InvoiceStatus; subtotal: Decimal; discount: Decimal; tax_amount: Decimal; total: Decimal; paid: Decimal; balance: Decimal; items?: InvoiceItem[] }
-export interface Payment { id: number; receipt_no: string; payment_date: string; customer_id: number; invoice_id: number | null; amount: Decimal; method: string }
+export interface SalesLine { id?: number; variant_id: number | null; description: string; unit_code: string; quantity: Decimal; rate: Decimal; discount_percent: Decimal; amount?: Decimal; returned_qty?: Decimal }
+export type OrderStatus = "quotation" | "confirmed" | "delivered" | "invoiced" | "cancelled";
+export interface SalesOrderInput { customer_id: number; order_date: string; delivery_date: string | null; buyer_ref: string | null; po_no: string | null; style_no: string | null; discount: Decimal; notes: string | null; items: SalesLine[] }
+export interface SalesOrder extends SalesOrderInput { id: number; order_no: string; customer_name: string; status: OrderStatus; subtotal: Decimal; total: Decimal; invoice_id: number | null }
+export interface InvoiceInput { customer_id: number; invoice_date: string; due_date: string | null; buyer_ref: string | null; po_no: string | null; style_no: string | null; discount: Decimal; notes: string | null; items: SalesLine[] }
+export type PaymentMethod = "cash" | "bkash" | "nagad" | "bank" | "cheque" | "credit_note";
+export interface Payment { id: number; receipt_no: string; payment_date: string; customer_id: number; customer_name: string; invoice_id: number | null; invoice_no: string | null; amount: Decimal; method: PaymentMethod; reference_no: string | null; note: string | null }
+export interface PaymentInput { payment_date: string; method: PaymentMethod; reference_no: string | null; amount: Decimal; note: string | null }
+export interface Challan { id: number; challan_no: string; challan_date: string; invoice_id: number; vehicle_no: string | null; driver_name: string | null; received_by: string | null; note: string | null }
+export interface ChallanInput { challan_date: string; vehicle_no: string | null; driver_name: string | null; received_by: string | null; note: string | null }
+export interface CompanyBlock { company_name: string; address: string; phones: string[]; emails: string[]; logo_url: string; bin: string | null; bank_details: string | null; footer: string | null; tax_enabled: boolean; tax_rate: Decimal; whatsapp: string | null }
+export interface Invoice {
+  id: number; invoice_no: string; invoice_date: string; due_date?: string | null; customer_id: number; customer_name: string; status: InvoiceStatus;
+  order_id?: number | null; buyer_ref?: string | null; po_no?: string | null; style_no?: string | null; notes?: string | null;
+  subtotal: Decimal; discount: Decimal; tax_rate?: Decimal; tax_amount: Decimal; total: Decimal; paid: Decimal; balance: Decimal;
+  items?: SalesLine[];
+}
+export interface InvoiceDetail extends Invoice { items: SalesLine[]; payments: Payment[]; challans: Challan[]; customer: Customer; company: CompanyBlock }
+export interface VariantPick { id: number; sku: string; display_name: string; unit_code: string; selling_price: Decimal; qty_on_hand: Decimal }
 export interface StockMovement { id: number; variant_id: number; sku: string; type: string; qty: Decimal; ref: string | null; created_at: string }
 export interface PurchaseOrder { id: number; po_no: string; po_date: string; supplier_id: number; supplier_name: string; status: string; total: Decimal }
 export interface Enquiry { id: number; name: string; company: string | null; phone: string; email: string | null; product_name: string | null; quantity: string | null; message: string | null; wants_sample: boolean; status: "new" | "contacted" | "quoted" | "closed"; created_at: string }
@@ -108,10 +124,10 @@ export interface StockRow {
 }
 /** Dashboard low-stock card rows share the stock overview shape. */
 export type LowStockItem = StockRow;
-export type StockMovementType = "opening" | "purchase_in" | "sale_out" | "sales_return" | "adjustment_in" | "adjustment_out";
+export type StockMovementType = "opening" | "purchase_in" | "sale_out" | "sales_return" | "sale_return_in" | "cancel_reverse" | "adjustment_in" | "adjustment_out";
 export interface StockLedgerRow {
   id: number; variant_id: number; type: StockMovementType; quantity: Decimal;
-  reference_type: "invoice" | "purchase_order" | "invoice_item" | null; reference_id: number | null;
+  reference_type: "invoice" | "purchase_order" | "invoice_item" | "invoice_return" | null; reference_id: number | null;
   buyer: string | null; style_no: string | null; batch: string | null;
   user_name: string; note: string | null; created_at: string;
 }

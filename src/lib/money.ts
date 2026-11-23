@@ -59,3 +59,29 @@ export function formatQty(value: string | null | undefined, unit?: string): stri
 export const addQty = (...v: (string | number)[]) => fromScaled(v.reduce<bigint>((a, b) => a + toScaled(b), 0n), 3);
 /** qty x price rounded to 2 decimals (stock value). */
 export const mulMoney = (qty: string, price: string) => fromScaled((toScaled(qty) * toScaled(price)) / FACTOR);
+
+const ONES = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+const TENS = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+function below1000(n: number): string {
+  const h = Math.floor(n / 100), r = n % 100;
+  const rest = r < 20 ? ONES[r]! : `${TENS[Math.floor(r / 10)]}${r % 10 ? ` ${ONES[r % 10]}` : ""}`;
+  return [h ? `${ONES[h]} Hundred` : "", rest].filter(Boolean).join(" ");
+}
+function intWords(n: bigint): string {
+  if (n === 0n) return "Zero";
+  const parts: string[] = [];
+  const crore = n / 10_000_000n; n %= 10_000_000n;
+  if (crore) parts.push(`${intWords(crore)} Crore`);
+  const lakh = Number(n / 100_000n); n %= 100_000n;
+  if (lakh) parts.push(`${below1000(lakh)} Lakh`);
+  const thousand = Number(n / 1000n); n %= 1000n;
+  if (thousand) parts.push(`${below1000(thousand)} Thousand`);
+  if (n) parts.push(below1000(Number(n)));
+  return parts.join(" ");
+}
+/** "35000.50" -> "Taka Thirty Five Thousand and Fifty Paisa Only" (Bangladeshi lakh/crore grouping). */
+export function amountInWords(value: string): string {
+  const [int = "0", frac = "00"] = fromScaled(toScaled(value)).replace("-", "").split(".");
+  const paisa = Number(frac);
+  return `Taka ${intWords(BigInt(int))}${paisa ? ` and ${below1000(paisa)} Paisa` : ""} Only`;
+}

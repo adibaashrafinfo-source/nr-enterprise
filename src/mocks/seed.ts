@@ -62,8 +62,8 @@ export const suppliers: SeedSupplier[] = [
 ];
 
 export const invoices: Invoice[] = [
-  { id: 1, invoice_no: "INV-00001", invoice_date: "2026-11-20", customer_id: 1, customer_name: "Rahim Apparels Ltd", status: "due", subtotal: "184500.00", discount: "0.00", tax_amount: "0.00", total: "184500.00", paid: "0.00", balance: "184500.00" },
-  { id: 2, invoice_no: "INV-00002", invoice_date: "2026-11-21", customer_id: 2, customer_name: "Sonali Knitwear", status: "draft", subtotal: "25440.00", discount: "440.00", tax_amount: "0.00", total: "25000.00", paid: "0.00", balance: "25000.00" },
+  { id: 1, invoice_no: "INV-00001", invoice_date: "2026-11-20", customer_id: 1, customer_name: "Rahim Apparels Ltd", status: "due", due_date: "2026-12-20", buyer_ref: "H&M", po_no: "PO-7781", style_no: "ST-204", notes: null, tax_rate: "0.00", items: [], subtotal: "184500.00", discount: "0.00", tax_amount: "0.00", total: "184500.00", paid: "0.00", balance: "184500.00" },
+  { id: 2, invoice_no: "INV-00002", invoice_date: "2026-11-21", customer_id: 2, customer_name: "Sonali Knitwear", status: "draft", due_date: null, buyer_ref: null, po_no: null, style_no: null, notes: null, tax_rate: "0.00", items: [], subtotal: "25440.00", discount: "440.00", tax_amount: "0.00", total: "25000.00", paid: "0.00", balance: "25000.00" },
 ];
 
 // No variants or stock movements are included in the supplied demo seed yet.

@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { adminApi, publicApi, type AdminProductListQuery, type StockListQuery, type CustomerListQuery, type LedgerRange, type StockMovementQuery, type ProductListQuery } from "./api";
+import { adminApi, publicApi, type AdminProductListQuery, type StockListQuery, type CustomerListQuery, type LedgerRange, type SalesListQuery, type StockMovementQuery, type ProductListQuery } from "./api";
 import type { Role } from "./types";
 
 export const settingsQuery = () => queryOptions({ queryKey: ["public", "settings"], queryFn: publicApi.settings, staleTime: 5 * 60_000 });
@@ -72,4 +72,20 @@ export const supplierQuery = (userId: number, role: Role, id: number) => queryOp
 });
 export const supplierLedgerQuery = (userId: number, role: Role, id: number, range: LedgerRange) => queryOptions({
   queryKey: ["admin", userId, role, "suppliers", "ledger", id, range], queryFn: () => adminApi.supplierLedger(id, range), staleTime: 15_000,
+});
+
+export const ordersQuery = (userId: number, role: Role, query: SalesListQuery) => queryOptions({
+  queryKey: ["admin", userId, role, "sales", "orders", query], queryFn: () => adminApi.orders(query), staleTime: 10_000,
+});
+export const orderQuery = (userId: number, role: Role, id: number) => queryOptions({
+  queryKey: ["admin", userId, role, "sales", "order", id], queryFn: () => adminApi.order(id), staleTime: 10_000,
+});
+export const invoicesQuery = (userId: number, role: Role, query: SalesListQuery) => queryOptions({
+  queryKey: ["admin", userId, role, "sales", "invoices", query], queryFn: () => adminApi.invoices(query), staleTime: 10_000,
+});
+export const invoiceQuery = (userId: number, role: Role, id: number) => queryOptions({
+  queryKey: ["admin", userId, role, "sales", "invoice", id], queryFn: () => adminApi.invoice(id), staleTime: 10_000,
+});
+export const variantSearchQuery = (userId: number, role: Role, q: string) => queryOptions({
+  queryKey: ["admin", userId, role, "sales", "variant-search", q], queryFn: () => adminApi.variantSearch(q), staleTime: 10_000,
 });

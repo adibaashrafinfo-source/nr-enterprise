@@ -6,7 +6,7 @@ import { shouldRedirectAdminUnauthorized } from "./admin-access";
 import type {
   AdminCategory, AdminProduct, AdminProductSummary, AdminSearchResults, Category, CategoryInput, Certification, Client,
   DashboardSummary, Enquiry, Invoice, LowStockItem, MeResponse, Paged, ProductImage, ProductImportResult, ProductImportRow,
-  ProductInput, PublicProduct, PublicProductSummary, PublicSettings, SalesDay, Customer, CustomerDue, CustomerInput, LedgerRow, PartyImportResult, Payment, Supplier, SupplierInput, StockAdjustInput, StockLedgerRow, StockRow, StockValue, OpeningStockInput, Unit, UnitInput, Variant, VariantInput,
+  ProductInput, PublicProduct, PublicProductSummary, PublicSettings, SalesDay, Challan, ChallanInput, CompanyBlock, InvoiceDetail, InvoiceInput, OrderStatus, PaymentInput, SalesLine, SalesOrder, SalesOrderInput, VariantPick, Customer, CustomerDue, CustomerInput, LedgerRow, PartyImportResult, Payment, Supplier, SupplierInput, StockAdjustInput, StockLedgerRow, StockRow, StockValue, OpeningStockInput, Unit, UnitInput, Variant, VariantInput,
 } from "./types";
 
 export { ApiError };
@@ -74,6 +74,9 @@ export interface LedgerRange { from?: string; to?: string }
 export type CustomerProfile = Customer & { invoices: Invoice[]; payments: Pick<Payment, "id" | "receipt_no" | "payment_date" | "amount">[] };
 export type SupplierProfile = Supplier & { purchases: { id: number; po_no: string; date: string; received_value: string }[]; payments: { id: number; voucher_no: string; payment_date: string; amount: string }[] };
 
+export interface SalesListQuery { q?: string; status?: string; customer_id?: number; from?: string; to?: string; page?: number; per_page?: number }
+export type ChallanPrint = Challan & { invoice_no: string; invoice_date: string; buyer_ref: string | null; po_no: string | null; style_no: string | null; customer: Customer; company: CompanyBlock; items: Pick<SalesLine, "description" | "unit_code" | "quantity">[] };
+
 export const publicApi = {
   settings: () => request<One<PublicSettings>>("GET", "/public/settings").then((r) => r.data),
   categories: () => request<One<Category[]>>("GET", "/public/categories").then((r) => r.data),
@@ -132,5 +135,25 @@ export const adminApi = {
   createSupplier: (input: SupplierInput) => request<One<Supplier>>("POST", "/suppliers", { body: input }).then((r) => r.data),
   updateSupplier: (id: number, input: SupplierInput) => request<One<Supplier>>("PUT", `/suppliers/${id}`, { body: input }).then((r) => r.data),
   deleteSupplier: (id: number) => request<One<{ ok: boolean; archived: boolean }>>("DELETE", `/suppliers/${id}`).then((r) => r.data),
+  variantSearch: (q: string) => request<One<VariantPick[]>>("GET", "/variants/search", { query: { q } }).then((r) => r.data),
+  orders: (query: SalesListQuery = {}) => request<Paged<SalesOrder>>("GET", "/orders", { query: { ...query } }),
+  order: (id: number) => request<One<SalesOrder & { company: CompanyBlock }>>("GET", `/orders/${id}`).then((r) => r.data),
+  createOrder: (input: SalesOrderInput) => request<One<SalesOrder>>("POST", "/orders", { body: input }).then((r) => r.data),
+  updateOrder: (id: number, input: SalesOrderInput) => request<One<SalesOrder>>("PUT", `/orders/${id}`, { body: input }).then((r) => r.data),
+  setOrderStatus: (id: number, status: OrderStatus) => request<One<SalesOrder>>("POST", `/orders/${id}/status`, { body: { status } }).then((r) => r.data),
+  convertOrder: (id: number) => request<One<{ invoice_id: number }>>("POST", `/orders/${id}/convert`).then((r) => r.data),
+  invoices: (query: SalesListQuery = {}) => request<Paged<Invoice>>("GET", "/invoices", { query: { ...query } }),
+  invoice: (id: number) => request<One<InvoiceDetail>>("GET", `/invoices/${id}`).then((r) => r.data),
+  createInvoice: (input: InvoiceInput) => request<One<InvoiceDetail>>("POST", "/invoices", { body: input }).then((r) => r.data),
+  updateInvoice: (id: number, input: InvoiceInput) => request<One<InvoiceDetail>>("PUT", `/invoices/${id}`, { body: input }).then((r) => r.data),
+  deleteInvoice: (id: number) => request<One<{ ok: boolean }>>("DELETE", `/invoices/${id}`).then((r) => r.data),
+  confirmInvoice: (id: number) => request<One<InvoiceDetail & { warnings: string[] }>>("POST", `/invoices/${id}/confirm`).then((r) => r.data),
+  cancelInvoice: (id: number, reason: string) => request<One<InvoiceDetail>>("POST", `/invoices/${id}/cancel`, { body: { reason } }).then((r) => r.data),
+  returnInvoiceItem: (itemId: number, quantity: string, note: string) => request<One<{ credit_note: Payment }>>("POST", `/invoice-items/${itemId}/return`, { body: { quantity, note } }).then((r) => r.data),
+  receivePayment: (invoiceId: number, input: PaymentInput) => request<One<Payment>>("POST", `/invoices/${invoiceId}/payments`, { body: input }).then((r) => r.data),
+  payment: (id: number) => request<One<Payment & { invoice: InvoiceDetail | null; company: CompanyBlock }>>("GET", `/payments/${id}`).then((r) => r.data),
+  deletePayment: (id: number) => request<One<{ ok: boolean }>>("DELETE", `/payments/${id}`).then((r) => r.data),
+  createChallan: (invoiceId: number, input: ChallanInput) => request<One<Challan>>("POST", `/invoices/${invoiceId}/challans`, { body: input }).then((r) => r.data),
+  challan: (id: number) => request<One<ChallanPrint>>("GET", `/challans/${id}`).then((r) => r.data),
   importProducts: (rows: ProductImportRow[]) => request<One<ProductImportResult>>("POST", "/products/import", { body: { rows } }).then((r) => r.data),
 };

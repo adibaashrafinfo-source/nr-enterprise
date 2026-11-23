@@ -157,3 +157,8 @@
   [data-print-hide] { display: none !important; }
   body { background: white; }
 }
+
+@media print {
+  @page { size: A4; margin: 0; }
+  .print-sheet { max-width: none; padding: 12mm; }
+}
