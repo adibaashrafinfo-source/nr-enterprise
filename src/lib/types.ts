@@ -28,6 +28,30 @@ export interface PublicProduct extends PublicProductSummary {
   description: string; features: string[]; specs: Record<string, unknown>;
   images: ProductImage[]; variants: PublicVariant[]; related: PublicProductSummary[];
 }
+export interface AdminProductSummary extends PublicProductSummary {
+  variant_count: number; total_stock: Decimal; show_on_website: boolean; is_active: boolean;
+}
+export interface AdminProduct extends PublicProduct {
+  variant_count: number; total_stock: Decimal; show_on_website: boolean; is_active: boolean;
+  seo_title: string | null; seo_description: string | null; variants: Variant[];
+}
+export interface AdminCategory extends Category { is_active: boolean }
+export interface Unit { code: string; name: string; is_active: boolean }
+export interface ProductInput {
+  name: string; slug: string; code: string; category_id: number; unit_code: string; moq: Decimal;
+  short_description: string; description: string; features: string[]; specs: Record<string, unknown>;
+  show_on_website: boolean; is_featured: boolean; is_active?: boolean;
+  seo_title: string | null; seo_description: string | null;
+}
+export interface VariantInput {
+  sku: string; name: string; color: string | null; size: string | null; material: string | null;
+  pack_size: Decimal | null; selling_price: Decimal; reorder_level: Decimal; is_active: boolean;
+  purchase_price?: Decimal;
+}
+export interface CategoryInput { slug: string; name: string; description: string; image_url: string; sort_order: number; is_active: boolean }
+export interface UnitInput { code: string; name: string; is_active: boolean }
+export interface ProductImportRow { product: ProductInput; variants: VariantInput[] }
+export interface ProductImportResult { created: number; errors: { row: number; message: string; fields?: Record<string, string> }[] }
 export interface Client { id: number; name: string; logo_url: string }
 export interface Certification { id: number; name: string; image_url: string | null }
 

@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { adminApi, publicApi, type ProductListQuery } from "./api";
+import { adminApi, publicApi, type AdminProductListQuery, type ProductListQuery } from "./api";
 import type { Role } from "./types";
 
 export const settingsQuery = () => queryOptions({ queryKey: ["public", "settings"], queryFn: publicApi.settings, staleTime: 5 * 60_000 });
@@ -27,4 +27,17 @@ export const newEnquiriesQuery = (userId: number) => queryOptions({
 });
 export const adminSearchQuery = (userId: number, q: string) => queryOptions({
   queryKey: ["admin", userId, "search", q], queryFn: () => adminApi.search(q), enabled: q.trim().length >= 2, staleTime: 15_000,
+});
+
+export const adminProductsQuery = (userId: number, role: Role, query: AdminProductListQuery) => queryOptions({
+  queryKey: ["admin", userId, role, "catalogue", "products", query], queryFn: () => adminApi.products(query), staleTime: 30_000,
+});
+export const adminProductQuery = (userId: number, role: Role, id: number) => queryOptions({
+  queryKey: ["admin", userId, role, "catalogue", "product", id], queryFn: () => adminApi.product(id), enabled: id > 0, staleTime: 30_000,
+});
+export const adminCategoriesQuery = (userId: number, role: Role) => queryOptions({
+  queryKey: ["admin", userId, role, "catalogue", "categories"], queryFn: adminApi.categories, staleTime: 30_000,
+});
+export const adminUnitsQuery = (userId: number, role: Role) => queryOptions({
+  queryKey: ["admin", userId, role, "catalogue", "units"], queryFn: adminApi.units, staleTime: 30_000,
 });

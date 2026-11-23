@@ -4,7 +4,9 @@ import { mockRequest } from "@/mocks";
 import { ApiError } from "./api-error";
 import { shouldRedirectAdminUnauthorized } from "./admin-access";
 import type {
-  AdminSearchResults, Category, Certification, Client, DashboardSummary, Enquiry, Invoice, LowStockItem, MeResponse, Paged, PublicProduct, PublicProductSummary, PublicSettings, SalesDay,
+  AdminCategory, AdminProduct, AdminProductSummary, AdminSearchResults, Category, CategoryInput, Certification, Client,
+  DashboardSummary, Enquiry, Invoice, LowStockItem, MeResponse, Paged, ProductImage, ProductImportResult, ProductImportRow,
+  ProductInput, PublicProduct, PublicProductSummary, PublicSettings, SalesDay, Unit, UnitInput, Variant, VariantInput,
 } from "./types";
 
 export { ApiError };
@@ -62,6 +64,7 @@ export const authApi = {
 };
 
 export interface ProductListQuery { category?: string; q?: string; featured?: 1; page?: number; per_page?: number }
+export interface AdminProductListQuery { q?: string; category_id?: number; status?: "active" | "archived"; page?: number; per_page?: number }
 
 export const publicApi = {
   settings: () => request<One<PublicSettings>>("GET", "/public/settings").then((r) => r.data),
@@ -80,4 +83,27 @@ export const adminApi = {
   recentInvoices: () => request<Paged<Invoice>>("GET", "/invoices", { query: { page: 1, per_page: 5 } }),
   newEnquiries: () => request<Paged<Enquiry>>("GET", "/enquiries", { query: { status: "new", page: 1, per_page: 5 } }),
   search: (q: string) => request<One<AdminSearchResults>>("GET", "/search", { query: { q } }).then((r) => r.data),
+  products: (query: AdminProductListQuery = {}) => request<Paged<AdminProductSummary>>("GET", "/products", { query }),
+  product: (id: number) => request<One<AdminProduct>>("GET", `/products/${id}`).then((r) => r.data),
+  createProduct: (input: ProductInput) => request<One<AdminProduct>>("POST", "/products", { body: input }).then((r) => r.data),
+  updateProduct: (id: number, input: ProductInput) => request<One<AdminProduct>>("PUT", `/products/${id}`, { body: input }).then((r) => r.data),
+  archiveProduct: (id: number) => request<One<{ ok: boolean }>>("DELETE", `/products/${id}`).then((r) => r.data),
+  categories: () => request<One<AdminCategory[]>>("GET", "/categories").then((r) => r.data),
+  createCategory: (input: CategoryInput) => request<One<AdminCategory>>("POST", "/categories", { body: input }).then((r) => r.data),
+  updateCategory: (id: number, input: CategoryInput) => request<One<AdminCategory>>("PUT", `/categories/${id}`, { body: input }).then((r) => r.data),
+  deleteCategory: (id: number) => request<One<{ ok: boolean }>>("DELETE", `/categories/${id}`).then((r) => r.data),
+  units: () => request<One<Unit[]>>("GET", "/units").then((r) => r.data),
+  saveUnit: (input: UnitInput) => request<One<Unit>>("POST", "/units", { body: input }).then((r) => r.data),
+  uploadProductImage: (productId: number, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return request<One<ProductImage>>("POST", `/products/${productId}/images`, { body: form }).then((r) => r.data);
+  },
+  orderProductImages: (productId: number, ids: number[], primaryId: number) =>
+    request<One<ProductImage[]>>("PUT", `/products/${productId}/images/order`, { body: { ids, primary_id: primaryId } }).then((r) => r.data),
+  deleteProductImage: (imageId: number) => request<One<{ ok: boolean }>>("DELETE", `/product-images/${imageId}`).then((r) => r.data),
+  createVariant: (productId: number, input: VariantInput) => request<One<Variant>>("POST", `/products/${productId}/variants`, { body: input }).then((r) => r.data),
+  updateVariant: (id: number, input: VariantInput) => request<One<Variant>>("PUT", `/variants/${id}`, { body: input }).then((r) => r.data),
+  archiveVariant: (id: number) => request<One<{ ok: boolean }>>("DELETE", `/variants/${id}`).then((r) => r.data),
+  importProducts: (rows: ProductImportRow[]) => request<One<ProductImportResult>>("POST", "/products/import", { body: { rows } }).then((r) => r.data),
 };

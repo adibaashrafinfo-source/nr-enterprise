@@ -37,3 +37,4 @@ use the editor.
 - Public pages sit under the pathless _site layout; admin pages under admin.tsx (guard + AdminLayout); login/reset pages use admin_ prefix to skip the guard — why: separate shells.
 - Keep admin endpoint types in src/lib/api.ts and mirror each endpoint in src/mocks; fetch protected admin data only after client-side role approval and scope cache keys by account — why: SSR has no authenticated PHP session and cached private values must not cross users.
 - Static SEO files live in public/ and use the published canonical host, with catalogue URLs sourced from docs/spec data — why: the separate PHP API is unavailable during static asset generation.
+- Keep catalogue administration nested under the /admin/products layout, with its list as the index route and editor/categories/units as child views — why: all catalogue tasks share one permission scope and shell.
