@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { adminApi, publicApi, type AdminProductListQuery, type StockListQuery, type CustomerListQuery, type LedgerRange, type SalesListQuery, type StockMovementQuery, type ProductListQuery } from "./api";
+import { adminApi, publicApi, type AdminProductListQuery, type StockListQuery, type CustomerListQuery, type LedgerRange, type SalesListQuery, type StockMovementQuery, type ProductListQuery, type PurchaseListQuery } from "./api";
 import type { Role } from "./types";
 
 export const settingsQuery = () => queryOptions({ queryKey: ["public", "settings"], queryFn: publicApi.settings, staleTime: 5 * 60_000 });
@@ -88,4 +88,17 @@ export const invoiceQuery = (userId: number, role: Role, id: number) => queryOpt
 });
 export const variantSearchQuery = (userId: number, role: Role, q: string) => queryOptions({
   queryKey: ["admin", userId, role, "sales", "variant-search", q], queryFn: () => adminApi.variantSearch(q), staleTime: 10_000,
+});
+
+export const purchasesQuery = (userId: number, role: Role, query: PurchaseListQuery) => queryOptions({
+  queryKey: ["admin", userId, role, "purchases", "list", query], queryFn: () => adminApi.purchases(query), staleTime: 10_000,
+});
+export const purchaseQuery = (userId: number, role: Role, id: number) => queryOptions({
+  queryKey: ["admin", userId, role, "purchases", "one", id], queryFn: () => adminApi.purchase(id), staleTime: 10_000,
+});
+export const pendingReceiptsQuery = (userId: number, role: Role) => queryOptions({
+  queryKey: ["admin", userId, role, "purchases", "pending"], queryFn: adminApi.pendingReceipts, staleTime: 10_000,
+});
+export const reorderSuggestionsQuery = (userId: number, role: Role) => queryOptions({
+  queryKey: ["admin", userId, role, "purchases", "reorder"], queryFn: adminApi.reorderSuggestions, staleTime: 10_000,
 });

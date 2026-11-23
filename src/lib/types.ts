@@ -92,9 +92,21 @@ export interface Invoice {
   items?: SalesLine[];
 }
 export interface InvoiceDetail extends Invoice { items: SalesLine[]; payments: Payment[]; challans: Challan[]; customer: Customer; company: CompanyBlock }
-export interface VariantPick { id: number; sku: string; display_name: string; unit_code: string; selling_price: Decimal; qty_on_hand: Decimal }
+export interface VariantPick { id: number; sku: string; display_name: string; unit_code: string; selling_price: Decimal; qty_on_hand: Decimal; /** Manager+ only. */ last_purchase_rate?: Decimal | null }
 export interface StockMovement { id: number; variant_id: number; sku: string; type: string; qty: Decimal; ref: string | null; created_at: string }
-export interface PurchaseOrder { id: number; po_no: string; po_date: string; supplier_id: number; supplier_name: string; status: string; total: Decimal }
+export type PurchaseStatus = "draft" | "ordered" | "partial" | "received" | "cancelled";
+export interface PurchaseItem { id: number; variant_id: number; display_name: string; sku: string; unit_code: string; qty_ordered: Decimal; qty_received: Decimal; rate: Decimal; line_total: Decimal }
+export interface PurchaseOrder { id: number; po_no: string; supplier_id: number; supplier_name: string; order_date: string; expected_date: string | null; bill_no: string | null; notes: string | null; status: PurchaseStatus; total: Decimal; received_value: Decimal }
+export interface PurchaseLineInput { variant_id: number; qty_ordered: Decimal; rate: Decimal }
+export interface PurchaseInput { supplier_id: number; order_date: string; expected_date: string | null; bill_no: string | null; notes: string | null; status?: "draft" | "ordered"; items: PurchaseLineInput[] }
+export type PaidMethod = Exclude<PaymentMethod, "credit_note">;
+export interface SupplierPayment { id: number; voucher_no: string; supplier_id: number; supplier_name: string; payment_date: string; method: PaidMethod; reference_no: string | null; amount: Decimal; purchase_id: number | null; po_no: string | null; note: string | null }
+export interface SupplierPaymentInput { payment_date: string; method: PaidMethod; reference_no: string | null; amount: Decimal; purchase_id: number | null; note: string | null }
+export interface PurchaseDetail extends PurchaseOrder { items: PurchaseItem[]; payments: SupplierPayment[]; supplier: Supplier; company: CompanyBlock }
+/** Staff-safe pending receipt line: never carries rates or values. */
+export interface PendingReceipt { item_id: number; purchase_id: number; po_no: string; supplier_name: string; expected_date: string | null; variant_id: number; display_name: string; sku: string; unit_code: string; qty_ordered: Decimal; qty_received: Decimal; qty_pending: Decimal }
+export interface ReceiveResult { item_id: number; qty_received: Decimal; qty_pending: Decimal; status: PurchaseStatus }
+export interface ReorderSuggestion { variant_id: number; display_name: string; sku: string; unit_code: string; qty_on_hand: Decimal; reorder_level: Decimal; suggested_qty: Decimal; last_rate: Decimal | null; supplier_id: number | null }
 export interface Enquiry { id: number; name: string; company: string | null; phone: string; email: string | null; product_name: string | null; quantity: string | null; message: string | null; wants_sample: boolean; status: "new" | "contacted" | "quoted" | "closed"; created_at: string }
 
 export interface DashboardSummary {
@@ -124,7 +136,7 @@ export interface StockRow {
 }
 /** Dashboard low-stock card rows share the stock overview shape. */
 export type LowStockItem = StockRow;
-export type StockMovementType = "opening" | "purchase_in" | "sale_out" | "sales_return" | "sale_return_in" | "cancel_reverse" | "adjustment_in" | "adjustment_out";
+export type StockMovementType = "opening" | "purchase_in" | "sale_out" | "sales_return" | "sale_return_in" | "cancel_reverse" | "adjustment_in" | "adjustment_out" | "purchase_return_out";
 export interface StockLedgerRow {
   id: number; variant_id: number; type: StockMovementType; quantity: Decimal;
   reference_type: "invoice" | "purchase_order" | "invoice_item" | "invoice_return" | null; reference_id: number | null;

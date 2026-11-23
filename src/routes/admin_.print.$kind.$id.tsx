@@ -7,10 +7,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { adminApi } from "@/lib/api";
 import { amountInWords, formatBDT, formatQty, toScaled } from "@/lib/money";
 import { noIndexPageHead } from "@/lib/seo";
-import type { CompanyBlock, Customer, SalesLine } from "@/lib/types";
+import type { CompanyBlock, Customer, SalesLine, Supplier } from "@/lib/types";
 
-type Kind = "invoice" | "challan" | "receipt" | "quotation";
-const KINDS: Kind[] = ["invoice", "challan", "receipt", "quotation"];
+type Kind = "invoice" | "challan" | "receipt" | "quotation" | "purchase" | "voucher";
+const KINDS: Kind[] = ["invoice", "challan", "receipt", "quotation", "purchase", "voucher"];
+type Party = Pick<Customer, "name" | "billing_address" | "area" | "phone" | "bin">;
+const supplierParty = (s: Supplier): Party => ({ name: s.name, billing_address: s.address, area: null, phone: s.phone, bin: null });
 
 export const Route = createFileRoute("/admin_/print/$kind/$id")({
   head: () => noIndexPageHead("Print — NR Enterprise", "Printable NR Enterprise document."),
@@ -20,7 +22,7 @@ export const Route = createFileRoute("/admin_/print/$kind/$id")({
 const fmtDate = (d: string | null | undefined) => (d ? new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—");
 
 interface Doc {
-  title: string; number: string; date: string; due?: string | null; terms?: string; company: CompanyBlock; customer: Customer;
+  title: string; number: string; date: string; due?: string | null; terms?: string; company: CompanyBlock; customer: Party; partyLabel?: string;
   refs: { buyer_ref?: string | null; po_no?: string | null; style_no?: string | null };
   lines?: SalesLine[]; priced: boolean; totals?: { subtotal: string; discount: string; tax_rate?: string; tax_amount?: string; total: string; paid?: string; balance?: string };
   extra?: [string, string][]; words?: string; signLeft: string; signRight: string;
@@ -48,6 +50,18 @@ function useDoc(kind: Kind, id: number) {
         return { title: "DELIVERY CHALLAN", number: ch.challan_no, date: ch.challan_date, company: ch.company, customer: ch.customer, refs: ch,
           lines: ch.items.map((l) => ({ ...l, variant_id: null, rate: "0", discount_percent: "0" })), priced: false,
           extra: [["Invoice", ch.invoice_no], ["Vehicle no.", ch.vehicle_no ?? "—"], ["Driver", ch.driver_name ?? "—"], ["Note", ch.note ?? "—"]], signLeft: `Received by${ch.received_by ? `: ${ch.received_by}` : ""}`, signRight: "Delivered by" };
+      }
+      if (kind === "purchase") {
+        const po = await adminApi.purchase(id);
+        return { title: po.status === "draft" ? "DRAFT PURCHASE ORDER" : "PURCHASE ORDER", number: po.po_no, date: po.order_date, due: po.expected_date, company: po.company, customer: supplierParty(po.supplier), partyLabel: "Supplier", refs: {},
+          lines: po.items.map((l) => ({ variant_id: l.variant_id, description: `${l.display_name} (${l.sku})`, unit_code: l.unit_code, quantity: l.qty_ordered, rate: l.rate, discount_percent: "0", amount: l.line_total })), priced: true, words: amountInWords(po.total),
+          totals: { subtotal: po.total, discount: "0.00", total: po.total }, extra: [["Supplier bill no.", po.bill_no ?? "—"], ["Notes", po.notes ?? "—"]], signLeft: "Supplier acceptance", signRight: "Authorised by" };
+      }
+      if (kind === "voucher") {
+        const v = await adminApi.supplierPayment(id);
+        return { title: "PAYMENT VOUCHER", number: v.voucher_no, date: v.payment_date, company: v.company, customer: supplierParty(v.supplier), partyLabel: "Paid to", refs: {}, priced: true,
+          extra: [["Against PO", v.po_no ?? "—"], ["Method", v.method], ["Reference", v.reference_no ?? "—"], ["Amount", formatBDT(v.amount, { decimals: true })], ["Payable after", formatBDT(v.supplier.payable_balance, { decimals: true })], ["Note", v.note ?? "—"]],
+          words: amountInWords(v.amount), signLeft: "Received by", signRight: "Paid by" };
       }
       const p = await adminApi.payment(id);
       const c = p.invoice?.customer ?? (await adminApi.customer(p.customer_id));
@@ -83,10 +97,10 @@ function PrintPage() {
               <p>{d.company.phones.join(", ")}</p><p>{d.company.emails.join(", ")}{d.company.bin ? ` · BIN: ${d.company.bin}` : ""}</p></div>
           </div>
           <div className="text-right"><p className="text-lg font-bold tracking-wide">{d.title}</p>
-            <p>No: <b>{d.number}</b></p><p>Date: {fmtDate(d.date)}</p>{d.due !== undefined && <p>{d.title === "QUOTATION" ? "Delivery" : "Due"}: {fmtDate(d.due)}</p>}{d.terms && <p>Terms: {d.terms}</p>}</div>
+            <p>No: <b>{d.number}</b></p><p>Date: {fmtDate(d.date)}</p>{d.due !== undefined && <p>{d.title === "QUOTATION" ? "Delivery" : d.title.includes("PURCHASE") ? "Expected" : "Due"}: {fmtDate(d.due)}</p>}{d.terms && <p>Terms: {d.terms}</p>}</div>
         </header>
         <section className="flex justify-between gap-6 border-b py-3">
-          <div><p className="text-[11px] uppercase text-muted-foreground">Bill to</p><p className="font-semibold" lang="bn">{d.customer.name}</p>
+          <div><p className="text-[11px] uppercase text-muted-foreground">{d.partyLabel ?? "Bill to"}</p><p className="font-semibold" lang="bn">{d.customer.name}</p>
             <p>{d.customer.billing_address ?? d.customer.area ?? ""}</p><p>{[d.customer.phone, d.customer.bin ? `BIN: ${d.customer.bin}` : null].filter(Boolean).join(" · ")}</p></div>
           <div className="text-right">{d.refs.buyer_ref && <p>Buyer: {d.refs.buyer_ref}</p>}{d.refs.po_no && <p>PO: {d.refs.po_no}</p>}{d.refs.style_no && <p>Style: {d.refs.style_no}</p>}</div>
         </section>

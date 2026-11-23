@@ -48,6 +48,10 @@ import { Route as AdminProductsCategoriesRouteImport } from './routes/admin.prod
 import { Route as AdminProductsImportRouteImport } from './routes/admin.products.import'
 import { Route as AdminProductsNewRouteImport } from './routes/admin.products.new'
 import { Route as AdminProductsUnitsRouteImport } from './routes/admin.products.units'
+import { Route as AdminPurchasesIndexRouteImport } from './routes/admin.purchases.index'
+import { Route as AdminPurchasesPurchaseIdRouteImport } from './routes/admin.purchases.$purchaseId'
+import { Route as AdminPurchasesNewRouteImport } from './routes/admin.purchases.new'
+import { Route as AdminPurchasesReceivingRouteImport } from './routes/admin.purchases.receiving'
 import { Route as AdminStockIndexRouteImport } from './routes/admin.stock.index'
 import { Route as AdminStockVariantIdRouteImport } from './routes/admin.stock.$variantId'
 import { Route as AdminStockOpeningRouteImport } from './routes/admin.stock.opening'
@@ -252,6 +256,27 @@ const AdminProductsUnitsRoute = AdminProductsUnitsRouteImport.update({
   path: '/units',
   getParentRoute: () => AdminProductsRoute,
 } as any)
+const AdminPurchasesIndexRoute = AdminPurchasesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminPurchasesRoute,
+} as any)
+const AdminPurchasesPurchaseIdRoute =
+  AdminPurchasesPurchaseIdRouteImport.update({
+    id: '/$purchaseId',
+    path: '/$purchaseId',
+    getParentRoute: () => AdminPurchasesRoute,
+  } as any)
+const AdminPurchasesNewRoute = AdminPurchasesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminPurchasesRoute,
+} as any)
+const AdminPurchasesReceivingRoute = AdminPurchasesReceivingRouteImport.update({
+  id: '/receiving',
+  path: '/receiving',
+  getParentRoute: () => AdminPurchasesRoute,
+} as any)
 const AdminStockIndexRoute = AdminStockIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -311,7 +336,7 @@ export interface FileRoutesByFullPath {
   '/admin/invoices': typeof AdminInvoicesRouteWithChildren
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/products': typeof AdminProductsRouteWithChildren
-  '/admin/purchases': typeof AdminPurchasesRoute
+  '/admin/purchases': typeof AdminPurchasesRouteWithChildren
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/stock': typeof AdminStockRouteWithChildren
@@ -330,6 +355,9 @@ export interface FileRoutesByFullPath {
   '/admin/products/import': typeof AdminProductsImportRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/units': typeof AdminProductsUnitsRoute
+  '/admin/purchases/$purchaseId': typeof AdminPurchasesPurchaseIdRoute
+  '/admin/purchases/new': typeof AdminPurchasesNewRoute
+  '/admin/purchases/receiving': typeof AdminPurchasesReceivingRoute
   '/admin/stock/$variantId': typeof AdminStockVariantIdRoute
   '/admin/stock/opening': typeof AdminStockOpeningRoute
   '/admin/suppliers/$supplierId': typeof AdminSuppliersSupplierIdRoute
@@ -338,6 +366,7 @@ export interface FileRoutesByFullPath {
   '/admin/invoices/': typeof AdminInvoicesIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
+  '/admin/purchases/': typeof AdminPurchasesIndexRoute
   '/admin/stock/': typeof AdminStockIndexRoute
   '/admin/suppliers/': typeof AdminSuppliersIndexRoute
   '/products/$categorySlug/$productSlug': typeof SiteProductsCategorySlugProductSlugRoute
@@ -353,7 +382,6 @@ export interface FileRoutesByTo {
   '/sustainability': typeof SiteSustainabilityRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
-  '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/forgot-password': typeof AdminForgotPasswordRoute
@@ -371,6 +399,9 @@ export interface FileRoutesByTo {
   '/admin/products/import': typeof AdminProductsImportRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/units': typeof AdminProductsUnitsRoute
+  '/admin/purchases/$purchaseId': typeof AdminPurchasesPurchaseIdRoute
+  '/admin/purchases/new': typeof AdminPurchasesNewRoute
+  '/admin/purchases/receiving': typeof AdminPurchasesReceivingRoute
   '/admin/stock/$variantId': typeof AdminStockVariantIdRoute
   '/admin/stock/opening': typeof AdminStockOpeningRoute
   '/admin/suppliers/$supplierId': typeof AdminSuppliersSupplierIdRoute
@@ -379,6 +410,7 @@ export interface FileRoutesByTo {
   '/admin/invoices': typeof AdminInvoicesIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
+  '/admin/purchases': typeof AdminPurchasesIndexRoute
   '/admin/stock': typeof AdminStockIndexRoute
   '/admin/suppliers': typeof AdminSuppliersIndexRoute
   '/products/$categorySlug/$productSlug': typeof SiteProductsCategorySlugProductSlugRoute
@@ -401,7 +433,7 @@ export interface FileRoutesById {
   '/admin/invoices': typeof AdminInvoicesRouteWithChildren
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/products': typeof AdminProductsRouteWithChildren
-  '/admin/purchases': typeof AdminPurchasesRoute
+  '/admin/purchases': typeof AdminPurchasesRouteWithChildren
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/stock': typeof AdminStockRouteWithChildren
@@ -421,6 +453,9 @@ export interface FileRoutesById {
   '/admin/products/import': typeof AdminProductsImportRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/units': typeof AdminProductsUnitsRoute
+  '/admin/purchases/$purchaseId': typeof AdminPurchasesPurchaseIdRoute
+  '/admin/purchases/new': typeof AdminPurchasesNewRoute
+  '/admin/purchases/receiving': typeof AdminPurchasesReceivingRoute
   '/admin/stock/$variantId': typeof AdminStockVariantIdRoute
   '/admin/stock/opening': typeof AdminStockOpeningRoute
   '/admin/suppliers/$supplierId': typeof AdminSuppliersSupplierIdRoute
@@ -429,6 +464,7 @@ export interface FileRoutesById {
   '/admin/invoices/': typeof AdminInvoicesIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
+  '/admin/purchases/': typeof AdminPurchasesIndexRoute
   '/admin/stock/': typeof AdminStockIndexRoute
   '/admin/suppliers/': typeof AdminSuppliersIndexRoute
   '/_site/products/$categorySlug/$productSlug': typeof SiteProductsCategorySlugProductSlugRoute
@@ -471,6 +507,9 @@ export interface FileRouteTypes {
     | '/admin/products/import'
     | '/admin/products/new'
     | '/admin/products/units'
+    | '/admin/purchases/$purchaseId'
+    | '/admin/purchases/new'
+    | '/admin/purchases/receiving'
     | '/admin/stock/$variantId'
     | '/admin/stock/opening'
     | '/admin/suppliers/$supplierId'
@@ -479,6 +518,7 @@ export interface FileRouteTypes {
     | '/admin/invoices/'
     | '/admin/orders/'
     | '/admin/products/'
+    | '/admin/purchases/'
     | '/admin/stock/'
     | '/admin/suppliers/'
     | '/products/$categorySlug/$productSlug'
@@ -494,7 +534,6 @@ export interface FileRouteTypes {
     | '/sustainability'
     | '/admin/content'
     | '/admin/enquiries'
-    | '/admin/purchases'
     | '/admin/reports'
     | '/admin/settings'
     | '/admin/forgot-password'
@@ -512,6 +551,9 @@ export interface FileRouteTypes {
     | '/admin/products/import'
     | '/admin/products/new'
     | '/admin/products/units'
+    | '/admin/purchases/$purchaseId'
+    | '/admin/purchases/new'
+    | '/admin/purchases/receiving'
     | '/admin/stock/$variantId'
     | '/admin/stock/opening'
     | '/admin/suppliers/$supplierId'
@@ -520,6 +562,7 @@ export interface FileRouteTypes {
     | '/admin/invoices'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/purchases'
     | '/admin/stock'
     | '/admin/suppliers'
     | '/products/$categorySlug/$productSlug'
@@ -561,6 +604,9 @@ export interface FileRouteTypes {
     | '/admin/products/import'
     | '/admin/products/new'
     | '/admin/products/units'
+    | '/admin/purchases/$purchaseId'
+    | '/admin/purchases/new'
+    | '/admin/purchases/receiving'
     | '/admin/stock/$variantId'
     | '/admin/stock/opening'
     | '/admin/suppliers/$supplierId'
@@ -569,6 +615,7 @@ export interface FileRouteTypes {
     | '/admin/invoices/'
     | '/admin/orders/'
     | '/admin/products/'
+    | '/admin/purchases/'
     | '/admin/stock/'
     | '/admin/suppliers/'
     | '/_site/products/$categorySlug/$productSlug'
@@ -860,6 +907,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsUnitsRouteImport
       parentRoute: typeof AdminProductsRoute
     }
+    '/admin/purchases/': {
+      id: '/admin/purchases/'
+      path: '/'
+      fullPath: '/admin/purchases/'
+      preLoaderRoute: typeof AdminPurchasesIndexRouteImport
+      parentRoute: typeof AdminPurchasesRoute
+    }
+    '/admin/purchases/$purchaseId': {
+      id: '/admin/purchases/$purchaseId'
+      path: '/$purchaseId'
+      fullPath: '/admin/purchases/$purchaseId'
+      preLoaderRoute: typeof AdminPurchasesPurchaseIdRouteImport
+      parentRoute: typeof AdminPurchasesRoute
+    }
+    '/admin/purchases/new': {
+      id: '/admin/purchases/new'
+      path: '/new'
+      fullPath: '/admin/purchases/new'
+      preLoaderRoute: typeof AdminPurchasesNewRouteImport
+      parentRoute: typeof AdminPurchasesRoute
+    }
+    '/admin/purchases/receiving': {
+      id: '/admin/purchases/receiving'
+      path: '/receiving'
+      fullPath: '/admin/purchases/receiving'
+      preLoaderRoute: typeof AdminPurchasesReceivingRouteImport
+      parentRoute: typeof AdminPurchasesRoute
+    }
     '/admin/stock/': {
       id: '/admin/stock/'
       path: '/'
@@ -1016,6 +1091,24 @@ const AdminProductsRouteWithChildren = AdminProductsRoute._addFileChildren(
   AdminProductsRouteChildren,
 )
 
+interface AdminPurchasesRouteChildren {
+  AdminPurchasesPurchaseIdRoute: typeof AdminPurchasesPurchaseIdRoute
+  AdminPurchasesNewRoute: typeof AdminPurchasesNewRoute
+  AdminPurchasesReceivingRoute: typeof AdminPurchasesReceivingRoute
+  AdminPurchasesIndexRoute: typeof AdminPurchasesIndexRoute
+}
+
+const AdminPurchasesRouteChildren: AdminPurchasesRouteChildren = {
+  AdminPurchasesPurchaseIdRoute: AdminPurchasesPurchaseIdRoute,
+  AdminPurchasesNewRoute: AdminPurchasesNewRoute,
+  AdminPurchasesReceivingRoute: AdminPurchasesReceivingRoute,
+  AdminPurchasesIndexRoute: AdminPurchasesIndexRoute,
+}
+
+const AdminPurchasesRouteWithChildren = AdminPurchasesRoute._addFileChildren(
+  AdminPurchasesRouteChildren,
+)
+
 interface AdminStockRouteChildren {
   AdminStockVariantIdRoute: typeof AdminStockVariantIdRoute
   AdminStockOpeningRoute: typeof AdminStockOpeningRoute
@@ -1053,7 +1146,7 @@ interface AdminRouteChildren {
   AdminInvoicesRoute: typeof AdminInvoicesRouteWithChildren
   AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
   AdminProductsRoute: typeof AdminProductsRouteWithChildren
-  AdminPurchasesRoute: typeof AdminPurchasesRoute
+  AdminPurchasesRoute: typeof AdminPurchasesRouteWithChildren
   AdminReportsRoute: typeof AdminReportsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminStockRoute: typeof AdminStockRouteWithChildren
@@ -1068,7 +1161,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminInvoicesRoute: AdminInvoicesRouteWithChildren,
   AdminOrdersRoute: AdminOrdersRouteWithChildren,
   AdminProductsRoute: AdminProductsRouteWithChildren,
-  AdminPurchasesRoute: AdminPurchasesRoute,
+  AdminPurchasesRoute: AdminPurchasesRouteWithChildren,
   AdminReportsRoute: AdminReportsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminStockRoute: AdminStockRouteWithChildren,

@@ -61,7 +61,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     const active = item.to === "/admin" ? pathname === item.to : pathname.startsWith(item.to);
     const count = item.to === "/admin/enquiries" ? summary?.new_enquiries ?? 0 : 0;
     return (
-      <Link key={item.to} to={item.to} activeOptions={{ exact: item.to === "/admin" }} onClick={() => { if (mobile) setMobileOpen(false); }}
+      <Link key={item.to} to={role === "staff" && item.to === "/admin/purchases" ? "/admin/purchases/receiving" : item.to} activeOptions={{ exact: item.to === "/admin" }} onClick={() => { if (mobile) setMobileOpen(false); }}
         title={!mobile && collapsed ? label : undefined} aria-label={!mobile && collapsed ? label : undefined}
         className={`flex items-center gap-3 rounded-full px-3 py-2.5 text-sm transition-colors hover:bg-sidebar-accent ${active ? "bg-sidebar-primary font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary" : "text-sidebar-foreground"} ${!mobile && collapsed ? "justify-center" : ""}`}>
         <Icon className="size-4 shrink-0" />

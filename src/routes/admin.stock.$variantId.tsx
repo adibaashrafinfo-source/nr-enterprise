@@ -20,7 +20,7 @@ export const Route = createFileRoute("/admin/stock/$variantId")({
   component: StockCard,
 });
 
-const TYPES: Record<StockMovementType, string> = { opening: "Opening", purchase_in: "Purchase in", sale_out: "Sale out", sales_return: "Sales return", sale_return_in: "Sales return", cancel_reverse: "Invoice cancelled", adjustment_in: "Adjustment in", adjustment_out: "Adjustment out" };
+const TYPES: Record<StockMovementType, string> = { opening: "Opening", purchase_in: "Purchase in", sale_out: "Sale out", sales_return: "Sales return", sale_return_in: "Sales return", cancel_reverse: "Invoice cancelled", adjustment_in: "Adjustment in", adjustment_out: "Adjustment out", purchase_return_out: "Purchase return" };
 const DOC_PATH = { invoice: "/admin/invoices", invoice_item: "/admin/invoices", invoice_return: "/admin/invoices", purchase_order: "/admin/purchases" } as const;
 const PER_PAGE = 25;
 

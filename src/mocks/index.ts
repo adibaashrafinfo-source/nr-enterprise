@@ -5,6 +5,7 @@ import type { DashboardSummary, PublicProductSummary, Role, SalesDay, User } fro
 import * as db from "./seed";
 import { isSalesPath, salesRequest } from "./sales";
 import { isPartyPath, partyRequest } from "./parties";
+import { isPurchasePath, purchaseRequest } from "./purchases";
 import { isStockPath, lowStockCount, stockRequest, stockValueTotal } from "./stock";
 import { variantEntries, catalogueRequest, isCatalogueAdminPath, isPublic, publicVariants } from "./catalogue";
 
@@ -140,6 +141,7 @@ export async function mockRequest(method: string, path: string, query: Query = {
     return { data: salesByDay(rawDays === 30 ? 30 : 7) };
   }
   if (isSalesPath(path)) return salesRequest(method, path, query, body, requireDashboardRole());
+  if (isPurchasePath(path)) return purchaseRequest(method, path, query, body, requireDashboardRole());
   if (isPartyPath(path)) return partyRequest(method, path, query, body, requireDashboardRole());
   if (isStockPath(path)) return stockRequest(method, path, query, body, requireDashboardRole());
   if (route === "GET /enquiries") {

@@ -4,6 +4,7 @@ import { addMoney, addQty, formatQty, previewLineAmount, subMoney, toScaled } fr
 import type { Challan, ChallanInput, CompanyBlock, Invoice, InvoiceDetail, InvoiceInput, OrderStatus, Payment, PaymentInput, PaymentMethod, SalesLine, SalesOrder, SalesOrderInput, User, VariantPick } from "@/lib/types";
 import { customerPayments, setOrderCounter } from "./parties";
 import * as db from "./seed";
+import { lastRate } from "./purchases";
 import { findEntry, onHand, post } from "./stock";
 import { variantEntries } from "./catalogue";
 
@@ -98,7 +99,8 @@ export function salesRequest(method: string, path: string, query: Query, body: u
   if (route === "GET /variants/search") {
     const term = String(query["q"] ?? "").toLowerCase(); const inStock = String(query["in_stock"] ?? "") === "1";
     const list: VariantPick[] = variantEntries().filter(({ variant }) => variant.is_active).map(({ product, variant }) => ({
-      id: variant.id, sku: variant.sku, display_name: `${product.name} — ${variant.name}`, unit_code: product.unit_code, selling_price: variant.selling_price, qty_on_hand: addQty(variant.stock_qty) }))
+      id: variant.id, sku: variant.sku, display_name: `${product.name} — ${variant.name}`, unit_code: product.unit_code, selling_price: variant.selling_price, qty_on_hand: addQty(variant.stock_qty),
+      ...(user.role === "staff" ? {} : { last_purchase_rate: lastRate(variant.id) ?? variant.purchase_price ?? null }) }))
       .filter((v) => (!term || `${v.display_name} ${v.sku}`.toLowerCase().includes(term)) && (!inStock || toScaled(v.qty_on_hand) > 0n));
     return { data: list.slice(0, 20) };
   }

@@ -13,7 +13,10 @@ import { LedgerTable } from "@/components/parties/LedgerTable";
 import { SupplierFormDialog } from "@/components/parties/SupplierFormDialog";
 import { adminApi } from "@/lib/api";
 import { formatBDT } from "@/lib/money";
-import { adminProductsQuery, supplierLedgerQuery, supplierQuery } from "@/lib/queries";
+import { adminProductsQuery, purchasesQuery, supplierLedgerQuery, supplierQuery } from "@/lib/queries";
+import { SupplierPaymentDialog } from "@/components/purchases/PurchaseDialogs";
+import { PurchaseStatusPill } from "@/components/purchases/shared";
+import { METHODS } from "@/components/sales/InvoiceDialogs";
 import { noIndexPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/admin/suppliers/$supplierId")({
@@ -21,13 +24,14 @@ export const Route = createFileRoute("/admin/suppliers/$supplierId")({
   component: SupplierProfile,
 });
 
-const soon = () => toast.info("This comes with purchases in a later phase.");
 
 function SupplierProfile() {
   const id = Number(Route.useParams().supplierId);
   const { userId, role, ready, canEdit, invalidate } = useCatalogueAccess();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const pos = useQuery({ ...purchasesQuery(userId, role, { supplier_id: id, per_page: 100 }), enabled: ready && canEdit && id > 0 });
   const [range, setRange] = useState({ from: "", to: "" });
   const s = useQuery({ ...supplierQuery(userId, role, id), enabled: ready && canEdit && id > 0 });
   const ledger = useQuery({ ...supplierLedgerQuery(userId, role, id, { ...(range.from ? { from: range.from } : {}), ...(range.to ? { to: range.to } : {}) }), enabled: ready && canEdit && id > 0 });
@@ -49,8 +53,8 @@ function SupplierProfile() {
       <div data-print-hide>
         <PageHeader title={data.name} description={`${data.code}${data.payment_terms ? ` · Terms: ${data.payment_terms}` : ""}`}
           actions={<>
-            <Button variant="outline" onClick={soon}>New purchase</Button>
-            <Button onClick={soon}>Make payment</Button>
+            <Button asChild variant="outline"><Link to="/admin/purchases/new" search={{ supplier_id: id }}>New purchase</Link></Button>
+            <Button onClick={() => setPaying(true)}>Make payment</Button>
             <Button variant="ghost" size="icon" aria-label="Edit supplier" onClick={() => setEditing(true)}><Pencil className="size-4" /></Button>
             <Button variant="ghost" size="icon" aria-label="Delete supplier" onClick={() => void remove()}><Trash2 className="size-4" /></Button>
           </>} />
@@ -65,13 +69,14 @@ function SupplierProfile() {
           <TabsTrigger value="purchases">Purchases</TabsTrigger><TabsTrigger value="payments">Payments</TabsTrigger>
           <TabsTrigger value="ledger">Ledger</TabsTrigger><TabsTrigger value="products">Products ({data.product_ids.length})</TabsTrigger>
         </TabsList>
-        <TabsContent value="purchases">{data.purchases.length ? <ul className="divide-y rounded-2xl border bg-card">{data.purchases.map((p) => <li key={p.id} className="flex justify-between p-4 text-sm"><span className="font-mono">{p.po_no} · {p.date}</span><span>{formatBDT(p.received_value)}</span></li>)}</ul> : <EmptyState title="No purchases yet" description="Purchase orders arrive in a later phase." />}</TabsContent>
-        <TabsContent value="payments">{data.payments.length ? <ul className="divide-y rounded-2xl border bg-card">{data.payments.map((p) => <li key={p.id} className="flex justify-between p-4 text-sm"><span className="font-mono">{p.voucher_no} · {p.payment_date}</span><span>{formatBDT(p.amount)}</span></li>)}</ul> : <EmptyState title="No payments yet" description="Payments you make will appear here." />}</TabsContent>
+        <TabsContent value="purchases">{pos.data?.data.length ? <ul className="divide-y rounded-2xl border bg-card">{pos.data.data.map((p) => <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm"><Link to="/admin/purchases/$purchaseId" params={{ purchaseId: String(p.id) }} className="font-mono font-semibold hover:underline">{p.po_no} · {p.order_date}</Link><span className="flex items-center gap-3"><PurchaseStatusPill status={p.status} /><span className="tabular-nums">{formatBDT(p.received_value)} of {formatBDT(p.total)} received</span></span></li>)}</ul> : <EmptyState title="No purchases yet" description="Purchase orders for this supplier will appear here." />}</TabsContent>
+        <TabsContent value="payments">{data.payments.length ? <ul className="divide-y rounded-2xl border bg-card">{data.payments.map((p) => <li key={p.id} className="flex items-center justify-between gap-3 p-4 text-sm"><span className="font-mono">{p.voucher_no} · {p.payment_date} · {METHODS[p.method]}{p.po_no ? ` · ${p.po_no}` : ""}</span><span className="flex items-center gap-2"><b>{formatBDT(p.amount)}</b><Button asChild size="sm" variant="ghost"><Link to="/admin/print/$kind/$id" params={{ kind: "voucher", id: String(p.id) }}>Voucher</Link></Button></span></li>)}</ul> : <EmptyState title="No payments yet" description="Payments you make will appear here." />}</TabsContent>
         <TabsContent value="ledger"><LedgerTable title={`Supplier ledger — ${data.name} (${data.code})`} rows={ledger.data} loading={ledger.isLoading} debitLabel="Purchased" creditLabel="Paid" range={range} onRangeChange={setRange} /></TabsContent>
         <TabsContent value="products">{supplied.length ? <ul className="flex flex-wrap gap-2">{supplied.map((p) => <li key={p.id}><Link to="/admin/products/$productId" params={{ productId: String(p.id) }} className="inline-block rounded-full border bg-card px-3 py-1 text-sm hover:bg-muted">{p.name}</Link></li>)}</ul> : <EmptyState title="No products linked" description="Use Edit to choose the products this supplier provides." />}</TabsContent>
       </Tabs>
       <p data-print-hide className="mt-6"><Link to="/admin/suppliers" className="text-sm text-secondary hover:underline">← All suppliers</Link></p>
       <SupplierFormDialog open={editing} onOpenChange={setEditing} supplier={data} onSaved={invalidate} />
+      <SupplierPaymentDialog open={paying} onOpenChange={setPaying} supplierId={id} supplierName={data.name} payable={data.payable_balance} purchases={(pos.data?.data ?? []).filter((p) => p.status !== "cancelled")} onDone={invalidate} />
     </>
   );
 }

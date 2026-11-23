@@ -7,6 +7,7 @@ import type {
   AdminCategory, AdminProduct, AdminProductSummary, AdminSearchResults, Category, CategoryInput, Certification, Client,
   DashboardSummary, Enquiry, Invoice, LowStockItem, MeResponse, Paged, ProductImage, ProductImportResult, ProductImportRow,
   ProductInput, PublicProduct, PublicProductSummary, PublicSettings, SalesDay, Challan, ChallanInput, CompanyBlock, InvoiceDetail, InvoiceInput, OrderStatus, PaymentInput, SalesLine, SalesOrder, SalesOrderInput, VariantPick, Customer, CustomerDue, CustomerInput, LedgerRow, PartyImportResult, Payment, Supplier, SupplierInput, StockAdjustInput, StockLedgerRow, StockRow, StockValue, OpeningStockInput, Unit, UnitInput, Variant, VariantInput,
+  PendingReceipt, PurchaseDetail, PurchaseInput, PurchaseOrder, PurchaseStatus, ReceiveResult, ReorderSuggestion, SupplierPayment, SupplierPaymentInput,
 } from "./types";
 
 export { ApiError };
@@ -72,7 +73,9 @@ export interface StockMovementQuery { type?: string; from?: string; to?: string;
 export interface CustomerListQuery { q?: string; type?: string; has_due?: 1; page?: number; per_page?: number }
 export interface LedgerRange { from?: string; to?: string }
 export type CustomerProfile = Customer & { invoices: Invoice[]; payments: Pick<Payment, "id" | "receipt_no" | "payment_date" | "amount">[] };
-export type SupplierProfile = Supplier & { purchases: { id: number; po_no: string; date: string; received_value: string }[]; payments: { id: number; voucher_no: string; payment_date: string; amount: string }[] };
+export type SupplierProfile = Supplier & { purchases: { id: number; po_no: string; date: string; received_value: string }[]; payments: SupplierPayment[] };
+export interface PurchaseListQuery { q?: string; status?: PurchaseStatus; supplier_id?: number; from?: string; to?: string; page?: number; per_page?: number }
+export type VoucherPrint = SupplierPayment & { supplier: Supplier; company: CompanyBlock };
 
 export interface SalesListQuery { q?: string; status?: string; customer_id?: number; from?: string; to?: string; page?: number; per_page?: number }
 export type ChallanPrint = Challan & { invoice_no: string; invoice_date: string; buyer_ref: string | null; po_no: string | null; style_no: string | null; customer: Customer; company: CompanyBlock; items: Pick<SalesLine, "description" | "unit_code" | "quantity">[] };
@@ -134,6 +137,17 @@ export const adminApi = {
   supplierLedger: (id: number, range: LedgerRange = {}) => request<One<LedgerRow[]>>("GET", `/suppliers/${id}/ledger`, { query: { ...range } }).then((r) => r.data),
   createSupplier: (input: SupplierInput) => request<One<Supplier>>("POST", "/suppliers", { body: input }).then((r) => r.data),
   updateSupplier: (id: number, input: SupplierInput) => request<One<Supplier>>("PUT", `/suppliers/${id}`, { body: input }).then((r) => r.data),
+  purchases: (query: PurchaseListQuery = {}) => request<Paged<PurchaseOrder>>("GET", "/purchases", { query: { ...query } }),
+  purchase: (id: number) => request<One<PurchaseDetail>>("GET", `/purchases/${id}`).then((r) => r.data),
+  createPurchase: (input: PurchaseInput) => request<One<PurchaseDetail>>("POST", "/purchases", { body: input }).then((r) => r.data),
+  updatePurchase: (id: number, input: PurchaseInput) => request<One<PurchaseDetail>>("PUT", `/purchases/${id}`, { body: input }).then((r) => r.data),
+  setPurchaseStatus: (id: number, status: PurchaseStatus) => request<One<PurchaseDetail>>("POST", `/purchases/${id}/status`, { body: { status } }).then((r) => r.data),
+  pendingReceipts: () => request<One<PendingReceipt[]>>("GET", "/receiving/pending").then((r) => r.data),
+  receiveItem: (itemId: number, input: { quantity: string; batch_no: string | null; note: string | null }) => request<One<ReceiveResult>>("POST", `/purchase-items/${itemId}/receive`, { body: input }).then((r) => r.data),
+  returnPurchaseItem: (itemId: number, input: { quantity: string; note: string | null }) => request<One<ReceiveResult>>("POST", `/purchase-items/${itemId}/return`, { body: input }).then((r) => r.data),
+  reorderSuggestions: () => request<One<ReorderSuggestion[]>>("GET", "/purchases/reorder-suggestions").then((r) => r.data),
+  paySupplier: (supplierId: number, input: SupplierPaymentInput) => request<One<SupplierPayment>>("POST", `/suppliers/${supplierId}/payments`, { body: input }).then((r) => r.data),
+  supplierPayment: (id: number) => request<One<VoucherPrint>>("GET", `/supplier-payments/${id}`).then((r) => r.data),
   deleteSupplier: (id: number) => request<One<{ ok: boolean; archived: boolean }>>("DELETE", `/suppliers/${id}`).then((r) => r.data),
   variantSearch: (q: string) => request<One<VariantPick[]>>("GET", "/variants/search", { query: { q } }).then((r) => r.data),
   orders: (query: SalesListQuery = {}) => request<Paged<SalesOrder>>("GET", "/orders", { query: { ...query } }),

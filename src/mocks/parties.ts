@@ -1,7 +1,7 @@
 // Mock Customers and Suppliers groups (docs/NRE_BACKEND_API.md). Balances follow 4.12: opening + confirmed invoices − payments.
 import { ApiError } from "@/lib/api-error";
 import { addMoney, subMoney, toScaled } from "@/lib/money";
-import type { Payment, Customer, CustomerDue, CustomerInput, CustomerType, LedgerRow, Supplier, SupplierInput, User } from "@/lib/types";
+import type { SupplierPayment, Payment, Customer, CustomerDue, CustomerInput, CustomerType, LedgerRow, Supplier, SupplierInput, User } from "@/lib/types";
 import * as db from "./seed";
 
 type Query = Record<string, string | number | undefined>;
@@ -9,7 +9,7 @@ const TYPES: CustomerType[] = ["factory", "buying_house", "brand", "retail", "ot
 // Payments, purchases and supplier payments arrive in Phases 7-8; the ledger already reads them.
 export const customerPayments: Payment[] = [];
 export const supplierPurchases: { id: number; po_no: string; date: string; supplier_id: number; received_value: string }[] = [];
-export const supplierPayments: { id: number; voucher_no: string; payment_date: string; supplier_id: number; amount: string }[] = [];
+export const supplierPayments: SupplierPayment[] = [];
 
 let orderCount: (customerId: number) => number = () => 0;
 export const setOrderCounter = (fn: (customerId: number) => number) => { orderCount = fn; };

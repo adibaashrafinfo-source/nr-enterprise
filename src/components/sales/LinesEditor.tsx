@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { useCatalogueAccess } from "@/components/catalogue/shared";
 import { formatBDT, formatQty, previewLineAmount, toScaled } from "@/lib/money";
 import { stockQuery, variantSearchQuery } from "@/lib/queries";
-import type { SalesLine } from "@/lib/types";
+import type { SalesLine, VariantPick } from "@/lib/types";
 
 export const emptyLine = (): SalesLine => ({ variant_id: null, description: "", unit_code: "pcs", quantity: "", rate: "", discount_percent: "0" });
 
-function ItemPicker({ onPick }: { onPick: (v: { id: number; display_name: string; unit_code: string; selling_price: string }) => void }) {
+export function ItemPicker({ onPick }: { onPick: (v: VariantPick) => void }) {
   const { userId, role, ready } = useCatalogueAccess();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
