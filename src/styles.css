@@ -142,3 +142,13 @@
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+@keyframes client-scroll {
+  to { transform: translateX(-50%); }
+}
+.client-track { animation: client-scroll 65s linear infinite; }
+.client-marquee:hover .client-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .client-track { animation: none; }
+  .client-marquee { overflow-x: auto; }
+}

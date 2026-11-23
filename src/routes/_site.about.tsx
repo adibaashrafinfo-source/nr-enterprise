@@ -1,14 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StubPage } from "@/components/nre/StubPage";
+import { HeartHandshake, Leaf, ShieldCheck, Users, Workflow, Cpu } from "lucide-react";
+import { PageBanner, ContactCta } from "@/components/site/TrustSections";
+import { SectionHeading } from "@/components/nre/SectionHeading";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_site/about")({
-  head: () => ({
-    meta: [
-      { title: "About NR Enterprise" },
-      { name: "description", content: "Who we are: garments trims and accessories from Dhaka, Bangladesh." },
-      { property: "og:title", content: "About NR Enterprise" },
-      { property: "og:description", content: "Who we are: garments trims and accessories from Dhaka, Bangladesh." },
-    ],
-  }),
-  component: () => <StubPage title="About" />,
+  head: () => pageHead("About NR Enterprise — Garment Labels, Tags & Trims", "Meet NR Enterprise, a Dhaka-based supplier of garment accessories connecting brands with consumers through labels, tags and trims."),
+  component: About,
 });
+function About() {
+  return <><PageBanner title="About NR Enterprise" text="We synchronize supply with demand." />
+    <section className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 lg:grid-cols-2"><div><SectionHeading eyebrow="Who we are" title="The details that define your brand" /><p className="mt-6 leading-relaxed text-muted-foreground">From promotional labels through to product identification solutions, NR Enterprise specialises in enhancing your brand image and helping you share essential information about your products.</p><p className="mt-4 leading-relaxed text-muted-foreground">Whether you are a retailer, brand owner or garment manufacturer, our integrated range of products and solutions is designed to support your needs throughout the supply chain. Whatever you need from your labels, tags and trims, you can count on us to make it happen.</p><p className="mt-4 leading-relaxed text-muted-foreground">We refine the art of apparel labelling. From concept to production, we turn every label and tag into the perfect distillation of a brand.</p></div><img src="/assets/products/woven-labels/woven-labels-1.jpg" alt="Woven garment labels supplied by NR Enterprise" className="aspect-[4/3] w-full rounded-2xl object-cover" /></section>
+    <section className="bg-primary py-14 text-primary-foreground"><div className="mx-auto grid max-w-7xl gap-10 px-4 md:grid-cols-2"><div><h2 className="text-2xl font-semibold">Our vision</h2><p className="mt-4 leading-relaxed">To be the global Trims & Accessories company that respected brands, retailers and manufacturers choose to partner with.</p></div><div><h2 className="text-2xl font-semibold">Our mission</h2><p className="mt-4 leading-relaxed">To create innovative, intelligent and sustainable ways to connect brands with consumers.</p></div></div></section>
+    <section className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 lg:grid-cols-2"><div><SectionHeading title="People, Process & Technology" /><img src="/assets/site/people-process-technology.jpg" alt="People, process and technology working together" loading="lazy" className="mt-8 w-full max-w-md rounded-2xl" /></div><div className="space-y-7">{[{ icon: Users, title: "People", text: "We listen to our customers and work with our partners to understand each brand's requirements." }, { icon: Workflow, title: "Process", text: "From the initial brief to delivery, clear approvals and attention to detail keep your requirements at the centre." }, { icon: Cpu, title: "Technology", text: "Appropriate printing, finishing and identification solutions help turn your artwork into accessories that connect with consumers." }].map((p) => <div key={p.title} className="flex gap-4"><p.icon className="mt-1 size-6 shrink-0 text-secondary" /><div><h3 className="font-semibold">{p.title}</h3><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.text}</p></div></div>)}</div></section>
+    <section className="bg-cream py-16"><div className="mx-auto max-w-7xl px-4"><SectionHeading title="The values we work by" /><div className="mt-8 grid gap-6 md:grid-cols-3">{[{ icon: ShieldCheck, title: "Ethical business", text: "Moral, ethical and responsible business practices guide our work and our partnerships." }, { icon: HeartHandshake, title: "Positive community impact", text: "We expect high standards from our employees, business partners and customers." }, { icon: Leaf, title: "Environmental responsibility", text: "We work towards a positive impact on the communities and environment in which we live." }].map((v) => <div key={v.title} className="rounded-2xl border bg-card p-6"><v.icon className="size-7 text-secondary" /><h3 className="mt-4 font-semibold">{v.title}</h3><p className="mt-3 text-sm text-muted-foreground">{v.text}</p></div>)}</div></div></section><ContactCta /></>;
+}

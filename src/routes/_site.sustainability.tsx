@@ -1,14 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StubPage } from "@/components/nre/StubPage";
-
+import { Leaf, Droplets, Wind, Zap, Recycle } from "lucide-react";
+import { PageBanner, FOUR_R, Certifications, ContactCta } from "@/components/site/TrustSections";
+import { SectionHeading } from "@/components/nre/SectionHeading";
+import { certificationsQuery } from "@/lib/queries";
+import { canPrefetch } from "@/config/flags";
+import { pageHead } from "@/lib/seo";
 export const Route = createFileRoute("/_site/sustainability")({
-  head: () => ({
-    meta: [
-      { title: "Sustainability — NR Enterprise" },
-      { name: "description", content: "Reduce, reuse, recycle and recover across our trims and accessories." },
-      { property: "og:title", content: "Sustainability — NR Enterprise" },
-      { property: "og:description", content: "Reduce, reuse, recycle and recover across our trims and accessories." },
-    ],
-  }),
-  component: () => <StubPage title="Sustainability" />,
+  loader: async ({ context }) => { if (canPrefetch()) await context.queryClient.ensureQueryData(certificationsQuery()); },
+  head: () => pageHead("Sustainability — NR Enterprise", "Reduce, reuse, recycle and recover. Explore NR Enterprise's responsible approach to materials, garment accessories and environmental impact."),
+  component: Sustainability,
 });
+function Sustainability() {
+  return <><PageBanner title="Sustainability" text="Responsible choices for the details your brand is made of." />
+    <section className="mx-auto max-w-7xl px-4 py-16"><SectionHeading eyebrow="Our approach" title="Better choices, throughout the supply chain" /><p className="mt-6 max-w-3xl leading-relaxed text-muted-foreground">Consumers are becoming more environmentally aware and asking for greater transparency and ethical practices. At NR Enterprise, we understand why sustainability matters to brands and retailers. Our approach is to explore responsible materials and thoughtful product solutions that support your brand's needs.</p><div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{FOUR_R.map((r) => <article key={r.title} className="rounded-2xl border bg-yellow-soft p-6"><r.icon className="size-8 text-secondary" /><h2 className="mt-5 text-xl font-semibold">{r.title}</h2><p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.text}</p></article>)}</div></section>
+    <section className="bg-cream py-16"><div className="mx-auto grid max-w-7xl items-center gap-10 px-4 lg:grid-cols-2"><img src="/assets/products/offset-printed-tags/offset-printed-tags-1.jpg" alt="Paper hangtags with custom printing" loading="lazy" className="aspect-[4/3] w-full rounded-2xl object-cover" /><div><SectionHeading title="Materials with your brand in mind" /><ul className="mt-6 space-y-5 text-muted-foreground"><li><h3 className="font-semibold text-foreground">Recycled-quality raw materials</h3><p className="mt-2 text-sm">Explore recycled-quality yarns, papers and fabrics suited to your product requirements.</p></li><li><h3 className="font-semibold text-foreground">Paper & printing</h3><p className="mt-2 text-sm">Discuss eco-friendly recycled paper and soy-based ink options for your tags.</p></li><li><h3 className="font-semibold text-foreground">Alternative substrates</h3><p className="mt-2 text-sm">Consider cotton substitute substrates that do not fray for suitable labelling applications.</p></li></ul></div></div></section>
+    <section className="mx-auto grid max-w-7xl items-start gap-10 px-4 py-16 lg:grid-cols-2"><div><SectionHeading title="Environmental responsibility" /><p className="mt-6 leading-relaxed text-muted-foreground">We aim to make a positive impact on the environment in which we live. Responsible material selection, resource efficiency and waste management are part of that commitment.</p><ul className="mt-6 space-y-4">{[{ icon: Leaf, text: "Thoughtful raw material choices" }, { icon: Droplets, text: "Responsible water use" }, { icon: Zap, text: "Energy and greenhouse gas awareness" }, { icon: Recycle, text: "Waste reduction and resource recovery" }, { icon: Wind, text: "Air pollution awareness" }].map((p) => <li key={p.text} className="flex items-center gap-3 text-sm"><p.icon className="size-5 text-secondary" />{p.text}</li>)}</ul></div><img src="/assets/site/governance-policy.jpg" alt="Environmental and governance policy" loading="lazy" className="max-h-96 w-full rounded-2xl object-contain" /></section><Certifications /><ContactCta title="Explore responsible material options" /></>;
+}

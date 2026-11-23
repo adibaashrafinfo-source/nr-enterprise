@@ -1,25 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 import { ArrowRight, BadgeCheck, Layers, Leaf, Palette, PenTool, Sparkles, Tag, Globe2 } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SectionHeading } from "@/components/nre/SectionHeading";
 import { ProductCard } from "@/components/nre/ProductCard";
 import { LoadingSkeleton } from "@/components/nre/LoadingSkeleton";
 import { useQuote } from "@/components/site/QuoteDrawer";
 import { categoriesQuery, productsQuery } from "@/lib/queries";
 import { canPrefetch } from "@/config/flags";
+import { EnquiryForm } from "@/components/site/EnquiryForm";
+import { ClientLogos, ProcessStrip, SustainabilityBand } from "@/components/site/TrustSections";
+import { pageHead } from "@/lib/seo";
 
 const TITLE = "NR Enterprise — All Kinds of Garments Accessories";
 const DESC = "Labels, tags, stickers and trims for garment factories, buying houses and brands. Woven labels, hangtags, thread, elastic, drawcords and buttons from Dhaka.";
 
 export const Route = createFileRoute("/_site/")({
   loader: async ({ context }) => { if (canPrefetch()) await context.queryClient.ensureQueryData(productsQuery({ featured: 1, per_page: 8 })); },
-  head: () => ({ meta: [{ title: TITLE }, { name: "description", content: DESC }, { property: "og:title", content: TITLE }, { property: "og:description", content: DESC }] }),
+  head: () => pageHead(TITLE, DESC),
   component: Home,
 });
 
@@ -130,6 +128,10 @@ function Home() {
         </div>
       </section>
 
+      <ProcessStrip />
+      <SustainabilityBand />
+      <ClientLogos marquee />
+
       {/* 9 Quote CTA */}
       <QuoteCta />
     </>
@@ -137,42 +139,11 @@ function Home() {
 }
 
 function QuoteCta() {
-  const { data: products } = useQuery(productsQuery({ per_page: 48 }));
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [product, setProduct] = useState("");
-  const [qty, setQty] = useState("");
-
-  return (
-    <section className="relative overflow-hidden bg-ink-green text-on-dark">
-      <div className="nr-dotted absolute inset-0 opacity-30" aria-hidden />
-      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 lg:grid-cols-2 lg:items-center">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Make your brand's product stand out.</h2>
-          <p className="mt-4 max-w-md opacity-80">Tell us what you need. We reply with options, samples and a quote.</p>
-          <Button asChild variant="onDark" className="mt-6"><Link to="/contact">Open the full quote form <ArrowRight /></Link></Button>
-        </div>
-        {/* Submits to POST /public/enquiries in Phase 2. */}
-        <form className="grid gap-4 rounded-2xl bg-background p-6 text-foreground shadow-lift sm:grid-cols-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (name.trim().length < 2 || !/^[+\d][\d\s-]{6,19}$/.test(phone.trim())) { toast.error("Please enter your name and a valid phone number."); return; }
-            toast.success("Thanks! We'll call you back shortly.");
-            setName(""); setPhone(""); setProduct(""); setQty("");
-          }}>
-          <div className="space-y-1.5"><Label htmlFor="cta-name">Name *</Label><Input id="cta-name" value={name} onChange={(e) => setName(e.target.value)} /></div>
-          <div className="space-y-1.5"><Label htmlFor="cta-phone">Phone *</Label><Input id="cta-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
-          <div className="space-y-1.5">
-            <Label htmlFor="cta-product">Product</Label>
-            <Select value={product} onValueChange={setProduct}>
-              <SelectTrigger id="cta-product"><SelectValue placeholder="Choose a product" /></SelectTrigger>
-              <SelectContent>{products?.data.map((p) => <SelectItem key={p.slug} value={p.slug}>{p.name}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5"><Label htmlFor="cta-qty">Quantity</Label><Input id="cta-qty" value={qty} onChange={(e) => setQty(e.target.value)} placeholder="e.g. 10,000 pcs" /></div>
-          <Button type="submit" className="sm:col-span-2">Send quote request</Button>
-        </form>
-      </div>
-    </section>
-  );
+  return <section className="relative overflow-hidden bg-ink-green text-on-dark">
+    <div className="nr-dotted absolute inset-0 opacity-30" aria-hidden />
+    <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 lg:grid-cols-2 lg:items-center">
+      <div><h2 className="text-3xl font-bold md:text-4xl">Make your brand's product stand out.</h2><p className="mt-4 max-w-md opacity-80">Tell us what you need. We reply with options, samples and a quote.</p><Button asChild variant="onDark" className="mt-6"><Link to="/contact">Request a detailed quote <ArrowRight /></Link></Button></div>
+      <div className="rounded-2xl bg-background p-6 text-foreground shadow-lift"><EnquiryForm compact /></div>
+    </div>
+  </section>;
 }
