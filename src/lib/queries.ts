@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { adminApi, publicApi, type AdminProductListQuery, type ProductListQuery } from "./api";
+import { adminApi, publicApi, type AdminProductListQuery, type StockListQuery, type StockMovementQuery, type ProductListQuery } from "./api";
 import type { Role } from "./types";
 
 export const settingsQuery = () => queryOptions({ queryKey: ["public", "settings"], queryFn: publicApi.settings, staleTime: 5 * 60_000 });
@@ -40,4 +40,14 @@ export const adminCategoriesQuery = (userId: number, role: Role) => queryOptions
 });
 export const adminUnitsQuery = (userId: number, role: Role) => queryOptions({
   queryKey: ["admin", userId, role, "catalogue", "units"], queryFn: adminApi.units, staleTime: 30_000,
+});
+
+export const stockQuery = (userId: number, role: Role, query: StockListQuery) => queryOptions({
+  queryKey: ["admin", userId, role, "stock", "list", query], queryFn: () => adminApi.stock(query), staleTime: 15_000,
+});
+export const stockMovementsQuery = (userId: number, role: Role, variantId: number, query: StockMovementQuery) => queryOptions({
+  queryKey: ["admin", userId, role, "stock", "movements", variantId, query], queryFn: () => adminApi.stockMovements(variantId, query), staleTime: 15_000,
+});
+export const stockValueQuery = (userId: number, role: Role) => queryOptions({
+  queryKey: ["admin", userId, role, "stock", "value"], queryFn: adminApi.stockValue, staleTime: 15_000,
 });

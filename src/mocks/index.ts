@@ -1,9 +1,10 @@
 // In-memory mock of the PHP REST API. Same paths, field names and envelopes as docs/NRE_BACKEND_API.md.
 import { ApiError } from "@/lib/api-error";
 import { addMoney } from "@/lib/money";
-import type { DashboardSummary, LowStockItem, PublicProductSummary, Role, SalesDay, User } from "@/lib/types";
+import type { DashboardSummary, PublicProductSummary, Role, SalesDay, User } from "@/lib/types";
 import * as db from "./seed";
-import { catalogueRequest, isCatalogueAdminPath, isPublic, publicVariants } from "./catalogue";
+import { isStockPath, lowStockCount, stockRequest, stockValueTotal } from "./stock";
+import { variantEntries, catalogueRequest, isCatalogueAdminPath, isPublic, publicVariants } from "./catalogue";
 
 type Query = Record<string, string | number | undefined>;
 let session: User | null = null;
@@ -46,16 +47,15 @@ const salesForDay = (day: string) => addMoney(...confirmedInvoices().filter((i) 
 
 function dashboardSummary(role: Role): DashboardSummary {
   const unpaid = db.invoices.filter((i) => i.status === "due" || i.status === "partial");
-  const lowStockCount = db.stockBalances.filter((row) => row.status === "low" || row.status === "out").length;
-  return {
+    return {
     sales_today: salesForDay(isoDayOffset(0)),
     sales_yesterday: salesForDay(isoDayOffset(-1)),
     customer_dues: addMoney(...unpaid.map((i) => i.balance)),
     unpaid_invoices: unpaid.length,
-    low_stock_count: lowStockCount,
+    low_stock_count: lowStockCount(),
     new_enquiries: db.enquiries.filter((e) => e.status === "new").length,
-    variant_count: db.products.reduce((total, product) => total + product.variants.length, 0),
-    stock_value: role === "staff" ? null : "0.00",
+    variant_count: variantEntries().length,
+    stock_value: role === "staff" ? null : stockValueTotal(),
   };
 }
 
@@ -137,12 +137,7 @@ export async function mockRequest(method: string, path: string, query: Query = {
     const rawDays = Number(query["days"] ?? 7);
     return { data: salesByDay(rawDays === 30 ? 30 : 7) };
   }
-  if (route === "GET /stock") {
-    requireDashboardRole();
-    const status = query["status"];
-    const rows = db.stockBalances.filter((row: LowStockItem) => !status || row.status === status);
-    return paginate(rows, query);
-  }
+  if (isStockPath(path)) return stockRequest(method, path, query, body, requireDashboardRole());
   if (route === "GET /invoices") {
     requireDashboardRole();
     const term = String(query["q"] ?? "").toLowerCase();

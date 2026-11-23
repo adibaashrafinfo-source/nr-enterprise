@@ -79,17 +79,32 @@ export interface DashboardSummary {
   stock_value: Decimal | null;
 }
 export interface SalesDay { day: string; total: Decimal }
-export interface LowStockItem {
+export interface StockRow {
   variant_id: number;
+  product_id: number;
   sku: string;
   display_name: string;
   product_name: string;
+  category_id: number;
   category_name: string;
   unit_code: string;
   qty_on_hand: Decimal;
   reorder_level: Decimal;
-  status: "low" | "out";
+  selling_price: Decimal;
+  status: StockStatus;
 }
+/** Dashboard low-stock card rows share the stock overview shape. */
+export type LowStockItem = StockRow;
+export type StockMovementType = "opening" | "purchase_in" | "sale_out" | "sales_return" | "adjustment_in" | "adjustment_out";
+export interface StockLedgerRow {
+  id: number; variant_id: number; type: StockMovementType; quantity: Decimal;
+  reference_type: "invoice" | "purchase_order" | "invoice_item" | null; reference_id: number | null;
+  buyer: string | null; style_no: string | null; batch: string | null;
+  user_name: string; note: string | null; created_at: string;
+}
+export interface StockValue { total: Decimal; by_category: { category_id: number; category_name: string; value: Decimal }[] }
+export interface OpeningStockInput { variant_id: number; quantity: string; cost?: string; note?: string }
+export interface StockAdjustInput { variant_id: number; quantity: string; reason: string }
 export interface AdminSearchResults {
   products: { id: number; name: string; code: string; category_slug: string }[];
   variants: { id: number; sku: string; display_name: string; product_id: number }[];

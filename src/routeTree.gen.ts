@@ -40,6 +40,9 @@ import { Route as AdminProductsCategoriesRouteImport } from './routes/admin.prod
 import { Route as AdminProductsImportRouteImport } from './routes/admin.products.import'
 import { Route as AdminProductsNewRouteImport } from './routes/admin.products.new'
 import { Route as AdminProductsUnitsRouteImport } from './routes/admin.products.units'
+import { Route as AdminStockIndexRouteImport } from './routes/admin.stock.index'
+import { Route as AdminStockVariantIdRouteImport } from './routes/admin.stock.$variantId'
+import { Route as AdminStockOpeningRouteImport } from './routes/admin.stock.opening'
 import { Route as SiteProductsCategorySlugIndexRouteImport } from './routes/_site.products.$categorySlug.index'
 import { Route as SiteProductsCategorySlugProductSlugRouteImport } from './routes/_site.products.$categorySlug.$productSlug'
 
@@ -197,6 +200,21 @@ const AdminProductsUnitsRoute = AdminProductsUnitsRouteImport.update({
   path: '/units',
   getParentRoute: () => AdminProductsRoute,
 } as any)
+const AdminStockIndexRoute = AdminStockIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminStockRoute,
+} as any)
+const AdminStockVariantIdRoute = AdminStockVariantIdRouteImport.update({
+  id: '/$variantId',
+  path: '/$variantId',
+  getParentRoute: () => AdminStockRoute,
+} as any)
+const AdminStockOpeningRoute = AdminStockOpeningRouteImport.update({
+  id: '/opening',
+  path: '/opening',
+  getParentRoute: () => AdminStockRoute,
+} as any)
 const SiteProductsCategorySlugIndexRoute =
   SiteProductsCategorySlugIndexRouteImport.update({
     id: '/products/$categorySlug/',
@@ -228,7 +246,7 @@ export interface FileRoutesByFullPath {
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/admin/stock': typeof AdminStockRoute
+  '/admin/stock': typeof AdminStockRouteWithChildren
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/forgot-password': typeof AdminForgotPasswordRoute
   '/admin/login': typeof AdminLoginRoute
@@ -239,8 +257,11 @@ export interface FileRoutesByFullPath {
   '/admin/products/import': typeof AdminProductsImportRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/units': typeof AdminProductsUnitsRoute
+  '/admin/stock/$variantId': typeof AdminStockVariantIdRoute
+  '/admin/stock/opening': typeof AdminStockOpeningRoute
   '/products/': typeof SiteProductsIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
+  '/admin/stock/': typeof AdminStockIndexRoute
   '/products/$categorySlug/$productSlug': typeof SiteProductsCategorySlugProductSlugRoute
   '/products/$categorySlug/': typeof SiteProductsCategorySlugIndexRoute
 }
@@ -259,7 +280,6 @@ export interface FileRoutesByTo {
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/admin/stock': typeof AdminStockRoute
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/forgot-password': typeof AdminForgotPasswordRoute
   '/admin/login': typeof AdminLoginRoute
@@ -271,8 +291,11 @@ export interface FileRoutesByTo {
   '/admin/products/import': typeof AdminProductsImportRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/units': typeof AdminProductsUnitsRoute
+  '/admin/stock/$variantId': typeof AdminStockVariantIdRoute
+  '/admin/stock/opening': typeof AdminStockOpeningRoute
   '/products': typeof SiteProductsIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
+  '/admin/stock': typeof AdminStockIndexRoute
   '/products/$categorySlug/$productSlug': typeof SiteProductsCategorySlugProductSlugRoute
   '/products/$categorySlug': typeof SiteProductsCategorySlugIndexRoute
 }
@@ -295,7 +318,7 @@ export interface FileRoutesById {
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/admin/stock': typeof AdminStockRoute
+  '/admin/stock': typeof AdminStockRouteWithChildren
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin_/forgot-password': typeof AdminForgotPasswordRoute
   '/admin_/login': typeof AdminLoginRoute
@@ -307,8 +330,11 @@ export interface FileRoutesById {
   '/admin/products/import': typeof AdminProductsImportRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/units': typeof AdminProductsUnitsRoute
+  '/admin/stock/$variantId': typeof AdminStockVariantIdRoute
+  '/admin/stock/opening': typeof AdminStockOpeningRoute
   '/_site/products/': typeof SiteProductsIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
+  '/admin/stock/': typeof AdminStockIndexRoute
   '/_site/products/$categorySlug/$productSlug': typeof SiteProductsCategorySlugProductSlugRoute
   '/_site/products/$categorySlug/': typeof SiteProductsCategorySlugIndexRoute
 }
@@ -343,8 +369,11 @@ export interface FileRouteTypes {
     | '/admin/products/import'
     | '/admin/products/new'
     | '/admin/products/units'
+    | '/admin/stock/$variantId'
+    | '/admin/stock/opening'
     | '/products/'
     | '/admin/products/'
+    | '/admin/stock/'
     | '/products/$categorySlug/$productSlug'
     | '/products/$categorySlug/'
   fileRoutesByTo: FileRoutesByTo
@@ -363,7 +392,6 @@ export interface FileRouteTypes {
     | '/admin/purchases'
     | '/admin/reports'
     | '/admin/settings'
-    | '/admin/stock'
     | '/admin/suppliers'
     | '/admin/forgot-password'
     | '/admin/login'
@@ -375,8 +403,11 @@ export interface FileRouteTypes {
     | '/admin/products/import'
     | '/admin/products/new'
     | '/admin/products/units'
+    | '/admin/stock/$variantId'
+    | '/admin/stock/opening'
     | '/products'
     | '/admin/products'
+    | '/admin/stock'
     | '/products/$categorySlug/$productSlug'
     | '/products/$categorySlug'
   id:
@@ -410,8 +441,11 @@ export interface FileRouteTypes {
     | '/admin/products/import'
     | '/admin/products/new'
     | '/admin/products/units'
+    | '/admin/stock/$variantId'
+    | '/admin/stock/opening'
     | '/_site/products/'
     | '/admin/products/'
+    | '/admin/stock/'
     | '/_site/products/$categorySlug/$productSlug'
     | '/_site/products/$categorySlug/'
   fileRoutesById: FileRoutesById
@@ -643,6 +677,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsUnitsRouteImport
       parentRoute: typeof AdminProductsRoute
     }
+    '/admin/stock/': {
+      id: '/admin/stock/'
+      path: '/'
+      fullPath: '/admin/stock/'
+      preLoaderRoute: typeof AdminStockIndexRouteImport
+      parentRoute: typeof AdminStockRoute
+    }
+    '/admin/stock/$variantId': {
+      id: '/admin/stock/$variantId'
+      path: '/$variantId'
+      fullPath: '/admin/stock/$variantId'
+      preLoaderRoute: typeof AdminStockVariantIdRouteImport
+      parentRoute: typeof AdminStockRoute
+    }
+    '/admin/stock/opening': {
+      id: '/admin/stock/opening'
+      path: '/opening'
+      fullPath: '/admin/stock/opening'
+      preLoaderRoute: typeof AdminStockOpeningRouteImport
+      parentRoute: typeof AdminStockRoute
+    }
     '/_site/products/$categorySlug/': {
       id: '/_site/products/$categorySlug/'
       path: '/products/$categorySlug'
@@ -711,6 +766,22 @@ const AdminProductsRouteWithChildren = AdminProductsRoute._addFileChildren(
   AdminProductsRouteChildren,
 )
 
+interface AdminStockRouteChildren {
+  AdminStockVariantIdRoute: typeof AdminStockVariantIdRoute
+  AdminStockOpeningRoute: typeof AdminStockOpeningRoute
+  AdminStockIndexRoute: typeof AdminStockIndexRoute
+}
+
+const AdminStockRouteChildren: AdminStockRouteChildren = {
+  AdminStockVariantIdRoute: AdminStockVariantIdRoute,
+  AdminStockOpeningRoute: AdminStockOpeningRoute,
+  AdminStockIndexRoute: AdminStockIndexRoute,
+}
+
+const AdminStockRouteWithChildren = AdminStockRoute._addFileChildren(
+  AdminStockRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminContentRoute: typeof AdminContentRoute
   AdminCustomersRoute: typeof AdminCustomersRoute
@@ -721,7 +792,7 @@ interface AdminRouteChildren {
   AdminPurchasesRoute: typeof AdminPurchasesRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
-  AdminStockRoute: typeof AdminStockRoute
+  AdminStockRoute: typeof AdminStockRouteWithChildren
   AdminSuppliersRoute: typeof AdminSuppliersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -736,7 +807,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPurchasesRoute: AdminPurchasesRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
-  AdminStockRoute: AdminStockRoute,
+  AdminStockRoute: AdminStockRouteWithChildren,
   AdminSuppliersRoute: AdminSuppliersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }

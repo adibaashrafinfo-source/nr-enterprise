@@ -6,7 +6,7 @@ import { shouldRedirectAdminUnauthorized } from "./admin-access";
 import type {
   AdminCategory, AdminProduct, AdminProductSummary, AdminSearchResults, Category, CategoryInput, Certification, Client,
   DashboardSummary, Enquiry, Invoice, LowStockItem, MeResponse, Paged, ProductImage, ProductImportResult, ProductImportRow,
-  ProductInput, PublicProduct, PublicProductSummary, PublicSettings, SalesDay, Unit, UnitInput, Variant, VariantInput,
+  ProductInput, PublicProduct, PublicProductSummary, PublicSettings, SalesDay, StockAdjustInput, StockLedgerRow, StockRow, StockValue, OpeningStockInput, Unit, UnitInput, Variant, VariantInput,
 } from "./types";
 
 export { ApiError };
@@ -66,6 +66,9 @@ export const authApi = {
 export interface ProductListQuery { category?: string; q?: string; featured?: 1; page?: number; per_page?: number }
 export interface AdminProductListQuery { q?: string; category_id?: number; status?: "active" | "archived"; page?: number; per_page?: number }
 
+export interface StockListQuery { q?: string; category_id?: number; status?: "ok" | "low" | "out"; page?: number; per_page?: number }
+export interface StockMovementQuery { type?: string; from?: string; to?: string; page?: number; per_page?: number }
+
 export const publicApi = {
   settings: () => request<One<PublicSettings>>("GET", "/public/settings").then((r) => r.data),
   categories: () => request<One<Category[]>>("GET", "/public/categories").then((r) => r.data),
@@ -80,6 +83,11 @@ export const adminApi = {
   dashboardSummary: () => request<One<DashboardSummary>>("GET", "/dashboard/summary").then((r) => r.data),
   salesByDay: (days: 7 | 30) => request<One<SalesDay[]>>("GET", "/dashboard/sales-by-day", { query: { days } }).then((r) => r.data),
   lowStock: () => request<Paged<LowStockItem>>("GET", "/stock", { query: { status: "low", per_page: 5 } }),
+  stock: (query: StockListQuery = {}) => request<Paged<StockRow>>("GET", "/stock", { query: { ...query } }),
+  stockMovements: (variantId: number, query: StockMovementQuery = {}) => request<Paged<StockLedgerRow> & { variant: StockRow }>("GET", `/stock/${variantId}/movements`, { query: { ...query } }),
+  stockValue: () => request<One<StockValue>>("GET", "/stock/value").then((r) => r.data),
+  openingStock: (input: OpeningStockInput) => request<One<StockLedgerRow>>("POST", "/stock/opening", { body: input }).then((r) => r.data),
+  adjustStock: (input: StockAdjustInput) => request<One<StockLedgerRow>>("POST", "/stock/adjust", { body: input }).then((r) => r.data),
   recentInvoices: () => request<Paged<Invoice>>("GET", "/invoices", { query: { page: 1, per_page: 5 } }),
   newEnquiries: () => request<Paged<Enquiry>>("GET", "/enquiries", { query: { status: "new", page: 1, per_page: 5 } }),
   search: (q: string) => request<One<AdminSearchResults>>("GET", "/search", { query: { q } }).then((r) => r.data),

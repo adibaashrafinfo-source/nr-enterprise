@@ -8,3 +8,8 @@
 - [x] Build product list and tabbed create/edit views, including images and variants.
 - [x] Add category/unit management and CSV/Excel import preview.
 - [x] Test manager/staff boundaries, validation, public visibility, and mobile layouts.
+
+# Phase 5 — Stock
+- [x] Stock overview with filters, export and manager-only stock value.
+- [x] Stock card with movement history, opening stock grid and adjustment dialog.
+- [x] Demo stock ledger with the same rules and tests.

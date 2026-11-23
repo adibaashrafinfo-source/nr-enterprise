@@ -89,6 +89,12 @@ function makeVariant(p: PublicProduct, input: VariantInput, role: Role | null): 
   return v;
 }
 
+/** Every variant with its product, for the stock ledger. Returns live objects so stock changes show in the catalogue. */
+export const variantEntries = () => db.products.flatMap((product) => {
+  const m = metaOf(product.id);
+  return m.is_active ? m.variants.map((variant) => ({ product, variant })) : [];
+});
+
 export function catalogueRequest(method: string, path: string, query: Query, body: unknown, user: User): unknown {
   const role = user.role;
   const write = () => { if (!canEdit(role)) throw new ApiError(403, "forbidden", "Only managers and admins can change the catalogue."); };

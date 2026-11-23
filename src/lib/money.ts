@@ -54,3 +54,8 @@ export function formatQty(value: string | null | undefined, unit?: string): stri
   const s = `${fixed.startsWith("-") ? "-" : ""}${groupIndian(int)}${frac ? "." + frac : ""}`;
   return unit ? `${s} ${unit}` : s;
 }
+
+/** Quantity sum with 3 decimals, e.g. addQty("50.000", "-5") -> "45.000". */
+export const addQty = (...v: (string | number)[]) => fromScaled(v.reduce<bigint>((a, b) => a + toScaled(b), 0n), 3);
+/** qty x price rounded to 2 decimals (stock value). */
+export const mulMoney = (qty: string, price: string) => fromScaled((toScaled(qty) * toScaled(price)) / FACTOR);
