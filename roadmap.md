@@ -13,3 +13,8 @@
 - [x] Stock overview with filters, export and manager-only stock value.
 - [x] Stock card with movement history, opening stock grid and adjustment dialog.
 - [x] Demo stock ledger with the same rules and tests.
+
+# Phase 6 — Customers and suppliers
+- [x] Customer list, due follow-up, form, profile tabs, ledger with print, Excel import/export.
+- [x] Supplier list, form with products supplied, profile tabs and ledger (manager/admin only).
+- [ ] New order / invoice / payment / purchase buttons — wired in Phases 7–8.

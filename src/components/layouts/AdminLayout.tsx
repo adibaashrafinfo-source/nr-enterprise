@@ -74,7 +74,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-muted">
-      <aside className={`hidden shrink-0 flex-col bg-sidebar text-sidebar-foreground transition-[width] duration-200 md:flex ${collapsed ? "w-[4.5rem]" : "w-64"}`}>
+      <aside className={`print:hidden hidden shrink-0 flex-col bg-sidebar text-sidebar-foreground transition-[width] duration-200 md:flex ${collapsed ? "w-[4.5rem]" : "w-64"}`}>
         <div className={`flex min-h-16 items-center gap-3 border-b border-sidebar-border px-4 ${collapsed ? "justify-center" : ""}`}>
           <Logo variant="mark" className="size-9 shrink-0" />
           {!collapsed && <div className="min-w-0"><p className="truncate font-semibold text-sidebar-accent-foreground">NR Enterprise</p><p className="text-xs opacity-70">Admin</p></div>}
@@ -85,7 +85,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="z-30 flex min-h-16 items-center justify-between gap-3 border-b bg-background px-3 py-2 md:px-6">
+        <header className="print:hidden z-30 flex min-h-16 items-center justify-between gap-3 border-b bg-background px-3 py-2 md:px-6">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <Button variant="ghost" size="icon" className="shrink-0 md:hidden" aria-label="Open admin menu" onClick={() => setMobileOpen(true)}><Menu /></Button>
             <Logo variant="mark" className="size-8 shrink-0 md:hidden" />

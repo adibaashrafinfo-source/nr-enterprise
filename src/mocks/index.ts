@@ -3,6 +3,7 @@ import { ApiError } from "@/lib/api-error";
 import { addMoney } from "@/lib/money";
 import type { DashboardSummary, PublicProductSummary, Role, SalesDay, User } from "@/lib/types";
 import * as db from "./seed";
+import { isPartyPath, partyRequest } from "./parties";
 import { isStockPath, lowStockCount, stockRequest, stockValueTotal } from "./stock";
 import { variantEntries, catalogueRequest, isCatalogueAdminPath, isPublic, publicVariants } from "./catalogue";
 
@@ -137,6 +138,7 @@ export async function mockRequest(method: string, path: string, query: Query = {
     const rawDays = Number(query["days"] ?? 7);
     return { data: salesByDay(rawDays === 30 ? 30 : 7) };
   }
+  if (isPartyPath(path)) return partyRequest(method, path, query, body, requireDashboardRole());
   if (isStockPath(path)) return stockRequest(method, path, query, body, requireDashboardRole());
   if (route === "GET /invoices") {
     requireDashboardRole();

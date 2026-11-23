@@ -50,13 +50,15 @@ export const users: (User & { password: string })[] = [
   { id: 4, email: "pending@nre.test", full_name: "Pending User", role: null, is_active: true, password: "password123" },
 ];
 
-export const customers: Customer[] = [
-  { id: 1, code: "C-0001", name: "Rahim Apparels Ltd", company: "Rahim Apparels", phone: "+8801700000001", email: null, address: "Gazipur", opening_balance: "0.00", due_balance: "184500.00", is_active: true },
-  { id: 2, code: "C-0002", name: "Sonali Knitwear", company: "Sonali Knitwear", phone: "+8801700000002", email: null, address: "Ashulia", opening_balance: "12000.00", due_balance: "12000.00", is_active: true },
+type SeedCustomer = Omit<Customer, "total_sales" | "due_balance" | "invoice_count" | "order_count">;
+type SeedSupplier = Omit<Supplier, "total_purchased" | "paid" | "payable_balance">;
+export const customers: SeedCustomer[] = [
+  { id: 1, code: "CUS-0001", name: "Rahim Apparels Ltd", contact_person: "Rahim Uddin", phone: "+8801700000001", whatsapp: "+8801700000001", email: null, billing_address: "Gazipur", delivery_address: "Gazipur", area: "Gazipur", type: "factory", credit_days: 30, credit_limit: "500000.00", opening_balance: "0.00", buyers_served: null, bin: null, notes: null, is_active: true },
+  { id: 2, code: "CUS-0002", name: "Sonali Knitwear", contact_person: null, phone: "+8801700000002", whatsapp: null, email: null, billing_address: "Ashulia", delivery_address: null, area: "Ashulia", type: "factory", credit_days: 15, credit_limit: "0.00", opening_balance: "12000.00", buyers_served: null, bin: null, notes: null, is_active: true },
 ];
 
-export const suppliers: Supplier[] = [
-  { id: 1, code: "S-0001", name: "Dhaka Thread House", phone: "+8801800000001", email: null, address: "Tongi", opening_balance: "0.00", due_balance: "25440.00", is_active: true },
+export const suppliers: SeedSupplier[] = [
+  { id: 1, code: "SUP-0001", name: "Dhaka Thread House", contact_person: null, phone: "+8801800000001", email: null, address: "Tongi", payment_terms: "30 days", opening_balance: "25440.00", notes: null, is_active: true, product_ids: [] },
 ];
 
 export const invoices: Invoice[] = [

@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { adminApi, publicApi, type AdminProductListQuery, type StockListQuery, type StockMovementQuery, type ProductListQuery } from "./api";
+import { adminApi, publicApi, type AdminProductListQuery, type StockListQuery, type CustomerListQuery, type LedgerRange, type StockMovementQuery, type ProductListQuery } from "./api";
 import type { Role } from "./types";
 
 export const settingsQuery = () => queryOptions({ queryKey: ["public", "settings"], queryFn: publicApi.settings, staleTime: 5 * 60_000 });
@@ -50,4 +50,26 @@ export const stockMovementsQuery = (userId: number, role: Role, variantId: numbe
 });
 export const stockValueQuery = (userId: number, role: Role) => queryOptions({
   queryKey: ["admin", userId, role, "stock", "value"], queryFn: adminApi.stockValue, staleTime: 15_000,
+});
+
+export const customersQuery = (userId: number, role: Role, query: CustomerListQuery) => queryOptions({
+  queryKey: ["admin", userId, role, "customers", "list", query], queryFn: () => adminApi.customers(query), staleTime: 15_000,
+});
+export const customerDuesQuery = (userId: number, role: Role) => queryOptions({
+  queryKey: ["admin", userId, role, "customers", "dues"], queryFn: adminApi.customerDues, staleTime: 15_000,
+});
+export const customerQuery = (userId: number, role: Role, id: number) => queryOptions({
+  queryKey: ["admin", userId, role, "customers", "one", id], queryFn: () => adminApi.customer(id), staleTime: 15_000,
+});
+export const customerLedgerQuery = (userId: number, role: Role, id: number, range: LedgerRange) => queryOptions({
+  queryKey: ["admin", userId, role, "customers", "ledger", id, range], queryFn: () => adminApi.customerLedger(id, range), staleTime: 15_000,
+});
+export const suppliersQuery = (userId: number, role: Role, query: { q?: string; page?: number; per_page?: number }) => queryOptions({
+  queryKey: ["admin", userId, role, "suppliers", "list", query], queryFn: () => adminApi.suppliers(query), staleTime: 15_000,
+});
+export const supplierQuery = (userId: number, role: Role, id: number) => queryOptions({
+  queryKey: ["admin", userId, role, "suppliers", "one", id], queryFn: () => adminApi.supplier(id), staleTime: 15_000,
+});
+export const supplierLedgerQuery = (userId: number, role: Role, id: number, range: LedgerRange) => queryOptions({
+  queryKey: ["admin", userId, role, "suppliers", "ledger", id, range], queryFn: () => adminApi.supplierLedger(id, range), staleTime: 15_000,
 });

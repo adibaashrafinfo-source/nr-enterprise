@@ -6,7 +6,7 @@ import { shouldRedirectAdminUnauthorized } from "./admin-access";
 import type {
   AdminCategory, AdminProduct, AdminProductSummary, AdminSearchResults, Category, CategoryInput, Certification, Client,
   DashboardSummary, Enquiry, Invoice, LowStockItem, MeResponse, Paged, ProductImage, ProductImportResult, ProductImportRow,
-  ProductInput, PublicProduct, PublicProductSummary, PublicSettings, SalesDay, StockAdjustInput, StockLedgerRow, StockRow, StockValue, OpeningStockInput, Unit, UnitInput, Variant, VariantInput,
+  ProductInput, PublicProduct, PublicProductSummary, PublicSettings, SalesDay, Customer, CustomerDue, CustomerInput, LedgerRow, PartyImportResult, Payment, Supplier, SupplierInput, StockAdjustInput, StockLedgerRow, StockRow, StockValue, OpeningStockInput, Unit, UnitInput, Variant, VariantInput,
 } from "./types";
 
 export { ApiError };
@@ -69,6 +69,11 @@ export interface AdminProductListQuery { q?: string; category_id?: number; statu
 export interface StockListQuery { q?: string; category_id?: number; status?: "ok" | "low" | "out"; page?: number; per_page?: number }
 export interface StockMovementQuery { type?: string; from?: string; to?: string; page?: number; per_page?: number }
 
+export interface CustomerListQuery { q?: string; type?: string; has_due?: 1; page?: number; per_page?: number }
+export interface LedgerRange { from?: string; to?: string }
+export type CustomerProfile = Customer & { invoices: Invoice[]; payments: Pick<Payment, "id" | "receipt_no" | "payment_date" | "amount">[] };
+export type SupplierProfile = Supplier & { purchases: { id: number; po_no: string; date: string; received_value: string }[]; payments: { id: number; voucher_no: string; payment_date: string; amount: string }[] };
+
 export const publicApi = {
   settings: () => request<One<PublicSettings>>("GET", "/public/settings").then((r) => r.data),
   categories: () => request<One<Category[]>>("GET", "/public/categories").then((r) => r.data),
@@ -113,5 +118,19 @@ export const adminApi = {
   createVariant: (productId: number, input: VariantInput) => request<One<Variant>>("POST", `/products/${productId}/variants`, { body: input }).then((r) => r.data),
   updateVariant: (id: number, input: VariantInput) => request<One<Variant>>("PUT", `/variants/${id}`, { body: input }).then((r) => r.data),
   archiveVariant: (id: number) => request<One<{ ok: boolean }>>("DELETE", `/variants/${id}`).then((r) => r.data),
+  customers: (query: CustomerListQuery = {}) => request<Paged<Customer>>("GET", "/customers", { query: { ...query } }),
+  customerDues: () => request<Paged<CustomerDue>>("GET", "/customers/dues", { query: { per_page: 100 } }),
+  customer: (id: number) => request<One<CustomerProfile>>("GET", `/customers/${id}`).then((r) => r.data),
+  customerLedger: (id: number, range: LedgerRange = {}) => request<One<LedgerRow[]>>("GET", `/customers/${id}/ledger`, { query: { ...range } }).then((r) => r.data),
+  createCustomer: (input: CustomerInput) => request<One<Customer>>("POST", "/customers", { body: input }).then((r) => r.data),
+  updateCustomer: (id: number, input: CustomerInput) => request<One<Customer>>("PUT", `/customers/${id}`, { body: input }).then((r) => r.data),
+  deleteCustomer: (id: number) => request<One<{ ok: boolean; archived: boolean }>>("DELETE", `/customers/${id}`).then((r) => r.data),
+  importCustomers: (rows: Partial<CustomerInput>[]) => request<One<PartyImportResult>>("POST", "/customers/import", { body: { rows } }).then((r) => r.data),
+  suppliers: (query: { q?: string; page?: number; per_page?: number } = {}) => request<Paged<Supplier>>("GET", "/suppliers", { query: { ...query } }),
+  supplier: (id: number) => request<One<SupplierProfile>>("GET", `/suppliers/${id}`).then((r) => r.data),
+  supplierLedger: (id: number, range: LedgerRange = {}) => request<One<LedgerRow[]>>("GET", `/suppliers/${id}/ledger`, { query: { ...range } }).then((r) => r.data),
+  createSupplier: (input: SupplierInput) => request<One<Supplier>>("POST", "/suppliers", { body: input }).then((r) => r.data),
+  updateSupplier: (id: number, input: SupplierInput) => request<One<Supplier>>("PUT", `/suppliers/${id}`, { body: input }).then((r) => r.data),
+  deleteSupplier: (id: number) => request<One<{ ok: boolean; archived: boolean }>>("DELETE", `/suppliers/${id}`).then((r) => r.data),
   importProducts: (rows: ProductImportRow[]) => request<One<ProductImportResult>>("POST", "/products/import", { body: { rows } }).then((r) => r.data),
 };

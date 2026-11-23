@@ -58,8 +58,21 @@ export interface Certification { id: number; name: string; image_url: string | n
 export type StockStatus = "ok" | "low" | "out";
 export type InvoiceStatus = "draft" | "due" | "partial" | "paid" | "cancelled";
 
-export interface Customer { id: number; code: string; name: string; company: string | null; phone: string | null; email: string | null; address: string | null; opening_balance: Decimal; due_balance?: Decimal; is_active: boolean }
-export interface Supplier { id: number; code: string; name: string; phone: string | null; email: string | null; address: string | null; opening_balance: Decimal; due_balance?: Decimal; is_active: boolean }
+export type CustomerType = "factory" | "buying_house" | "brand" | "retail" | "other";
+export interface CustomerInput {
+  name: string; contact_person: string | null; phone: string | null; whatsapp: string | null; email: string | null;
+  billing_address: string | null; delivery_address: string | null; area: string | null; type: CustomerType;
+  credit_days: number; credit_limit: Decimal; opening_balance: Decimal; buyers_served: string | null; bin: string | null; notes: string | null; is_active: boolean;
+}
+export interface Customer extends CustomerInput { id: number; code: string; total_sales: Decimal; due_balance: Decimal; invoice_count: number; order_count: number }
+export interface SupplierInput {
+  name: string; contact_person: string | null; phone: string | null; email: string | null; address: string | null;
+  payment_terms: string | null; opening_balance: Decimal; notes: string | null; is_active: boolean; product_ids: number[];
+}
+export interface Supplier extends SupplierInput { id: number; code: string; total_purchased: Decimal; paid: Decimal; payable_balance: Decimal }
+export interface LedgerRow { date: string; type: "opening" | "invoice" | "payment" | "purchase" | "supplier_payment"; doc_no: string | null; debit: Decimal; credit: Decimal; running_balance: Decimal }
+export interface CustomerDue { invoice_id: number; invoice_no: string; customer_id: number; customer_name: string; invoice_date: string; due_date: string; balance: Decimal; days_overdue: number }
+export interface PartyImportResult { created: number; errors: { row: number; message: string }[] }
 export interface Variant { id: number; product_id: number; sku: string; name: string; color: string | null; size: string | null; material: string | null; pack_size: Decimal | null; selling_price: Decimal; reorder_level: Decimal; stock_qty: Decimal; is_active: boolean; purchase_price?: Decimal }
 export interface InvoiceItem { id: number; variant_id: number; description: string; qty: Decimal; rate: Decimal; discount_pct: Decimal; amount: Decimal }
 export interface Invoice { id: number; invoice_no: string; invoice_date: string; customer_id: number; customer_name: string; status: InvoiceStatus; subtotal: Decimal; discount: Decimal; tax_amount: Decimal; total: Decimal; paid: Decimal; balance: Decimal; items?: InvoiceItem[] }
