@@ -17,7 +17,7 @@ const DESC = "Labels, tags, stickers and trims for garment factories, buying hou
 
 export const Route = createFileRoute("/_site/")({
   loader: async ({ context }) => { if (canPrefetch()) await context.queryClient.ensureQueryData(productsQuery({ featured: 1, per_page: 8 })); },
-  head: () => pageHead(TITLE, DESC),
+  head: () => pageHead(TITLE, DESC, "/"),
   component: Home,
 });
 

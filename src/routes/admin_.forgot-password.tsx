@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/nre/Logo";
 import { authApi } from "@/lib/api";
-import { pageHead } from "@/lib/seo";
+import { noIndexPageHead } from "@/lib/seo";
 
-const HEAD = pageHead("Forgot password — NR Enterprise Admin", "Request a password reset link for your NR Enterprise workspace account.");
+const HEAD = noIndexPageHead("Forgot password — NR Enterprise Admin", "Request a password reset link for your NR Enterprise workspace account.");
 
 export const Route = createFileRoute("/admin_/forgot-password")({
   head: () => ({ ...HEAD, meta: [...HEAD.meta, { name: "robots", content: "noindex" }] }),

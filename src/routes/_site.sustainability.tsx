@@ -7,7 +7,7 @@ import { canPrefetch } from "@/config/flags";
 import { pageHead } from "@/lib/seo";
 export const Route = createFileRoute("/_site/sustainability")({
   loader: async ({ context }) => { if (canPrefetch()) await context.queryClient.ensureQueryData(certificationsQuery()); },
-  head: () => pageHead("Sustainability — NR Enterprise", "Reduce, reuse, recycle and recover. Explore NR Enterprise's responsible approach to materials, garment accessories and environmental impact."),
+  head: () => pageHead("Sustainability — NR Enterprise", "Reduce, reuse, recycle and recover. Explore NR Enterprise's responsible approach to materials, garment accessories and environmental impact.", "/sustainability"),
   component: Sustainability,
 });
 function Sustainability() {

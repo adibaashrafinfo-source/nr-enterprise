@@ -5,7 +5,7 @@ import { SectionHeading } from "@/components/nre/SectionHeading";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_site/about")({
-  head: () => pageHead("About NR Enterprise — Garment Labels, Tags & Trims", "Meet NR Enterprise, a Dhaka-based supplier of garment accessories connecting brands with consumers through labels, tags and trims."),
+  head: () => pageHead("About NR Enterprise — Garment Labels, Tags & Trims", "Meet NR Enterprise, a Dhaka-based supplier of garment accessories connecting brands with consumers through labels, tags and trims.", "/about"),
   component: About,
 });
 function About() {

@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_site/products/")({
     if (Number.isInteger(page) && page > 1) out.page = page;
     return out;
   },
-  head: () => pageHead(TITLE, DESC),
+  head: () => pageHead(TITLE, DESC, "/products"),
   component: Products,
 });
 

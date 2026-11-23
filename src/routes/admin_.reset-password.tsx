@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/nre/Logo";
 import { ApiError, authApi } from "@/lib/api";
-import { pageHead } from "@/lib/seo";
+import { noIndexPageHead } from "@/lib/seo";
 
-const HEAD = pageHead("Reset password — NR Enterprise Admin", "Set a new password for your NR Enterprise workspace account.");
+const HEAD = noIndexPageHead("Reset password — NR Enterprise Admin", "Set a new password for your NR Enterprise workspace account.");
 
 export const Route = createFileRoute("/admin_/reset-password")({
   validateSearch: (search: Record<string, unknown>) => ({ token: typeof search["token"] === "string" ? search["token"] : "" }),

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_site/contact")({
     if (Number(s["sample"]) === 1) out.sample = 1;
     return out;
   },
-  head: () => pageHead("Contact & Request a Quote — NR Enterprise", "Request a quote or sample for labels, tags and trims. Contact NR Enterprise in Uttarkhan, Dhaka by phone, email or WhatsApp."),
+  head: () => pageHead("Contact & Request a Quote — NR Enterprise", "Request a quote or sample for labels, tags and trims. Contact NR Enterprise in Uttarkhan, Dhaka by phone, email or WhatsApp.", "/contact"),
   component: Contact,
 });
 function Contact() {

@@ -9,9 +9,9 @@ import { Logo } from "@/components/nre/Logo";
 import { useAuth } from "@/hooks/use-auth";
 import { ApiError } from "@/lib/api";
 import { USE_MOCK } from "@/config/flags";
-import { pageHead } from "@/lib/seo";
+import { noIndexPageHead } from "@/lib/seo";
 
-const HEAD = pageHead("Sign in — NR Enterprise Admin", "Sign in to manage NR Enterprise products, stock, customers and enquiries.");
+const HEAD = noIndexPageHead("Sign in — NR Enterprise Admin", "Sign in to manage NR Enterprise products, stock, customers and enquiries.");
 
 export const Route = createFileRoute("/admin_/login")({
   head: () => ({ ...HEAD, meta: [...HEAD.meta, { name: "robots", content: "noindex" }] }),

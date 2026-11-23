@@ -1,3 +1,4 @@
+import { canonicalUrl } from "@/lib/seo";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -19,10 +20,10 @@ export const Route = createFileRoute("/_site/products/$categorySlug/")({
     await context.queryClient.ensureQueryData(productsQuery({ category: cat.slug, per_page: 48 }));
     return { name: cat.name, description: cat.description, image: cat.image_url };
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     const title = loaderData ? `${loaderData.name} — NR Enterprise` : "Product category — NR Enterprise";
     const desc = loaderData?.description ?? "Garment trims and accessories by category.";
-    return { meta: [{ title }, { name: "description", content: desc }, { property: "og:title", content: title }, { property: "og:description", content: desc }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] };
+    return { meta: [{ title }, { name: "description", content: desc }, { property: "og:title", content: title }, { property: "og:description", content: desc }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }], links: [{ rel: "canonical", href: canonicalUrl(`/products/${params.categorySlug}`) }] };
   },
   notFoundComponent: () => <div className="mx-auto max-w-7xl px-4 py-20"><EmptyState title="Category not found" action={<Link to="/products" className="font-semibold text-secondary">See all products</Link>} /></div>,
   component: CategoryPage,

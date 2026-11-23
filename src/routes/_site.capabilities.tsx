@@ -8,7 +8,7 @@ import { canPrefetch, SHOW_CAPACITY } from "@/config/flags";
 
 export const Route = createFileRoute("/_site/capabilities")({
   loader: async ({ context }) => { if (canPrefetch()) await context.queryClient.ensureQueryData(certificationsQuery()); },
-  head: () => pageHead("Capabilities — NR Enterprise", "Explore woven and printed labels, offset tags, digital printing, thermal and RFID identification, finishing and our brief-to-delivery process."),
+  head: () => pageHead("Capabilities — NR Enterprise", "Explore woven and printed labels, offset tags, digital printing, thermal and RFID identification, finishing and our brief-to-delivery process.", "/capabilities"),
   component: Capabilities,
 });
 const METHODS = [
