@@ -43,3 +43,32 @@ export interface Payment { id: number; receipt_no: string; payment_date: string;
 export interface StockMovement { id: number; variant_id: number; sku: string; type: string; qty: Decimal; ref: string | null; created_at: string }
 export interface PurchaseOrder { id: number; po_no: string; po_date: string; supplier_id: number; supplier_name: string; status: string; total: Decimal }
 export interface Enquiry { id: number; name: string; company: string | null; phone: string; email: string | null; product_name: string | null; quantity: string | null; message: string | null; wants_sample: boolean; status: "new" | "contacted" | "quoted" | "closed"; created_at: string }
+
+export interface DashboardSummary {
+  sales_today: Decimal;
+  sales_yesterday: Decimal;
+  customer_dues: Decimal;
+  unpaid_invoices: number;
+  low_stock_count: number;
+  new_enquiries: number;
+  variant_count: number;
+  stock_value: Decimal | null;
+}
+export interface SalesDay { day: string; total: Decimal }
+export interface LowStockItem {
+  variant_id: number;
+  sku: string;
+  display_name: string;
+  product_name: string;
+  category_name: string;
+  unit_code: string;
+  qty_on_hand: Decimal;
+  reorder_level: Decimal;
+  status: "low" | "out";
+}
+export interface AdminSearchResults {
+  products: { id: number; name: string; code: string; category_slug: string }[];
+  variants: { id: number; sku: string; display_name: string; product_id: number }[];
+  customers: { id: number; name: string; phone: string | null }[];
+  invoices: { id: number; invoice_no: string; customer_name: string; total: Decimal; status: InvoiceStatus }[];
+}

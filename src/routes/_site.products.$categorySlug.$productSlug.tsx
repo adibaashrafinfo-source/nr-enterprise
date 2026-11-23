@@ -29,11 +29,11 @@ export const Route = createFileRoute("/_site/products/$categorySlug/$productSlug
     }
   },
   head: ({ loaderData }) => {
-    if (!loaderData) return { meta: [{ title: "Product — NR Enterprise" }, { name: "description", content: "Garment trims and accessories from NR Enterprise." }, { property: "og:title", content: "Product — NR Enterprise" }, { property: "og:description", content: "Garment trims and accessories from NR Enterprise." }] };
+    if (!loaderData) return { meta: [{ title: "Product — NR Enterprise" }, { name: "description", content: "Garment trims and accessories from NR Enterprise." }, { property: "og:title", content: "Product — NR Enterprise" }, { property: "og:description", content: "Garment trims and accessories from NR Enterprise." }, { property: "og:type", content: "product" }, { name: "twitter:card", content: "summary_large_image" }] };
     const title = `${loaderData.name} (${loaderData.code}) — NR Enterprise`;
     const jsonLd = { "@context": "https://schema.org", "@type": "Product", name: loaderData.name, sku: loaderData.code, description: loaderData.description, category: loaderData.category, ...(loaderData.image ? { image: loaderData.image } : {}), brand: { "@type": "Organization", name: "NR Enterprise" } };
     return {
-      meta: [{ title }, { name: "description", content: loaderData.description }, { property: "og:title", content: title }, { property: "og:description", content: loaderData.description }, { property: "og:type", content: "product" }],
+      meta: [{ title }, { name: "description", content: loaderData.description }, { property: "og:title", content: title }, { property: "og:description", content: loaderData.description }, { property: "og:type", content: "product" }, { name: "twitter:card", content: "summary_large_image" }],
       scripts: [{ type: "application/ld+json", children: JSON.stringify(jsonLd) }],
     };
   },

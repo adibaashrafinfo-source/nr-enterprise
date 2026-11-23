@@ -20,9 +20,9 @@ export const Route = createFileRoute("/_site/products/$categorySlug/")({
     return { name: cat.name, description: cat.description, image: cat.image_url };
   },
   head: ({ loaderData }) => {
-    const title = loaderData ? `${loaderData.name} — NR Enterprise` : "Products — NR Enterprise";
+    const title = loaderData ? `${loaderData.name} — NR Enterprise` : "Product category — NR Enterprise";
     const desc = loaderData?.description ?? "Garment trims and accessories by category.";
-    return { meta: [{ title }, { name: "description", content: desc }, { property: "og:title", content: title }, { property: "og:description", content: desc }] };
+    return { meta: [{ title }, { name: "description", content: desc }, { property: "og:title", content: title }, { property: "og:description", content: desc }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] };
   },
   notFoundComponent: () => <div className="mx-auto max-w-7xl px-4 py-20"><EmptyState title="Category not found" action={<Link to="/products" className="font-semibold text-secondary">See all products</Link>} /></div>,
   component: CategoryPage,

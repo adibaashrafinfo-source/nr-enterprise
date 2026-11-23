@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/nre/EmptyState";
 import { categoriesQuery, productsQuery } from "@/lib/queries";
 import { publicApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { pageHead } from "@/lib/seo";
 
 const PER_PAGE = 12;
 const TITLE = "Products — Labels, Tags & Trims | NR Enterprise";
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/_site/products/")({
     if (Number.isInteger(page) && page > 1) out.page = page;
     return out;
   },
-  head: () => ({ meta: [{ title: TITLE }, { name: "description", content: DESC }, { property: "og:title", content: TITLE }, { property: "og:description", content: DESC }] }),
+  head: () => pageHead(TITLE, DESC),
   component: Products,
 });
 

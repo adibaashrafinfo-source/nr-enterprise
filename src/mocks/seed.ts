@@ -1,5 +1,5 @@
 import spec from "@/data/spec.json";
-import type { Category, Client, Customer, Enquiry, Invoice, PublicProduct, PublicSettings, Supplier, User } from "@/lib/types";
+import type { Category, Client, Customer, Enquiry, Invoice, LowStockItem, PublicProduct, PublicSettings, Supplier, User } from "@/lib/types";
 
 interface SpecProduct {
   category_slug: string; slug: string; name: string; code: string; short_description: string; description: string;
@@ -63,6 +63,9 @@ export const invoices: Invoice[] = [
   { id: 1, invoice_no: "INV-00001", invoice_date: "2026-11-20", customer_id: 1, customer_name: "Rahim Apparels Ltd", status: "due", subtotal: "184500.00", discount: "0.00", tax_amount: "0.00", total: "184500.00", paid: "0.00", balance: "184500.00" },
   { id: 2, invoice_no: "INV-00002", invoice_date: "2026-11-21", customer_id: 2, customer_name: "Sonali Knitwear", status: "draft", subtotal: "25440.00", discount: "440.00", tax_amount: "0.00", total: "25000.00", paid: "0.00", balance: "25000.00" },
 ];
+
+// No variants or stock movements are included in the supplied demo seed yet.
+export const stockBalances: LowStockItem[] = [];
 
 export const enquiries: Enquiry[] = [
   { id: 1, name: "Karim", company: "Karim Fashions", phone: "+8801900000001", email: null, product_name: "Woven Labels", quantity: "20000 pcs", message: "Need a sample first", wants_sample: true, status: "new", created_at: "2026-11-21T09:30:00Z" },

@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/nre/PageHeader";
 import { EmptyState } from "@/components/nre/EmptyState";
+import { noIndexPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/admin/orders")({
-  head: () => ({ meta: [{ title: "Sales orders — NR Admin" }] }),
+  head: () => noIndexPageHead("Sales orders — NR Enterprise Admin", "Review customer quotations and sales orders in the NR Enterprise workspace."),
   component: () => (
     <>
       <PageHeader title="Sales orders" />

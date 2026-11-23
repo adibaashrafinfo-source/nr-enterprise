@@ -13,9 +13,10 @@ import { LoadingSkeleton } from "@/components/nre/LoadingSkeleton";
 import { ConfirmDialog } from "@/components/nre/ConfirmDialog";
 import { publicApi } from "@/lib/api";
 import { toast } from "sonner";
+import { noIndexPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_site/styleguide")({
-  head: () => ({ meta: [{ title: "Styleguide — NR Enterprise" }, { name: "description", content: "NR Enterprise brand colours, type and components." }, { property: "og:title", content: "Styleguide — NR Enterprise" }, { property: "og:description", content: "NR Enterprise brand colours, type and components." }, { name: "robots", content: "noindex" }] }),
+  head: () => noIndexPageHead("Styleguide — NR Enterprise", "NR Enterprise brand colours, typography and interface components."),
   component: Styleguide,
 });
 

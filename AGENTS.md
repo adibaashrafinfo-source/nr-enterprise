@@ -35,3 +35,5 @@ use the editor.
 - Public data loads via src/lib/queries.ts queryOptions; loaders prefetch only when canPrefetch() and router.tsx dehydrates them with router-ssr-query — why: SSR/hydration must match and real API is unreachable from the server.
 - Money/quantities stay decimal strings; use src/lib/money.ts, never float sums — why: server owns totals.
 - Public pages sit under the pathless _site layout; admin pages under admin.tsx (guard + AdminLayout); login/reset pages use admin_ prefix to skip the guard — why: separate shells.
+- Keep admin endpoint types in src/lib/api.ts and mirror each endpoint in src/mocks; fetch protected admin data only after client-side role approval and scope cache keys by account — why: SSR has no authenticated PHP session and cached private values must not cross users.
+- Static SEO files live in public/ and use the published canonical host, with catalogue URLs sourced from docs/spec data — why: the separate PHP API is unavailable during static asset generation.

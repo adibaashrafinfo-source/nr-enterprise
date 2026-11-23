@@ -1,10 +1,11 @@
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, Outlet, createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { Logo } from "@/components/nre/Logo";
 import { LoadingSkeleton } from "@/components/nre/LoadingSkeleton";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { canAccessAdminPath } from "@/lib/admin-access";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ name: "robots", content: "noindex" }] }),
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/admin")({
 function AdminGuard() {
   const { user, role, loading, logout } = useAuth();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   useEffect(() => { if (!loading && !user) void navigate({ to: "/admin/login" }); }, [loading, user, navigate]);
 
   if (loading || !user) return <div className="p-8"><LoadingSkeleton /></div>;
@@ -28,6 +30,9 @@ function AdminGuard() {
         </div>
       </div>
     );
+  }
+  if (!canAccessAdminPath(pathname, role)) {
+    return <div className="grid min-h-[60vh] place-items-center p-6"><div className="max-w-md text-center"><h1 className="text-2xl font-bold">Access restricted</h1><p className="mt-2 text-sm text-muted-foreground">Your account does not have access to this section.</p><Button asChild className="mt-5"><Link to="/admin">Back to dashboard</Link></Button></div></div>;
   }
   return <AdminLayout><Outlet /></AdminLayout>;
 }

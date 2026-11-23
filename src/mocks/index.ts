@@ -1,11 +1,13 @@
 // In-memory mock of the PHP REST API. Same paths, field names and envelopes as docs/NRE_BACKEND_API.md.
 import { ApiError } from "@/lib/api-error";
-import type { PublicProductSummary, User } from "@/lib/types";
+import { addMoney } from "@/lib/money";
+import type { DashboardSummary, LowStockItem, PublicProductSummary, Role, SalesDay, User } from "@/lib/types";
 import * as db from "./seed";
 
 type Query = Record<string, string | number | undefined>;
 let session: User | null = null;
 const CSRF = "mock-csrf-token";
+const passwordResetTokens = new Map<string, number>();
 
 const delay = () => new Promise((r) => setTimeout(r, 120));
 
@@ -24,6 +26,45 @@ const requireSession = () => {
   if (!session) throw new ApiError(401, "unauthenticated", "Please log in.");
   return session;
 };
+
+const requireDashboardRole = () => {
+  const user = requireSession();
+  if (!user.role) throw new ApiError(403, "forbidden", "Your account is waiting for approval.");
+  return user;
+};
+
+const confirmedInvoices = () => db.invoices.filter((i) => i.status === "due" || i.status === "partial" || i.status === "paid");
+const dayString = (date: Date) => date.toISOString().slice(0, 10);
+const isoDayOffset = (offset: number) => {
+  const date = new Date();
+  date.setUTCHours(12, 0, 0, 0);
+  date.setUTCDate(date.getUTCDate() + offset);
+  return dayString(date);
+};
+const salesForDay = (day: string) => addMoney(...confirmedInvoices().filter((i) => i.invoice_date === day).map((i) => i.total));
+
+function dashboardSummary(role: Role): DashboardSummary {
+  const unpaid = db.invoices.filter((i) => i.status === "due" || i.status === "partial");
+  const lowStockCount = db.stockBalances.filter((row) => row.status === "low" || row.status === "out").length;
+  return {
+    sales_today: salesForDay(isoDayOffset(0)),
+    sales_yesterday: salesForDay(isoDayOffset(-1)),
+    customer_dues: addMoney(...unpaid.map((i) => i.balance)),
+    unpaid_invoices: unpaid.length,
+    low_stock_count: lowStockCount,
+    new_enquiries: db.enquiries.filter((e) => e.status === "new").length,
+    variant_count: db.products.reduce((total, product) => total + product.variants.length, 0),
+    stock_value: role === "staff" ? null : "0.00",
+  };
+}
+
+function salesByDay(days: number): SalesDay[] {
+  return Array.from({ length: days }, (_, index) => {
+    const offset = index - days + 1;
+    const day = isoDayOffset(offset);
+    return { day, total: salesForDay(day) };
+  });
+}
 
 export async function mockRequest(method: string, path: string, query: Query = {}, body?: unknown): Promise<unknown> {
   await delay();
@@ -62,7 +103,70 @@ export async function mockRequest(method: string, path: string, query: Query = {
     return { data: { user, csrf_token: CSRF } };
   }
   if (route === "POST /auth/logout") { session = null; return { data: { ok: true } }; }
-  if (route === "POST /auth/forgot-password") return { data: { ok: true } };
+  if (route === "POST /auth/forgot-password") {
+    const { email } = (body ?? {}) as { email?: string };
+    const user = db.users.find((u) => u.email === email?.trim().toLowerCase() && u.is_active);
+    if (!user) return { data: { ok: true } };
+    const token = `demo-reset-${user.id}-${Date.now().toString(36)}`;
+    passwordResetTokens.set(token, user.id);
+    return { data: { ok: true, demo_reset_url: `/admin/reset-password?token=${encodeURIComponent(token)}` } };
+  }
+  if (route === "POST /auth/reset-password") {
+    const { token, password } = (body ?? {}) as { token?: string; password?: string };
+    const userId = token ? passwordResetTokens.get(token) : undefined;
+    const user = userId === undefined ? undefined : db.users.find((u) => u.id === userId);
+    if (!user || !password || password.length < 8) throw new ApiError(422, "invalid_reset", "The reset link is invalid or expired.");
+    user.password = password;
+    if (token) passwordResetTokens.delete(token);
+    return { data: { ok: true } };
+  }
+  if (route === "POST /auth/change-password") {
+    const user = requireSession();
+    const { current_password, new_password } = (body ?? {}) as { current_password?: string; new_password?: string };
+    const record = db.users.find((u) => u.id === user.id);
+    if (!record || record.password !== current_password) throw new ApiError(422, "invalid_password", "Current password is incorrect.");
+    if (!new_password || new_password.length < 8) throw new ApiError(422, "invalid_password", "Use at least 8 characters for your new password.");
+    record.password = new_password;
+    return { data: { ok: true } };
+  }
+
+  if (route === "GET /dashboard/summary") return { data: dashboardSummary(requireDashboardRole().role ?? "staff") };
+  if (route === "GET /dashboard/sales-by-day") {
+    requireDashboardRole();
+    const rawDays = Number(query["days"] ?? 7);
+    return { data: salesByDay(rawDays === 30 ? 30 : 7) };
+  }
+  if (route === "GET /stock") {
+    requireDashboardRole();
+    const status = query["status"];
+    const rows = db.stockBalances.filter((row: LowStockItem) => !status || row.status === status);
+    return paginate(rows, query);
+  }
+  if (route === "GET /invoices") {
+    requireDashboardRole();
+    const term = String(query["q"] ?? "").toLowerCase();
+    const status = String(query["status"] ?? "");
+    const rows = db.invoices.filter((invoice) => (!status || invoice.status === status) && (!term || `${invoice.invoice_no} ${invoice.customer_name}`.toLowerCase().includes(term)));
+    return paginate(rows, query);
+  }
+  if (route === "GET /enquiries") {
+    requireDashboardRole();
+    const term = String(query["q"] ?? "").toLowerCase();
+    const status = String(query["status"] ?? "");
+    const rows = db.enquiries.filter((enquiry) => (!status || enquiry.status === status) && (!term || `${enquiry.name} ${enquiry.company ?? ""} ${enquiry.phone}`.toLowerCase().includes(term)));
+    return paginate(rows, query);
+  }
+  if (route === "GET /search") {
+    requireDashboardRole();
+    const term = String(query["q"] ?? "").trim().toLowerCase();
+    const matches = <T,>(rows: T[], value: (row: T) => string) => rows.filter((row) => term && value(row).toLowerCase().includes(term)).slice(0, 5);
+    return { data: {
+      products: matches(db.products, (p) => `${p.name} ${p.code}`).map((p) => ({ id: p.id, name: p.name, code: p.code, category_slug: p.category.slug })),
+      variants: db.products.flatMap((p) => p.variants.map((v) => ({ id: v.id, sku: `${p.code}-${v.id}`, display_name: `${p.name} · ${v.name}`, product_id: p.id }))).filter((v) => term && `${v.sku} ${v.display_name}`.toLowerCase().includes(term)).slice(0, 5),
+      customers: matches(db.customers, (c) => `${c.name} ${c.phone ?? ""}`).map((c) => ({ id: c.id, name: c.name, phone: c.phone })),
+      invoices: matches(db.invoices, (i) => `${i.invoice_no} ${i.customer_name}`).map((i) => ({ id: i.id, invoice_no: i.invoice_no, customer_name: i.customer_name, total: i.total, status: i.status })),
+    } };
+  }
 
   throw new ApiError(404, "not_implemented", `Mock endpoint not built yet: ${route}`);
 }
