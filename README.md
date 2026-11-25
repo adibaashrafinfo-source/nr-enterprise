@@ -24,3 +24,12 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Backend + cPanel deploy
+
+- `backend/nre_backend/` PHP 8.1+ REST API (lives OUTSIDE public_html), `backend/public_html/` API front controller + .htaccess + uploads skeleton
+- `database/` MySQL schema + seed
+- `frontend-dist/` prebuilt static site (`npm run build:cpanel` rebuilds it; VITE_USE_MOCK=false)
+- `.cpanel.yml` copies everything to `~/nre_backend` and `~/public_html` via cPanel Git Version Control
+- `docs/DEPLOY_CPANEL.md` manual steps, `docs/NRE_CHROME_DEPLOY_PROMPT.md` Claude-in-Chrome deploy prompt, `docs/NRE_BACKEND_API.md` API contract
+- Tests: `backend/nre_backend/tests/run_all.sh database/NRE_mysql_schema.sql database/NRE_mysql_seed.sql` (needs local MariaDB)

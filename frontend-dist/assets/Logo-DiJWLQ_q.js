@@ -1,0 +1,1 @@
+import{o as e}from"./useSelector-DkBAF1WU.js";import{t}from"./utils-BpA-aDny.js";var n=e();function r({variant:e=`full`,className:r}){return e===`full`?(0,n.jsx)(`img`,{src:`/assets/brand/nr-logo-full.png`,alt:`NR Enterprise`,className:t(`h-10 w-auto`,r)}):(0,n.jsx)(`img`,{src:`/assets/brand/nr-logo-mark.png`,alt:`NR Enterprise`,className:t(`h-10 w-10`,r)})}export{r as t};

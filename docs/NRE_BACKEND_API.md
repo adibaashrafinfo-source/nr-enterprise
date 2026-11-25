@@ -29,18 +29,21 @@ Browser ──HTTPS──▶  https://nrenterprise.example/            (React SP
 /home/<cpuser>/
   nre_backend/                  (OUTSIDE public_html, not web-accessible)
     config.php                  DB host/name/user/pass, APP_URL, APP_ENV, mail settings, session name  (chmod 640, never in git)
+    config.sample.php           template for config.php
+    .htaccess                   Require all denied (safety if the folder is ever placed under public_html)
     src/
-      bootstrap.php  Router.php  Db.php  Request.php  Response.php  Auth.php  Csrf.php
-      Validator.php  Upload.php  Audit.php  Numbering.php  RateLimit.php  Money.php
-      Controllers/   AuthController  PublicController  CatalogueController  StockController
-                     CustomerController  SupplierController  SalesController  PurchaseController
-                     ReportController  EnquiryController  ContentController  SettingsController
-      Services/      StockService  InvoiceService  OrderService  PaymentService  PurchaseService
-                     LedgerService  DashboardService  ReportService
+      bootstrap.php             boot, error mapping, helpers (paging, like, slugify, listResponse)
+      Core/Support.php          Config, Db, Request, Response, Money, V (validator), Audit, Numbering, RateLimit, Mailer, Upload
+      Core/Auth.php             Auth (session, CSRF, roles) + Router (role-checked dispatch)
+      routes/                   auth public dashboard catalogue stock customers suppliers sales
+                                purchases reports enquiries content settings   (one file per group of endpoints)
+      Services/                 StockService InvoiceService PaymentService OrderService
+                                PurchaseService LedgerService CatalogueService   (all DB transactions live here)
     storage/
       enquiries/                private attachments
       logs/                     app.log (rotated)
-    tests/                      PHPUnit or plain PHP test scripts (see section 9)
+    deploy/backup.sh            nightly mysqldump (cron). Health check: GET /api/v1/health?key=HEALTHCHECK_KEY
+    tests/                      plain PHP integration tests: run_all.sh (not uploaded to the server)
   backups/                      nightly SQL dumps
   public_html/
     index.html  assets/ (Vite output + /assets/products, /assets/clients, /assets/brand, /assets/site)

@@ -1,0 +1,704 @@
+[
+{
+"group": "Auth",
+"method": "POST",
+"path": "/auth/register",
+"role": "P"
+},
+{
+"group": "Auth",
+"method": "POST",
+"path": "/auth/login",
+"role": "P"
+},
+{
+"group": "Auth",
+"method": "POST",
+"path": "/auth/logout",
+"role": "S*"
+},
+{
+"group": "Auth",
+"method": "GET",
+"path": "/auth/me",
+"role": "S*"
+},
+{
+"group": "Auth",
+"method": "POST",
+"path": "/auth/forgot-password",
+"role": "P"
+},
+{
+"group": "Auth",
+"method": "POST",
+"path": "/auth/reset-password",
+"role": "P"
+},
+{
+"group": "Auth",
+"method": "POST",
+"path": "/auth/change-password",
+"role": "S*"
+},
+{
+"group": "Public",
+"method": "GET",
+"path": "/public/settings",
+"role": "P"
+},
+{
+"group": "Public",
+"method": "GET",
+"path": "/public/categories",
+"role": "P"
+},
+{
+"group": "Public",
+"method": "GET",
+"path": "/public/products",
+"role": "P"
+},
+{
+"group": "Public",
+"method": "GET",
+"path": "/public/products/{slug}",
+"role": "P"
+},
+{
+"group": "Public",
+"method": "GET",
+"path": "/public/clients",
+"role": "P"
+},
+{
+"group": "Public",
+"method": "GET",
+"path": "/public/certifications",
+"role": "P"
+},
+{
+"group": "Public",
+"method": "POST",
+"path": "/public/enquiries",
+"role": "P"
+},
+{
+"group": "Dashboard",
+"method": "GET",
+"path": "/dashboard/summary",
+"role": "S"
+},
+{
+"group": "Dashboard",
+"method": "GET",
+"path": "/dashboard/sales-by-day",
+"role": "S"
+},
+{
+"group": "Dashboard",
+"method": "GET",
+"path": "/search",
+"role": "S"
+},
+{
+"group": "Catalogue",
+"method": "GET",
+"path": "/categories",
+"role": "S"
+},
+{
+"group": "Catalogue",
+"method": "POST",
+"path": "/categories",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "PUT",
+"path": "/categories/{id}",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "DELETE",
+"path": "/categories/{id}",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "GET",
+"path": "/units",
+"role": "S"
+},
+{
+"group": "Catalogue",
+"method": "POST",
+"path": "/units",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "GET",
+"path": "/products",
+"role": "S"
+},
+{
+"group": "Catalogue",
+"method": "POST",
+"path": "/products",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "GET",
+"path": "/products/{id}",
+"role": "S"
+},
+{
+"group": "Catalogue",
+"method": "PUT",
+"path": "/products/{id}",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "DELETE",
+"path": "/products/{id}",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "POST",
+"path": "/products/{id}/images",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "PUT",
+"path": "/products/{id}/images/order",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "DELETE",
+"path": "/product-images/{id}",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "POST",
+"path": "/products/{id}/variants",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "PUT",
+"path": "/variants/{id}",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "DELETE",
+"path": "/variants/{id}",
+"role": "M"
+},
+{
+"group": "Catalogue",
+"method": "GET",
+"path": "/variants/search",
+"role": "S"
+},
+{
+"group": "Catalogue",
+"method": "POST",
+"path": "/products/import",
+"role": "M"
+},
+{
+"group": "Stock",
+"method": "GET",
+"path": "/stock",
+"role": "S"
+},
+{
+"group": "Stock",
+"method": "GET",
+"path": "/stock/{variantId}/movements",
+"role": "S"
+},
+{
+"group": "Stock",
+"method": "GET",
+"path": "/stock/value",
+"role": "M"
+},
+{
+"group": "Stock",
+"method": "POST",
+"path": "/stock/opening",
+"role": "M"
+},
+{
+"group": "Stock",
+"method": "POST",
+"path": "/stock/adjust",
+"role": "M"
+},
+{
+"group": "Customers",
+"method": "GET",
+"path": "/customers",
+"role": "S"
+},
+{
+"group": "Customers",
+"method": "POST",
+"path": "/customers",
+"role": "S"
+},
+{
+"group": "Customers",
+"method": "GET",
+"path": "/customers/{id}",
+"role": "S"
+},
+{
+"group": "Customers",
+"method": "PUT",
+"path": "/customers/{id}",
+"role": "S"
+},
+{
+"group": "Customers",
+"method": "DELETE",
+"path": "/customers/{id}",
+"role": "M"
+},
+{
+"group": "Customers",
+"method": "GET",
+"path": "/customers/{id}/ledger",
+"role": "S"
+},
+{
+"group": "Customers",
+"method": "GET",
+"path": "/customers/dues",
+"role": "S"
+},
+{
+"group": "Suppliers",
+"method": "GET",
+"path": "/suppliers",
+"role": "M"
+},
+{
+"group": "Suppliers",
+"method": "POST",
+"path": "/suppliers",
+"role": "M"
+},
+{
+"group": "Suppliers",
+"method": "GET",
+"path": "/suppliers/{id}",
+"role": "M"
+},
+{
+"group": "Suppliers",
+"method": "PUT",
+"path": "/suppliers/{id}",
+"role": "M"
+},
+{
+"group": "Suppliers",
+"method": "DELETE",
+"path": "/suppliers/{id}",
+"role": "M"
+},
+{
+"group": "Suppliers",
+"method": "GET",
+"path": "/suppliers/{id}/ledger",
+"role": "M"
+},
+{
+"group": "Suppliers",
+"method": "POST",
+"path": "/suppliers/{id}/payments",
+"role": "M"
+},
+{
+"group": "Suppliers",
+"method": "GET",
+"path": "/supplier-payments/{id}",
+"role": "M"
+},
+{
+"group": "Sales",
+"method": "GET",
+"path": "/orders",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "POST",
+"path": "/orders",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "GET",
+"path": "/orders/{id}",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "PUT",
+"path": "/orders/{id}",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "POST",
+"path": "/orders/{id}/status",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "POST",
+"path": "/orders/{id}/convert",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "GET",
+"path": "/invoices",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "POST",
+"path": "/invoices",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "GET",
+"path": "/invoices/{id}",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "PUT",
+"path": "/invoices/{id}",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "DELETE",
+"path": "/invoices/{id}",
+"role": "M"
+},
+{
+"group": "Sales",
+"method": "POST",
+"path": "/invoices/{id}/confirm",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "POST",
+"path": "/invoices/{id}/cancel",
+"role": "M"
+},
+{
+"group": "Sales",
+"method": "POST",
+"path": "/invoice-items/{id}/return",
+"role": "M"
+},
+{
+"group": "Sales",
+"method": "POST",
+"path": "/invoices/{id}/payments",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "GET",
+"path": "/payments",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "GET",
+"path": "/payments/{id}",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "PUT",
+"path": "/payments/{id}",
+"role": "M"
+},
+{
+"group": "Sales",
+"method": "DELETE",
+"path": "/payments/{id}",
+"role": "M"
+},
+{
+"group": "Sales",
+"method": "POST",
+"path": "/invoices/{id}/challans",
+"role": "S"
+},
+{
+"group": "Sales",
+"method": "GET",
+"path": "/challans/{id}",
+"role": "S"
+},
+{
+"group": "Purchases",
+"method": "GET",
+"path": "/purchases",
+"role": "M"
+},
+{
+"group": "Purchases",
+"method": "POST",
+"path": "/purchases",
+"role": "M"
+},
+{
+"group": "Purchases",
+"method": "GET",
+"path": "/purchases/{id}",
+"role": "M"
+},
+{
+"group": "Purchases",
+"method": "PUT",
+"path": "/purchases/{id}",
+"role": "M"
+},
+{
+"group": "Purchases",
+"method": "POST",
+"path": "/purchases/{id}/status",
+"role": "M"
+},
+{
+"group": "Purchases",
+"method": "GET",
+"path": "/receiving/pending",
+"role": "S"
+},
+{
+"group": "Purchases",
+"method": "POST",
+"path": "/purchase-items/{id}/receive",
+"role": "S"
+},
+{
+"group": "Purchases",
+"method": "POST",
+"path": "/purchase-items/{id}/return",
+"role": "M"
+},
+{
+"group": "Purchases",
+"method": "GET",
+"path": "/purchases/reorder-suggestions",
+"role": "M"
+},
+{
+"group": "Reports",
+"method": "GET",
+"path": "/reports/stock",
+"role": "M"
+},
+{
+"group": "Reports",
+"method": "GET",
+"path": "/reports/low-stock",
+"role": "S"
+},
+{
+"group": "Reports",
+"method": "GET",
+"path": "/reports/movements",
+"role": "S"
+},
+{
+"group": "Reports",
+"method": "GET",
+"path": "/reports/sales",
+"role": "M"
+},
+{
+"group": "Reports",
+"method": "GET",
+"path": "/reports/purchases",
+"role": "M"
+},
+{
+"group": "Reports",
+"method": "GET",
+"path": "/reports/dues",
+"role": "S"
+},
+{
+"group": "Reports",
+"method": "GET",
+"path": "/reports/payables",
+"role": "M"
+},
+{
+"group": "Reports",
+"method": "GET",
+"path": "/reports/profit",
+"role": "M"
+},
+{
+"group": "Enquiries",
+"method": "GET",
+"path": "/enquiries",
+"role": "S"
+},
+{
+"group": "Enquiries",
+"method": "GET",
+"path": "/enquiries/{id}",
+"role": "S"
+},
+{
+"group": "Enquiries",
+"method": "PUT",
+"path": "/enquiries/{id}",
+"role": "S"
+},
+{
+"group": "Enquiries",
+"method": "GET",
+"path": "/enquiries/{id}/attachment",
+"role": "S"
+},
+{
+"group": "Enquiries",
+"method": "POST",
+"path": "/enquiries/{id}/convert",
+"role": "S"
+},
+{
+"group": "Content",
+"method": "GET",
+"path": "/clients",
+"role": "M"
+},
+{
+"group": "Content",
+"method": "POST",
+"path": "/clients",
+"role": "M"
+},
+{
+"group": "Content",
+"method": "PUT",
+"path": "/clients/{id}",
+"role": "M"
+},
+{
+"group": "Content",
+"method": "DELETE",
+"path": "/clients/{id}",
+"role": "M"
+},
+{
+"group": "Content",
+"method": "GET",
+"path": "/certifications",
+"role": "M"
+},
+{
+"group": "Content",
+"method": "POST",
+"path": "/certifications",
+"role": "M"
+},
+{
+"group": "Content",
+"method": "PUT",
+"path": "/certifications/{id}",
+"role": "M"
+},
+{
+"group": "Content",
+"method": "DELETE",
+"path": "/certifications/{id}",
+"role": "M"
+},
+{
+"group": "Settings",
+"method": "GET",
+"path": "/settings",
+"role": "M"
+},
+{
+"group": "Settings",
+"method": "PUT",
+"path": "/settings",
+"role": "A"
+},
+{
+"group": "Settings",
+"method": "GET",
+"path": "/settings/numbering",
+"role": "A"
+},
+{
+"group": "Settings",
+"method": "PUT",
+"path": "/settings/numbering",
+"role": "A"
+},
+{
+"group": "Settings",
+"method": "POST",
+"path": "/settings/logo",
+"role": "A"
+},
+{
+"group": "Settings",
+"method": "GET",
+"path": "/users",
+"role": "A"
+},
+{
+"group": "Settings",
+"method": "POST",
+"path": "/users",
+"role": "A"
+},
+{
+"group": "Settings",
+"method": "PUT",
+"path": "/users/{id}",
+"role": "A"
+},
+{
+"group": "Settings",
+"method": "POST",
+"path": "/users/{id}/reset-password",
+"role": "A"
+},
+{
+"group": "Settings",
+"method": "GET",
+"path": "/activity-log",
+"role": "A"
+}
+]

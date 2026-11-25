@@ -1,0 +1,17 @@
+---
+# cPanel > Git Version Control > "Deploy HEAD Commit" runs these tasks as the account user.
+# Never overwrites config.php, storage/ data or uploads/.
+deployment:
+  tasks:
+    - export APP=$HOME/nre_backend
+    - export WEB=$HOME/public_html
+    - /bin/mkdir -p $APP/src $APP/deploy $APP/storage/enquiries $APP/storage/logs $WEB/api $WEB/uploads/products $WEB/uploads/clients $WEB/uploads/brand
+    - /bin/cp -R backend/nre_backend/src/. $APP/src/
+    - /bin/cp backend/nre_backend/.htaccess $APP/.htaccess
+    - /bin/cp backend/nre_backend/config.sample.php $APP/config.sample.php
+    - /bin/cp backend/nre_backend/deploy/backup.sh $APP/deploy/backup.sh
+    - /bin/cp -n backend/nre_backend/storage/.htaccess $APP/storage/.htaccess
+    - /bin/cp -R frontend-dist/. $WEB/
+    - /bin/cp backend/public_html/.htaccess $WEB/.htaccess
+    - /bin/cp -R backend/public_html/api/. $WEB/api/
+    - /bin/cp -n backend/public_html/uploads/.htaccess $WEB/uploads/.htaccess

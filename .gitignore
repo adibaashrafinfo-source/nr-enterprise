@@ -30,3 +30,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Backend secrets / runtime
+backend/nre_backend/config.php
+backend/nre_backend/storage/enquiries/*
+backend/nre_backend/storage/logs/*
+!backend/nre_backend/storage/enquiries/.gitkeep
+!backend/nre_backend/storage/logs/.gitkeep
+backend/public_html/uploads/*/*
+!backend/public_html/uploads/*/.gitkeep

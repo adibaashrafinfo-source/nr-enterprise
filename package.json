@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:cpanel": "VITE_USE_MOCK=false VITE_API_BASE=/api/v1 vite build -c vite.cpanel.config.ts && cp dist/client/_shell.html dist/client/index.html && sh scripts/sync-frontend-dist.sh"
   },
   "overrides": {
     "rolldown": "1.2.1",

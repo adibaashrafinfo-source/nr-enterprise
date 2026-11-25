@@ -1,0 +1,1 @@
+var e=e=>new Promise((t,n)=>{if(!e.type.startsWith(`image/`)){n(Error(`Choose an image file.`));return}if(e.size>2097152){n(Error(`Logo must be 2 MB or smaller.`));return}let r=new FileReader;r.onload=()=>t(String(r.result)),r.onerror=()=>n(Error(`Could not read the file.`)),r.readAsDataURL(e)});export{e as t};

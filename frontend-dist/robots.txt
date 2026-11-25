@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /styleguide
+
+Sitemap: https://nr-enterprise.lovable.app/sitemap.xml
