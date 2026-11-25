@@ -18,11 +18,11 @@ INPUTS (I fill these before pasting)
 - SITE_DOMAIN: <nrenterprise.example>      (the domain/subdomain where the site will live)
 - DOC_ROOT: <public_html  or  public_html/subfolder  or  the addon domain's document root>
 - DB_NAME_SUFFIX: nre      DB_USER_SUFFIX: nreapp   (cPanel adds the account prefix automatically)
-- FILES: <where the deploy files are: GitHub repo URL, or download links, or "uploaded in File Manager at /home/<user>/deploy/">
+- FILES: https://github.com/adibaashrafinfo-source/nr-enterprise  (branch main; everything needed is already inside it)
 - ADMIN_EMAIL: <email for the first admin account>
 
 WHAT IS BEING DEPLOYED
-A React single-page frontend (static dist/ files) + a PHP 8.1+ REST API in nre_backend/ (outside web root) and public_html/api/ + a MySQL/MariaDB database on this same cPanel. No Supabase or any external service. Reference files: NRE_BACKEND_API.md section 8 (deployment) is the authoritative checklist; deploy/DEPLOY_CPANEL.md if present.
+A React single-page frontend (prebuilt static files in frontend-dist/, built with VITE_USE_MOCK=false so it talks to /api/v1) + a PHP 8.1+ REST API in nre_backend/ (outside web root) and public_html/api/ + a MySQL/MariaDB database on this same cPanel. No Supabase or any external service. Reference files: NRE_BACKEND_API.md section 8 (deployment) is the authoritative checklist; deploy/DEPLOY_CPANEL.md if present.
 
 AUTONOMY RULES
 - Proceed through all steps below on your own. Do not ask "should I continue?" between steps.
@@ -46,9 +46,13 @@ B. PHP and SSL
 6. SSL/TLS Status -> run AutoSSL for SITE_DOMAIN. Wait until it shows a valid certificate (retry later if pending; continue other steps meanwhile).
 
 C. Getting files onto the server (use the first route that works)
-Route 1 - Git Version Control: cPanel -> Git Version Control -> Clone the repository given in FILES into /home/<user>/nre_repo (use the HTTPS URL; if the repo is private, stop and ask me for a deploy key/token path, never ask me to paste a token in chat). Then use File Manager to copy: nre_backend/ -> /home/<user>/nre_backend/, public_html contents -> DOC_ROOT.
-Route 2 - Terminal (if available): run the exact commands to download/unzip the provided release zips into the right folders.
-Route 3 - File Manager upload: upload the zips named in FILES (nre_backend.zip -> /home/<user>/, public_html.zip -> DOC_ROOT (contains .htaccess, api/, uploads/, assets/); then upload the frontend build (dist/ contents) into DOC_ROOT without overwriting those), then Extract. If the file picker dialog cannot be driven from the browser, tell me exactly which files to select and wait for me to do the upload, then continue.
+Route 1 - GitHub + cPanel Git Version Control (preferred; the repo already contains the backend, SQL, prebuilt site in frontend-dist/ and a .cpanel.yml):
+  a. cPanel -> Git Version Control -> Create -> Clone URL = FILES (HTTPS), Repository Path = /home/<user>/repositories/nr-enterprise, branch main. If the repo is private, stop and ask me for a deploy key/token path; never ask me to paste a token in chat.
+  b. Open the repo -> "Deploy HEAD Commit". .cpanel.yml copies backend/nre_backend/src -> ~/nre_backend/src, frontend-dist/ -> ~/public_html/, backend/public_html/api + .htaccess -> ~/public_html/. It never touches config.php, storage/ data or uploads/.
+  c. .cpanel.yml deploys to ~/public_html only. If DOC_ROOT is something else, do NOT edit files inside the cPanel repo (that blocks deploy); instead copy with File Manager: frontend-dist/* and backend/public_html/{.htaccess,api,uploads} -> DOC_ROOT, and backend/nre_backend/* -> ~/nre_backend/.
+  d. For later updates: Git Version Control -> Pull or Deploy -> Update from Remote, then Deploy HEAD Commit. Database SQL is in database/NRE_mysql_schema.sql and database/NRE_mysql_seed.sql (import via phpMyAdmin, schema first).
+Route 2 - Terminal (if available): git clone FILES, then run the same copy steps as above.
+Route 3 - File Manager upload (fallback): download the repo ZIP from GitHub (Code -> Download ZIP) or use zips named by me, upload and Extract; same destination mapping as 1c. If the file picker cannot be driven from the browser, tell me exactly which files to select and wait.
 Final layout must be:
   /home/<user>/nre_backend/{config.php, src/, storage/}
   DOC_ROOT/{index.html, assets/, .htaccess, api/{index.php,.htaccess}, uploads/.htaccess}

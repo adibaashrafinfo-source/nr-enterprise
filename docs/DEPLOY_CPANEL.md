@@ -78,3 +78,9 @@ Replace `nre_backend/src/` and `public_html/api/` with the new version (keep `co
 | `403 CSRF` on every save | frontend must send header `X-CSRF-Token` (value from `/auth/me`); stale cache — hard refresh |
 | Image upload fails | `uploads/` not writable, or file > 5 MB, or not jpg/png/webp |
 | Blank page on `/admin/...` after refresh | `.htaccess` from `public_html.zip` missing in the document root |
+
+
+## GitHub route (recommended)
+Repo: https://github.com/adibaashrafinfo-source/nr-enterprise (main). Contains backend/, database/, frontend-dist/ (prebuilt) and .cpanel.yml.
+cPanel -> Git Version Control -> Clone -> then "Deploy HEAD Commit" copies everything to ~/nre_backend and ~/public_html. Create ~/nre_backend/config.php from config.sample.php once (DB creds, APP_URL, first admin). Import database/NRE_mysql_schema.sql then NRE_mysql_seed.sql in phpMyAdmin. Updates: Pull -> Deploy HEAD Commit.
+Rebuild site locally: `npm run build:cpanel` (updates frontend-dist/), commit, push.
