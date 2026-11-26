@@ -1,0 +1,1 @@
+import{o as e}from"./useSelector-DkBAF1WU.js";import{It as t}from"./index-CBV8Lt10.js";import{t as n}from"./ProductEditor-oRYlnzUu.js";import{a as r}from"./shared-WdP5e3de.js";var i=e();function a(){let{canEdit:e,ready:a}=r();return a&&!e?(0,i.jsx)(t,{to:`/admin/products`}):(0,i.jsx)(n,{})}export{a as component};

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ChevronDown, Menu, Phone } from "lucide-react";
+import { ArrowRight, Binary, Cable, ChevronDown, CircleDot, Circle, Cog, Disc3, Flame, Layers, Menu, Nfc, Package, Phone, Printer, Ribbon, ScanBarcode, Scissors, Shell, Shirt, Spool, Sticker, StickyNote, Tag, Tags, Waves, WashingMachine, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/nre/Logo";
@@ -17,6 +17,15 @@ const NAV = [
   { to: "/contact", label: "Contact" },
 ] as const;
 
+const PRODUCT_ICON: Record<string, LucideIcon> = {
+  "woven-labels": Shirt, "printed-care-labels": WashingMachine, "screen-printed-labels": Layers,
+  "offset-printed-tags": Tag, "digital-printed-tags": Printer, "thermal-stickers": Flame, "barcode-labels": ScanBarcode, "rfid-labels-tags": Nfc,
+  "variable-data-labels": Binary, "flexo-adhesive-labels": Sticker, "adhesive-labels-tags": StickyNote,
+  "sewing-thread": Spool, elastic: Waves, "twill-tape": Ribbon, "drawstring-cord": Cable, "cord-stoppers": CircleDot,
+  "metal-snap-buttons": Disc3, "plastic-buttons": Circle, "shell-buttons": Shell,
+};
+const CATEGORY_ICON: Record<string, LucideIcon> = { labels: Tag, "tags-stickers-tracking": Tags, trims: Scissors };
+
 export function SiteHeader() {
   const { data: settings } = useQuery(settingsQuery());
   const { data: categories = [] } = useQuery(categoriesQuery());
@@ -28,29 +37,55 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 md:h-20">
+      <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 md:h-20">
         <Link to="/" aria-label="NR Enterprise home"><Logo className="h-10 md:h-12" /></Link>
 
         <nav className="hidden items-center gap-6 text-sm font-medium lg:flex" aria-label="Main">
           <Link to="/" className="hover:text-secondary" activeOptions={{ exact: true }} activeProps={{ className: "text-secondary" }}>Home</Link>
-          <div className="relative" onMouseEnter={() => setMega(true)} onMouseLeave={() => setMega(false)}>
+          <div onMouseEnter={() => setMega(true)} onMouseLeave={() => setMega(false)}>
             <Link to="/products" className="inline-flex items-center gap-1 py-7 hover:text-secondary" activeProps={{ className: "text-secondary" }}
               aria-expanded={mega} onFocus={() => setMega(true)}>
               Products <ChevronDown className="size-3.5" />
             </Link>
             {mega && (
-              <div className="absolute left-1/2 top-full w-[760px] -translate-x-1/2 animate-fade-up rounded-2xl border bg-popover p-6 shadow-lift">
-                <div className="grid grid-cols-3 gap-6">
-                  {categories.map((c) => (
-                    <div key={c.slug}>
-                      <Link to="/products/$categorySlug" params={{ categorySlug: c.slug }} onClick={() => setMega(false)} className="heading-bar mb-3 block font-semibold hover:text-secondary">{c.name}</Link>
-                      <ul className="space-y-1.5 text-sm text-muted-foreground">
-                        {all?.data.filter((p) => p.category.slug === c.slug).map((p) => (
-                          <li key={p.slug}><Link to="/products/$categorySlug/$productSlug" params={{ categorySlug: c.slug, productSlug: p.slug }} onClick={() => setMega(false)} className="hover:text-secondary">{p.name}</Link></li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+              <div className="absolute inset-x-0 top-full z-50 mx-auto w-[min(940px,92vw)] animate-fade-up overflow-hidden rounded-3xl border bg-popover shadow-lift ring-1 ring-black/5">
+                <div className="h-1 bg-gradient-to-r from-primary via-primary to-secondary" aria-hidden />
+                <div className="grid grid-cols-3 gap-x-5 gap-y-6 p-6">
+                  {categories.map((c) => {
+                    const CatIcon = CATEGORY_ICON[c.slug] ?? Package;
+                    const items = all?.data.filter((p) => p.category.slug === c.slug) ?? [];
+                    return (
+                      <div key={c.slug}>
+                        <Link to="/products/$categorySlug" params={{ categorySlug: c.slug }} onClick={() => setMega(false)} className="group/cat mb-3 flex items-center gap-3 rounded-2xl bg-cream p-3 transition-colors hover:bg-accent">
+                          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-secondary text-secondary-foreground shadow-soft"><CatIcon className="size-5" /></span>
+                          <span className="min-w-0 flex-1"><span className="block font-semibold leading-tight">{c.name}</span><span className="text-xs text-muted-foreground">{items.length} products</span></span>
+                          <ArrowRight className="size-4 -translate-x-1 text-secondary opacity-0 transition-all group-hover/cat:translate-x-0 group-hover/cat:opacity-100" />
+                        </Link>
+                        <ul className="space-y-0.5">
+                          {items.map((p) => {
+                            const Icon = PRODUCT_ICON[p.slug] ?? Cog;
+                            return (
+                              <li key={p.slug}>
+                                <Link to="/products/$categorySlug/$productSlug" params={{ categorySlug: c.slug, productSlug: p.slug }} onClick={() => setMega(false)}
+                                  className="group/item flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm text-foreground/80 transition-all hover:bg-accent hover:text-foreground">
+                                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-muted text-secondary transition-all group-hover/item:scale-110 group-hover/item:bg-primary group-hover/item:text-primary-foreground group-hover/item:shadow-soft"><Icon className="size-4" /></span>
+                                  <span className="flex-1 leading-tight">{p.name}</span>
+                                  <ArrowRight className="size-3.5 -translate-x-1 text-secondary opacity-0 transition-all group-hover/item:translate-x-0 group-hover/item:opacity-100" />
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center justify-between gap-4 border-t bg-cream px-6 py-3.5 text-sm">
+                  <span className="text-muted-foreground">Custom artwork, samples and low MOQ available on request.</span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <Link to="/products" onClick={() => setMega(false)} className="inline-flex items-center gap-1.5 font-semibold text-secondary hover:underline">View all products <ArrowRight className="size-4" /></Link>
+                    <button type="button" onClick={() => { setMega(false); openQuote(); }} className="cursor-pointer rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground shadow-soft transition-all hover:bg-primary-hover hover:shadow-lift">Request a Quote</button>
+                  </div>
                 </div>
               </div>
             )}
