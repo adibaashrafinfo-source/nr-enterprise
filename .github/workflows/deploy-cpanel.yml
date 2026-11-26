@@ -1,0 +1,71 @@
+# Auto-deploy to cPanel (nrenterpriseopc.com) over FTP on every push to main.
+#
+# Required GitHub repo settings (Settings > Secrets and variables > Actions):
+#   Secrets:   FTP_SERVER, FTP_USERNAME, FTP_PASSWORD
+#   Variables: FTP_PORT (optional, default 21)
+#
+# The FTP account must be rooted at the cPanel HOME directory (/home/nrenterp),
+# because this mirrors .cpanel.yml: files go to both ~/public_html and ~/nre_backend.
+# Never uploads config.php, storage data or user uploads, so those stay safe on the server.
+
+name: Deploy to cPanel (FTP)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cpanel-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build frontend for cPanel
+        run: bun run build:cpanel
+
+      - name: Stage deploy folder (same layout as .cpanel.yml)
+        run: |
+          set -e
+          D=deploy_out
+          APP=$D/nre_backend
+          WEB=$D/public_html
+          mkdir -p $APP/src $APP/deploy $APP/storage $WEB/api $WEB/uploads
+          cp -R backend/nre_backend/src/. $APP/src/
+          cp backend/nre_backend/.htaccess $APP/.htaccess 2>/dev/null || true
+          cp backend/nre_backend/config.sample.php $APP/config.sample.php
+          cp backend/nre_backend/deploy/backup.sh $APP/deploy/backup.sh
+          cp backend/nre_backend/storage/.htaccess $APP/storage/.htaccess 2>/dev/null || true
+          cp -R frontend-dist/. $WEB/
+          cp backend/public_html/.htaccess $WEB/.htaccess
+          cp -R backend/public_html/api/. $WEB/api/
+          cp backend/public_html/uploads/.htaccess $WEB/uploads/.htaccess 2>/dev/null || true
+          find $D -type f | wc -l
+
+      - name: Upload via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ vars.FTP_PORT || 21 }}
+          protocol: ftps
+          security: loose
+          local-dir: ./deploy_out/
+          server-dir: ./
+          timeout: 600000
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/config.php
