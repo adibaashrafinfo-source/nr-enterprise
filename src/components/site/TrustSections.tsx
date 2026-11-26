@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, ClipboardList, Palette, PackageCheck, ScanLine, Truck, Minimize2, Repeat2, Recycle, Sprout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/nre/SectionHeading";
+import { Reveal } from "@/components/nre/Reveal";
+import { cn } from "@/lib/utils";
 import { certificationsQuery, clientsQuery } from "@/lib/queries";
 
 export const PROCESS = [
@@ -22,7 +24,18 @@ export function PageBanner({ title, text }: { title: string; text?: string }) {
   return <section className="relative overflow-hidden border-b bg-cream"><div className="nr-dotted absolute inset-y-0 right-0 w-1/2 opacity-50" aria-hidden="true" /><div className="relative mx-auto max-w-7xl px-4 py-14 md:py-18"><nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-2 text-sm text-muted-foreground"><Link to="/">Home</Link><span aria-hidden="true">/</span><span>{title}</span></nav><h1 className="text-3xl font-bold md:text-4xl">{title}</h1>{text && <p className="mt-4 max-w-2xl text-muted-foreground">{text}</p>}</div></section>;
 }
 export function ProcessStrip({ detailed = false }: { detailed?: boolean }) {
-  return <section className="border-y bg-cream py-16"><div className="mx-auto max-w-7xl px-4"><SectionHeading eyebrow="From brief to delivery" title="Every detail, every step" /><ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">{PROCESS.map((step, i) => <li key={step.title} className="relative"><div className="mb-4 flex items-center gap-3"><span className="grid size-12 place-items-center rounded-full bg-primary text-primary-foreground"><step.icon className="size-5" /></span><span className="text-sm font-semibold text-muted-foreground">0{i + 1}</span>{i < 4 && <ArrowRight className="ml-auto hidden size-5 text-muted-foreground lg:block" />}</div><h3 className="font-semibold">{step.title}</h3>{detailed && <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{step.text}</p>}</li>)}</ol></div></section>;
+  return <section className="border-y bg-cream py-12 md:py-16"><div className="mx-auto max-w-7xl px-4"><Reveal><SectionHeading eyebrow="From brief to delivery" title="Every detail, every step" /></Reveal>
+    <ol className={detailed ? "mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5" : "mt-8 grid grid-cols-6 gap-x-2 gap-y-7 sm:gap-x-4 md:mt-10 lg:grid-cols-5 lg:gap-6"}>
+      {PROCESS.map((step, i) => <Reveal as="li" delay={i * 90} key={step.title} className={cn("relative", !detailed && "col-span-2 text-center lg:col-span-1 lg:text-left", !detailed && i === 3 && "col-start-2 lg:col-start-auto")}>
+        <div className={cn("mb-3 flex items-center gap-3", !detailed && "flex-col gap-1.5 lg:flex-row lg:gap-3")}>
+          <span className={cn("grid place-items-center rounded-full bg-primary text-primary-foreground shadow-soft", detailed ? "size-12" : "size-11 lg:size-12")}><step.icon className="size-5" /></span>
+          <span className="text-xs font-semibold text-muted-foreground sm:text-sm">0{i + 1}</span>
+          {i < 4 && <ArrowRight className="ml-auto hidden size-5 text-muted-foreground lg:block" />}
+        </div>
+        <h3 className={cn("font-semibold", !detailed && "text-sm leading-tight sm:text-base")}>{step.title}</h3>
+        {detailed && <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{step.text}</p>}
+      </Reveal>)}
+    </ol></div></section>;
 }
 export function SustainabilityBand() {
   return <section className="bg-primary py-14 text-primary-foreground"><div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 lg:flex-row lg:items-center lg:justify-between"><div><p className="mb-4 text-sm font-medium">Responsible choices. Lasting impact.</p><div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:flex sm:flex-wrap">{FOUR_R.map((r) => <div key={r.title} className="flex items-center gap-2 text-xl font-semibold"><r.icon className="size-6" />{r.title}</div>)}</div><p className="mt-5 max-w-2xl text-sm">Thoughtful material choices for brands that care about people and the planet.</p></div><Button asChild variant="outline" className="self-start border-primary-foreground bg-transparent"><Link to="/sustainability">Our approach <ArrowRight /></Link></Button></div></section>;

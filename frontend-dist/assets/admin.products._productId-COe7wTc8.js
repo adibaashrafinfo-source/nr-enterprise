@@ -1,1 +1,0 @@
-import{o as e}from"./useSelector-DkBAF1WU.js";import{c as t}from"./index-CHPl0Lhe.js";import{t as n}from"./ProductEditor-BXRVf-Ys.js";var r=e();function i(){let{productId:e}=t.useParams();return(0,r.jsx)(n,{productId:Number(e)},e)}export{i as component};
