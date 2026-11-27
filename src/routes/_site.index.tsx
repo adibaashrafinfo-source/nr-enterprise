@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowRight, BadgeCheck, ChevronDown, Layers, Leaf, Palette, PenTool, Sparkles, Tag, Globe2 } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check, ChevronDown, Layers, Leaf, Palette, PenTool, Sparkles, Tag, Globe2, Handshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/nre/Reveal";
 import { SectionHeading } from "@/components/nre/SectionHeading";
@@ -11,7 +11,7 @@ import { useQuote } from "@/components/site/QuoteDrawer";
 import { categoriesQuery, productsQuery } from "@/lib/queries";
 import { canPrefetch } from "@/config/flags";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
-import { ClientLogos, ProcessStrip, SustainabilityBand } from "@/components/site/TrustSections";
+import { ClientLogos, HomeProcess, SustainabilityBanner } from "@/components/site/TrustSections";
 import { pageHead } from "@/lib/seo";
 
 const TITLE = "NR Enterprise — All Kinds of Garments Accessories";
@@ -75,18 +75,19 @@ function HeroSection({ openQuote }: { openQuote: () => void }) {
 }
 
 const TRUST = [
-  { icon: Tag, label: "Labels · Tags · Trims" },
-  { icon: Palette, label: "Custom finishing" },
-  { icon: Leaf, label: "Recycled-quality materials" },
-  { icon: Globe2, label: "Supplying global brands" },
+  { icon: Tag, label: "Labels · Tags · Trims", text: "Everything for your garment line" },
+  { icon: Palette, label: "Custom finishing", text: "Die cut, emboss, foil, varnish" },
+  { icon: Leaf, label: "Recycled-quality materials", text: "Eco-friendly options available" },
+  { icon: Globe2, label: "Supplying global brands", text: "Trusted by leading buyers" },
 ];
 
-const WHY = [
-  { icon: Layers, title: "Wide range under one roof", text: "Labels, tags, stickers, thread, elastic, cords and buttons from a single supplier." },
-  { icon: Sparkles, title: "Custom finishing", text: "Die cut, emboss, foil, varnish and folds on labels and tags." },
-  { icon: Leaf, title: "Sustainable materials focus", text: "Recycled-quality yarns, papers and fabrics where your brand needs them." },
-  { icon: PenTool, title: "Sample and artwork support", text: "Send your artwork or a sample and we help you get it right." },
+const ABOUT_FEATURES = [
+  { icon: Layers, title: "One supplier", text: "Range under one roof" },
+  { icon: Handshake, title: "Sample support", text: "Artwork and sample help" },
+  { icon: Sparkles, title: "Custom finish", text: "Matched to your brand" },
 ];
+
+const WHY_LIST = ["Wide product range under one roof", "Custom finishing on labels and tags", "Sustainable and recycled-quality material focus", "Sample and artwork support", "Professional support at every step"];
 
 function Home() {
   const { openQuote } = useQuote();
@@ -99,31 +100,60 @@ function Home() {
       <HeroSection openQuote={() => openQuote()} />
 
       {/* 2 Trust strip */}
-      <section id="trust" className="border-y bg-background">
-        <ul className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-6 md:grid-cols-4">
-          {TRUST.map((t) => <li key={t.label} className="flex items-center gap-3 text-sm font-medium"><span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent text-secondary"><t.icon className="size-5" /></span>{t.label}</li>)}
+      <section id="trust" className="border-b bg-cream/60">
+        <ul className="mx-auto grid max-w-7xl grid-cols-2 gap-x-4 gap-y-5 px-4 py-7 lg:grid-cols-4 lg:gap-6">
+          {TRUST.map((t, ti) => <Reveal as="li" delay={ti * 80} key={t.label} className="flex items-center gap-3">
+            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/20 text-secondary"><t.icon className="size-6" /></span>
+            <span className="min-w-0"><span className="block text-sm font-semibold leading-tight">{t.label}</span><span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{t.text}</span></span>
+          </Reveal>)}
         </ul>
       </section>
 
-      {/* 3 Categories */}
-      <section className="mx-auto max-w-7xl px-4 py-16 md:py-20">
-        <Reveal><SectionHeading eyebrow="What we supply" title="Three ranges, one supplier" /></Reveal>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {categories.map((c, ci) => (
-            <Reveal key={c.slug} delay={ci * 110}><Link to="/products/$categorySlug" params={{ categorySlug: c.slug }} className="group block h-full overflow-hidden rounded-2xl border bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
-              <div className="aspect-[4/3] overflow-hidden"><img src={c.image_url} alt={c.name} loading="lazy" className="size-full object-cover transition-transform duration-500 group-hover:scale-105" /></div>
-              <div className="p-6">
-                <div className="flex items-center justify-between"><h3 className="text-lg font-semibold">{c.name}</h3><span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium">{c.product_count} products</span></div>
-                <p className="mt-2 text-sm text-muted-foreground">{c.description}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-secondary">Explore <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" /></span>
-              </div>
-            </Link></Reveal>
-          ))}
+      {/* 3 About */}
+      <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 md:py-20 lg:grid-cols-2 lg:gap-16">
+        <Reveal className="relative mx-auto w-full max-w-xl">
+          <span className="absolute -left-3 -top-3 h-14 w-24 rounded-2xl bg-primary/70" aria-hidden />
+          <span className="absolute -bottom-3 -right-3 h-20 w-10 rounded-2xl bg-primary/70" aria-hidden />
+          <div className="relative grid grid-cols-5 grid-rows-[auto] gap-3 sm:gap-4">
+            <img src="/assets/products/metal-snap-buttons/metal-snap-buttons-1.jpg" alt="Metal snap buttons" loading="lazy" className="col-span-2 aspect-square w-full rounded-3xl object-cover shadow-soft" />
+            <img src="/assets/products/sewing-thread/sewing-thread-1.jpg" alt="Sewing thread" loading="lazy" className="col-span-3 aspect-[4/3] w-full self-start rounded-3xl object-cover shadow-lift" />
+            <img src="/assets/products/woven-labels/woven-labels-2.jpg" alt="Woven labels" loading="lazy" className="col-span-3 aspect-[4/3] w-full rounded-3xl object-cover shadow-lift" />
+            <img src="/assets/products/woven-labels/woven-labels-1.jpg" alt="Brand labels" loading="lazy" className="col-span-2 aspect-square w-full self-end rounded-3xl object-cover shadow-soft" />
+          </div>
+        </Reveal>
+        <Reveal delay={120}>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">About NR Enterprise</p>
+          <h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight md:text-4xl">Your trusted partner in garment accessories</h2>
+          <p className="mt-4 text-muted-foreground md:text-lg">We supply labels, tags, stickers and trims to garment factories, buying houses and brands, with consistent quality and support from artwork to delivery.</p>
+          <div className="mt-7 grid grid-cols-3 gap-3">
+            {ABOUT_FEATURES.map((f) => <div key={f.title} className="rounded-2xl border bg-card p-3 text-center shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift sm:p-4"><f.icon className="mx-auto size-7 text-primary" /><p className="mt-2 text-sm font-semibold leading-tight">{f.title}</p><p className="mt-0.5 text-xs text-muted-foreground">{f.text}</p></div>)}
+          </div>
+          <Button asChild size="lg" className="mt-8 shadow-lift"><Link to="/about">Learn More <ArrowRight /></Link></Button>
+        </Reveal>
+      </section>
+
+      {/* 4 Product range */}
+      <section className="bg-cream/60 py-14 md:py-20">
+        <div className="mx-auto max-w-7xl px-4">
+          <Reveal className="mx-auto max-w-2xl text-center"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">Our product range</p><h2 className="mt-3 text-2xl font-bold tracking-tight md:text-4xl">Complete garment accessories solution</h2><p className="mt-3 text-sm text-muted-foreground md:text-base">From labels and tags to thread and trims, everything you need for apparel production.</p></Reveal>
+          <div className="mt-10 grid gap-5 md:grid-cols-3 md:gap-6">
+            {categories.map((c, ci) => (
+              <Reveal key={c.slug} delay={ci * 110}><Link to="/products/$categorySlug" params={{ categorySlug: c.slug }} className="group relative block h-full overflow-hidden rounded-3xl border bg-card shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift">
+                <div className="aspect-[16/11] overflow-hidden"><img src={c.image_url} alt={c.name} loading="lazy" className="size-full object-cover transition-transform duration-700 group-hover:scale-110" /></div>
+                <div className="relative p-5 pt-8 sm:p-6 sm:pt-9">
+                  <span className="absolute -top-6 left-5 grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-lift sm:left-6"><Tag className="size-5" /></span>
+                  <div className="flex items-start justify-between gap-3"><div><h3 className="text-lg font-semibold leading-tight">{c.name}</h3><p className="mt-1 text-xs font-medium text-secondary">{c.product_count} products</p></div>
+                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/25 text-secondary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground"><ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" /></span></div>
+                  <p className="mt-3 line-clamp-3 text-sm text-muted-foreground">{c.description}</p>
+                </div>
+              </Link></Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* 4 Featured */}
-      <section className="bg-cream py-16 md:py-20">
+      {/* 5 Featured */}
+      <section className="py-14 md:py-20">
         <div className="mx-auto max-w-7xl px-4">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeading eyebrow="Featured" title="Popular with our buyers" />
@@ -137,25 +167,27 @@ function Home() {
         </div>
       </section>
 
-      {/* 5 Why NR */}
-      <section className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 md:py-20 lg:grid-cols-2">
-        <Reveal>
-          <SectionHeading eyebrow="Why NR Enterprise" title="We blend People, Process & Technology to meet customer demand" />
-          <img src="/assets/site/people-process-technology.jpg" alt="People, process and technology" loading="lazy" className="mt-8 w-full max-w-md rounded-2xl" />
-        </Reveal>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {WHY.map((w, wi) => (
-            <Reveal key={w.title} delay={wi * 90} className="rounded-2xl border bg-card p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
-              <span className="grid size-11 place-items-center rounded-full bg-primary text-primary-foreground"><w.icon className="size-5" /></span>
-              <h3 className="mt-4 font-semibold">{w.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{w.text}</p>
-            </Reveal>
-          ))}
+      {/* 6 Why NR */}
+      <section className="relative isolate overflow-hidden bg-ink-green text-on-dark">
+        <div className="grid lg:grid-cols-2">
+          <Reveal className="relative z-10 px-4 py-14 md:py-20 lg:pl-[max(1rem,calc((100vw-80rem)/2+1rem))] lg:pr-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Why choose NR Enterprise</p>
+            <h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight md:text-4xl">More than a supplier,<br />a long-term partner</h2>
+            <ul className="mt-7 space-y-3.5">
+              {WHY_LIST.map((w) => <li key={w} className="flex items-start gap-3 text-sm md:text-base"><span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><Check className="size-3.5" /></span>{w}</li>)}
+            </ul>
+            <Button asChild size="lg" className="mt-8 shadow-lift"><Link to="/capabilities">Our Capabilities <ArrowRight /></Link></Button>
+          </Reveal>
+          <div className="relative min-h-64 lg:min-h-[28rem]">
+            <img src="/assets/site/sewing-floor.jpg" alt="Sewing line in a garment factory" loading="lazy" className="absolute inset-0 size-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-ink-green via-transparent to-transparent lg:bg-gradient-to-r" aria-hidden />
+            <span className="absolute -left-6 top-0 hidden h-full w-3 -skew-x-12 bg-primary lg:block" aria-hidden />
+          </div>
         </div>
       </section>
 
-      <ProcessStrip />
-      <SustainabilityBand />
+      <HomeProcess />
+      <SustainabilityBanner />
       <ClientLogos marquee />
 
       {/* 9 Quote CTA */}

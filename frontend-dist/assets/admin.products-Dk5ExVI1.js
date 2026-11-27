@@ -1,0 +1,1 @@
+import{o as e}from"./useSelector-DkBAF1WU.js";import{Ft as t}from"./index-CfX7icPx.js";import{a as n,t as r}from"./shared-DWfoyqFU.js";var i=e();function a(){let{canEdit:e}=n();return(0,i.jsxs)(i.Fragment,{children:[(0,i.jsx)(r,{canEdit:e}),(0,i.jsx)(t,{})]})}export{a as component};

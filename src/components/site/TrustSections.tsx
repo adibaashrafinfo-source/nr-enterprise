@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, ClipboardList, Palette, PackageCheck, ScanLine, Truck, Minimize2, Repeat2, Recycle, Sprout } from "lucide-react";
+import { ArrowRight, Leaf, ClipboardList, Palette, PackageCheck, ScanLine, Truck, Minimize2, Repeat2, Recycle, Sprout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/nre/SectionHeading";
 import { Reveal } from "@/components/nre/Reveal";
@@ -53,4 +53,31 @@ export function Certifications() {
 }
 export function ContactCta({ title = "Talk to our team" }: { title?: string }) {
   return <section className="bg-ink-green py-14 text-on-dark"><div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="text-2xl font-semibold md:text-3xl">{title}</h2><p className="mt-3 text-sm opacity-80">Labels, tags and trims tailored to your brand.</p></div><Button asChild><Link to="/contact">Request a Quote <ArrowRight /></Link></Button></div></section>;
+}
+
+export function HomeProcess() {
+  return <section className="bg-background py-14 md:py-20"><div className="mx-auto max-w-7xl px-4">
+    <Reveal className="mx-auto max-w-2xl text-center"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">Our process</p><h2 className="mt-3 text-2xl font-bold tracking-tight md:text-4xl">A simple & reliable supply process</h2><p className="mt-3 text-sm text-muted-foreground md:text-base">From brief to delivery, one team keeps every step clear and on schedule.</p></Reveal>
+    <ol className="relative mt-10 grid grid-cols-6 gap-x-2 gap-y-8 sm:gap-x-4 md:mt-14 lg:grid-cols-5">
+      <span className="absolute left-[10%] right-[10%] top-7 hidden border-t-2 border-dashed border-primary/60 lg:block" aria-hidden />
+      {PROCESS.map((step, i) => <Reveal as="li" delay={i * 100} key={step.title} className={cn("relative col-span-2 text-center lg:col-span-1", i === 3 && "col-start-2 lg:col-start-auto")}>
+        <span className="relative mx-auto grid size-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-lift ring-8 ring-background"><step.icon className="size-6" /><span className="absolute -right-1 -top-1 grid size-6 place-items-center rounded-full bg-secondary text-[11px] font-bold text-secondary-foreground">{i + 1}</span></span>
+        <h3 className="mt-4 text-sm font-semibold leading-tight sm:text-base">{step.title}</h3>
+        <p className="mx-auto mt-2 hidden max-w-[16rem] text-sm leading-relaxed text-muted-foreground md:block">{step.text.split(". ")[0]!.replace(/\.$/, "")}.</p>
+      </Reveal>)}
+    </ol></div></section>;
+}
+
+export function SustainabilityBanner() {
+  return <section className="mx-auto max-w-7xl px-4 pb-14 md:pb-20"><Reveal>
+    <div className="relative isolate overflow-hidden rounded-3xl bg-ink-green text-on-dark shadow-lift">
+      <img src="/assets/site/sustainability-banner.jpg" alt="" loading="lazy" className="absolute inset-0 -z-20 size-full object-cover object-right" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#0f3a22]/95 via-[#0f3a22]/80 to-transparent" aria-hidden />
+      <div className="flex flex-col gap-5 px-6 py-9 sm:flex-row sm:items-center sm:gap-8 sm:px-10 md:py-12">
+        <span className="grid size-16 shrink-0 place-items-center rounded-full border-2 border-white/40 text-white"><Leaf className="size-8" /></span>
+        <div className="max-w-xl"><h2 className="text-2xl font-bold md:text-3xl">Sustainable & responsible sourcing</h2><p className="mt-2 text-sm text-white/85 md:text-base">Thoughtful material choices and recycled-quality options for brands that care about people and the planet.</p></div>
+        <Button asChild variant="onDark" className="self-start sm:ml-auto sm:self-center"><Link to="/sustainability">Our approach <ArrowRight /></Link></Button>
+      </div>
+    </div>
+  </Reveal></section>;
 }
